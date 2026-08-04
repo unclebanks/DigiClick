@@ -1,0 +1,28 @@
+import { sampleDigimon } from '../../data/digimon'
+import { Button } from '../common/Button'
+import styles from './StarterSelection.module.css'
+
+interface StarterSelectionProps {
+  onSelect: (digimonId: string) => void
+}
+
+const starters = sampleDigimon.filter((digimon) => digimon.stage === 'In-Training')
+
+export function StarterSelection({ onSelect }: StarterSelectionProps) {
+  return (
+    <section className={styles.panel}>
+      <h2>Choose your first Digimon</h2>
+      <p className={styles.copy}>No party was found, so you can select one starter from the In-Training line.</p>
+      <div className={styles.grid}>
+        {starters.map((digimon) => (
+          <button key={digimon.id} type="button" className={styles.card} onClick={() => onSelect(digimon.id)}>
+            <span className={styles.emoji}>{digimon.emoji}</span>
+            <strong>{digimon.name}</strong>
+            <span>{digimon.description}</span>
+            <Button variant="secondary">Select</Button>
+          </button>
+        ))}
+      </div>
+    </section>
+  )
+}

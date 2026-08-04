@@ -1,0 +1,73 @@
+.card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  padding: 1rem;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.active {
+  border-color: #8b5cf6;
+  box-shadow: 0 10px 30px rgba(139, 92, 246, 0.15);
+}
+
+.emoji {
+  font-size: 2rem;
+}
+
+.description {
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+.power {
+  font-weight: 700;
+  color: #2563eb;
+}
+
+.requirements {
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+}
+
+.label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: #7c3aed;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.requirementText {
+  color: #475569;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.button,
+.buttonSecondary {
+  border: none;
+  border-radius: 999px;
+  padding: 0.5rem 0.8rem;
+  cursor: pointer;
+}
+
+.button {
+  background: #2563eb;
+  color: white;
+}
+
+.buttonSecondary {
+  background: #f3f4f6;
+  color: #111827;
+}
