@@ -1,10 +1,23 @@
+export interface DigimonStats {
+  attack: number
+  defense: number
+  speed: number
+  hp: number
+}
+
 export interface Digimon {
   id: string
   name: string
   stage: string
   description: string
+  personality: string
+  type: string
   basePower: number
   emoji: string
+  baseStats: DigimonStats
+  level: number
+  exp: number
+  expToNextLevel: number
   evolutionRequirements?: EvolutionRequirement[]
 }
 
@@ -37,6 +50,12 @@ export interface DigitalSpaceEnvironment {
   digimonIds: string[]
 }
 
+export interface DigimonProgressionState {
+  level: number
+  exp: number
+  expToNextLevel: number
+}
+
 export interface PlayerState {
   currency: number
   playerLevel: number
@@ -45,4 +64,5 @@ export interface PlayerState {
   currentArea: string
   digitalSpace: DigitalSpaceEnvironment[]
   digivolutionStates: Record<string, string>
+  digimonProgression: Record<string, DigimonProgressionState>
 }

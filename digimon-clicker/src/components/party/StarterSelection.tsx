@@ -6,13 +6,13 @@ interface StarterSelectionProps {
   onSelect: (digimonId: string) => void
 }
 
-const starters = sampleDigimon.filter((digimon) => digimon.stage === 'In-Training')
+const starters = sampleDigimon.filter((digimon) => digimon.stage === 'Fresh')
 
 export function StarterSelection({ onSelect }: StarterSelectionProps) {
   return (
     <section className={styles.panel}>
       <h2>Choose your first Digimon</h2>
-      <p className={styles.copy}>No party was found, so you can select one starter from the In-Training line.</p>
+      <p className={styles.copy}>No party was found, so you can select one starter from the Fresh line.</p>
       <div className={styles.grid}>
         {starters.map((digimon) => (
           <button key={digimon.id} type="button" className={styles.card} onClick={() => onSelect(digimon.id)}>

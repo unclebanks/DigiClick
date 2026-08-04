@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import type { PlayerState } from '../types/game'
+import { gainDigimonExperience, resolveDigimonProgression } from '../utils/digimonProgression'
 
 // This store is intentionally simple and centralized so future systems such as
 // save/load, offline progress, and battle state can build on a single source of truth.
@@ -11,6 +12,7 @@ interface GameStore extends PlayerState {
   moveToDigitalSpace: (digimonId: string) => void
   selectStarter: (digimonId: string) => void
   setDigivolutionState: (digimonId: string, formId: string) => void
+  gainDigimonExperience: (digimonId: string, amount: number) => void
 }
 
 const createInitialDigitalSpace = (): PlayerState['digitalSpace'] =>
@@ -23,13 +25,14 @@ const createInitialDigitalSpace = (): PlayerState['digitalSpace'] =>
 const initialState: PlayerState = {
   currency: 120,
   playerLevel: 1,
-  partyDigimon: ['agumon'],
+  partyDigimon: [],
   inventory: ['training-chip'],
   currentArea: 'Digital Forest',
   digitalSpace: createInitialDigitalSpace(),
   digivolutionStates: {
     agumon: 'agumon',
   },
+  digimonProgression: {},
 }
 
 export const useGameStore = create<GameStore>((set) => ({
@@ -46,12 +49,20 @@ export const useGameStore = create<GameStore>((set) => ({
     }),
   setCurrentArea: (area) => set({ currentArea: area }),
   addPartyDigimon: (digimonId) =>
-    set((state) => ({
-      partyDigimon:
-        state.partyDigimon.includes(digimonId) || state.partyDigimon.length >= 6
-          ? state.partyDigimon
-          : [...state.partyDigimon, digimonId],
-    })),
+    set((state) => {
+      const isAlreadyInParty = state.partyDigimon.includes(digimonId)
+      const nextPartyDigimon = isAlreadyInParty || state.partyDigimon.length >= 6
+        ? state.partyDigimon
+        : [...state.partyDigimon, digimonId]
+
+      return {
+        partyDigimon: nextPartyDigimon,
+        digimonProgression: {
+          ...state.digimonProgression,
+          [digimonId]: resolveDigimonProgression(state.digimonProgression[digimonId]),
+        },
+      }
+    }),
   moveToParty: (digimonId) =>
     set((state) => {
       const nextParty = state.partyDigimon.includes(digimonId)
@@ -64,6 +75,10 @@ export const useGameStore = create<GameStore>((set) => ({
           ...environment,
           digimonIds: environment.digimonIds.filter((id) => id !== digimonId),
         })),
+        digimonProgression: {
+          ...state.digimonProgression,
+          [digimonId]: resolveDigimonProgression(state.digimonProgression[digimonId]),
+        },
       }
     }),
   moveToDigitalSpace: (digimonId) =>
@@ -91,6 +106,10 @@ export const useGameStore = create<GameStore>((set) => ({
   selectStarter: (digimonId) =>
     set((state) => ({
       partyDigimon: state.partyDigimon.length === 0 ? [digimonId] : state.partyDigimon,
+      digimonProgression: {
+        ...state.digimonProgression,
+        [digimonId]: resolveDigimonProgression(state.digimonProgression[digimonId]),
+      },
     })),
   setDigivolutionState: (digimonId, formId) =>
     set((state) => ({
@@ -99,4 +118,16 @@ export const useGameStore = create<GameStore>((set) => ({
         [digimonId]: formId,
       },
     })),
+  gainDigimonExperience: (digimonId, amount) =>
+    set((state) => {
+      const currentProgression = resolveDigimonProgression(state.digimonProgression[digimonId])
+      const nextProgression = gainDigimonExperience(currentProgression, amount)
+
+      return {
+        digimonProgression: {
+          ...state.digimonProgression,
+          [digimonId]: nextProgression,
+        },
+      }
+    }),
 }))

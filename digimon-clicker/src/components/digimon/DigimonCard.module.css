@@ -26,6 +26,19 @@
   color: #2563eb;
 }
 
+.statsGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: #334155;
+}
+
+.exp {
+  font-size: 0.9rem;
+  color: #475569;
+}
+
 .requirements {
   padding: 0.75rem;
   border-radius: 0.75rem;

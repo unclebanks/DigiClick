@@ -25,6 +25,16 @@ export function DigimonCard({
       </div>
       <p className={styles.description}>{digimon.description}</p>
       <p className={styles.power}>Power {digimon.basePower}</p>
+      <p className={styles.requirementText}>Personality: {digimon.personality}</p>
+      <p className={styles.requirementText}>Type: {digimon.type}</p>
+      <div className={styles.statsGrid}>
+        <span>Lv. {digimon.level}</span>
+        <span>ATK {digimon.baseStats.attack}</span>
+        <span>DEF {digimon.baseStats.defense}</span>
+        <span>SPD {digimon.baseStats.speed}</span>
+        <span>HP {digimon.baseStats.hp}</span>
+      </div>
+      <p className={styles.exp}>EXP {digimon.exp}/{digimon.expToNextLevel}</p>
       <div className={styles.requirements}>
         <p className={styles.label}>Requirements</p>
         {digimon.evolutionRequirements?.length ? (

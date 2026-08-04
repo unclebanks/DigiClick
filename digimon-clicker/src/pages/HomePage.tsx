@@ -8,6 +8,8 @@ import { Button } from '../components/common/Button'
 import { ProgressBar } from '../components/common/ProgressBar'
 import { StarterSelection } from '../components/party/StarterSelection'
 import { getLevelProgress } from '../utils/game'
+import { getPartyDigimonList } from '../utils/digimonParty'
+import { resolveDigimonProgression } from '../utils/digimonProgression'
 import styles from '../styles/pages.module.css'
 
 export function HomePage() {
@@ -19,7 +21,13 @@ export function HomePage() {
   const digivolutionStates = useGameStore((state) => state.digivolutionStates)
   const partyDigimon = useGameStore((state) => state.partyDigimon)
   const selectStarter = useGameStore((state) => state.selectStarter)
+  const digimonProgression = useGameStore((state) => state.digimonProgression)
+  const gainDigimonExperience = useGameStore((state) => state.gainDigimonExperience)
   const navigate = useNavigate()
+  const partyMembers = getPartyDigimonList(sampleDigimon, partyDigimon).map((digimon) => ({
+    ...digimon,
+    ...resolveDigimonProgression(digimonProgression[digimon.id]),
+  }))
 
   const handleEvolve = (digimonId: string) => {
     const currentFormId = digivolutionStates[digimonId] ?? digimonId
@@ -51,7 +59,14 @@ export function HomePage() {
               This template keeps the first steps simple so you can focus on learning the game loop.
             </p>
             <div className={styles.actions}>
-              <Button onClick={() => addCurrency(10)}>Collect 10 Bits</Button>
+              <Button onClick={() => {
+                addCurrency(10)
+                if (partyDigimon[0]) {
+                  gainDigimonExperience(partyDigimon[0], 20)
+                }
+              }}>
+                Collect 10 Bits
+              </Button>
               <Button variant="secondary" onClick={() => navigate('/battle')}>
                 Enter Battle
               </Button>
@@ -67,7 +82,7 @@ export function HomePage() {
       )}
 
       <section className={styles.grid}>
-        {sampleDigimon.map((digimon) => (
+        {partyMembers.map((digimon) => (
           <DigimonCard
             key={digimon.id}
             digimon={digimon}

@@ -2,15 +2,22 @@ import { useGameStore } from '../store/gameStore'
 import { sampleDigimon } from '../data/digimon'
 import { Card } from '../components/common/Card'
 import { Button } from '../components/common/Button'
+import { resolveDigimonProgression } from '../utils/digimonProgression'
 import styles from '../styles/pages.module.css'
 
 export function PartyPage() {
   const partyDigimon = useGameStore((state) => state.partyDigimon)
   const digitalSpace = useGameStore((state) => state.digitalSpace)
+  const digimonProgression = useGameStore((state) => state.digimonProgression)
   const moveToParty = useGameStore((state) => state.moveToParty)
   const moveToDigitalSpace = useGameStore((state) => state.moveToDigitalSpace)
 
-  const partyMembers = sampleDigimon.filter((digimon) => partyDigimon.includes(digimon.id))
+  const partyMembers = sampleDigimon
+    .filter((digimon) => partyDigimon.includes(digimon.id))
+    .map((digimon) => ({
+      ...digimon,
+      ...resolveDigimonProgression(digimonProgression[digimon.id]),
+    }))
   const storedDigimon = digitalSpace.flatMap((environment) =>
     environment.digimonIds.map((digimonId) => ({
       digimonId,
