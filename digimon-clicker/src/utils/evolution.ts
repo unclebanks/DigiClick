@@ -12,6 +12,54 @@ export interface EvolutionRequirement {
   notes?: string
 }
 
+export function canSatisfyEvolutionRequirements(
+  requirements: EvolutionRequirement[] | undefined,
+  currentLevel: number,
+  inventory: string[],
+): boolean {
+  if (!requirements?.length) {
+    return true
+  }
+
+  return requirements.every((requirement) => {
+    const meetsLevel = requirement.minLevel === undefined || currentLevel >= requirement.minLevel
+    const meetsItem = requirement.requiredItemId === undefined || inventory.includes(requirement.requiredItemId)
+    const meetsPartner = requirement.requiredDigimonId === undefined || inventory.includes(requirement.requiredDigimonId)
+
+    return meetsLevel && meetsItem && meetsPartner
+  })
+}
+
+export function formatEvolutionRequirements(requirements: EvolutionRequirement[] | undefined): string {
+  if (!requirements?.length) {
+    return 'No special requirements.'
+  }
+
+  return requirements
+    .map((requirement) => {
+      const parts: string[] = []
+
+      if (requirement.minLevel) {
+        parts.push(`Level ${requirement.minLevel}`)
+      }
+
+      if (requirement.requiredItemId) {
+        const itemLabel = requirement.requiredItemId
+          .split('-')
+          .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
+          .join(' ')
+        parts.push(itemLabel.replace(/ Of /g, ' of ').replace(/ And /g, ' and '))
+      }
+
+      if (requirement.requiredDigimonId) {
+        parts.push(`Partner: ${requirement.requiredDigimonId}`)
+      }
+
+      return parts.length ? parts.join(' + ') : requirement.notes ?? 'Special evolution requirement'
+    })
+    .join(' | ')
+}
+
 export function evolveDigimonState(
   state: DigivolutionState,
   nextFormId: string,

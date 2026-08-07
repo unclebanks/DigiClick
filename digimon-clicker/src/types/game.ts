@@ -19,6 +19,7 @@ export interface Digimon {
   exp: number
   expToNextLevel: number
   evolutionRequirements?: EvolutionRequirement[]
+  drops?: Array<{ itemId: string, chance: number }>
 }
 
 export interface Item {

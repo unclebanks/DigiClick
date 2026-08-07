@@ -16,6 +16,7 @@ export function BattlePage() {
   const [battleLog, setBattleLog] = useState('Select a route and challenge the wild Digimon ahead.')
   const [activeRouteId, setActiveRouteId] = useState(getDefaultBattleRoute(sampleBattleRoutes).id)
   const addCurrency = useGameStore((state) => state.addCurrency)
+  const addInventoryItem = useGameStore((state) => state.addInventoryItem)
   const playerLevel = useGameStore((state) => state.playerLevel)
 
   const currentRoute = useMemo(
@@ -32,11 +33,18 @@ export function BattlePage() {
 
   const handleAttack = () => {
     const power = 4 + playerLevel
-    const result = resolveBattleTurn(power, enemyHp)
+    const result = resolveBattleTurn(power, enemyHp, activeEncounter?.drops)
 
     if (result.defeated) {
       setEnemyHp(initialEnemyHp)
-      setBattleLog(`Victory! You earned ${result.reward} Bits.`)
+
+      if (result.droppedItemIds.length) {
+        result.droppedItemIds.forEach((itemId) => addInventoryItem(itemId))
+        setBattleLog(`Victory! You earned ${result.reward} Bits and found ${result.droppedItemIds.join(', ')}.`)
+      } else {
+        setBattleLog(`Victory! You earned ${result.reward} Bits.`)
+      }
+
       addCurrency(result.reward)
       return
     }

@@ -1,4 +1,5 @@
 import type { Digimon } from '../../types/game'
+import { formatEvolutionRequirements } from '../../utils/evolution'
 import styles from './DigimonCard.module.css'
 
 interface DigimonCardProps {
@@ -37,15 +38,9 @@ export function DigimonCard({
       <p className={styles.exp}>EXP {digimon.exp}/{digimon.expToNextLevel}</p>
       <div className={styles.requirements}>
         <p className={styles.label}>Requirements</p>
-        {digimon.evolutionRequirements?.length ? (
-          digimon.evolutionRequirements.map((requirement, index) => (
-            <p key={`${digimon.id}-${index}`} className={styles.requirementText}>
-              {requirement.notes ?? 'Template requirement placeholder.'}
-            </p>
-          ))
-        ) : (
-          <p className={styles.requirementText}>No template requirements yet.</p>
-        )}
+        <p className={styles.requirementText}>
+          {formatEvolutionRequirements(digimon.evolutionRequirements)}
+        </p>
       </div>
       <div className={styles.actions}>
         <button type="button" className={styles.button} onClick={() => onEvolve?.(digimon.id)}>

@@ -6,6 +6,7 @@ import { gainDigimonExperience, resolveDigimonProgression } from '../utils/digim
 // save/load, offline progress, and battle state can build on a single source of truth.
 interface GameStore extends PlayerState {
   addCurrency: (amount: number) => void
+  addInventoryItem: (itemId: string) => void
   setCurrentArea: (area: string) => void
   addPartyDigimon: (digimonId: string) => void
   moveToParty: (digimonId: string) => void
@@ -47,6 +48,10 @@ export const useGameStore = create<GameStore>((set) => ({
         playerLevel: nextLevel,
       }
     }),
+  addInventoryItem: (itemId) =>
+    set((state) => ({
+      inventory: state.inventory.includes(itemId) ? state.inventory : [...state.inventory, itemId],
+    })),
   setCurrentArea: (area) => set({ currentArea: area }),
   addPartyDigimon: (digimonId) =>
     set((state) => {
