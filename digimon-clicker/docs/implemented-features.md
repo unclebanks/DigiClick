@@ -73,11 +73,13 @@ Implemented in:
 - src/data/areas.ts
 
 Current behavior:
-- Combat is real-time: the active party Digimon and the wild Digimon each attack automatically on their own speed-derived interval (`getAttackIntervalMs`), rather than waiting for a manual click.
-- Each attack can miss, land normally, or crit (`resolveAttack` in src/utils/combat.ts), and damage is scaled by the Vaccine/Data/Virus/Free attribute triangle (src/utils/digimonAttributes.ts).
+- Combat is real-time: the active party Digimon and the wild Digimon each attack automatically on their own speed-derived interval (`getAttackIntervalMs`). Each side's attack loop is a separate `useEffect`/`setInterval` pair that fires an immediate attack as soon as it (re)starts, then repeats on the interval - so entering battle, regrouping, or swapping the active Digimon doesn't leave a dead multi-second gap before the next hit, and a change on one side (e.g. a party swap) doesn't reset the other side's clock.
+- A wild encounter's level is locked in at the moment it's rolled (`encounterLevelLock`) instead of being recomputed live from the player's current level - previously the same in-progress wild Digimon could retroactively change level/stats mid-fight if the player leveled up from battle rewards.
+- The player can also click an "Attack" button for a manual hit that bypasses defense entirely; its damage (`getManualAttackDamage` in src/utils/combat.ts) starts at 1 and grows as the trainer owns more Digimon (party + Digital Space + digivolution history, via `getOwnedDigimonIds`). It takes a reserved `itemBonus` parameter for upgrade items, which are not implemented yet.
+- Each auto-battle attack can miss, land normally, or crit (`resolveAttack` in src/utils/combat.ts), and damage is scaled by the Vaccine/Data/Virus/Free attribute triangle (src/utils/digimonAttributes.ts). The manual attack button does not roll miss/crit.
 - Combat stats (attack/defense/speed/hp) are derived from level, digivolution penalty, and any scan-recruit stat bonus via `calculateDigimonStats`.
-- If the active party Digimon faints, the next living party member is swapped in automatically; if the whole party faints, battling pauses until the player clicks "Regroup".
-- Defeating a wild Digimon fills its per-species DigiDex "scan" meter by an amount based on its level (`getScanGainFromDefeat` in src/utils/scanning.ts) instead of a catch-with-balls mechanic or damage-based gain. At 100% the Digimon can be recruited into the Digital Space; at 200% there's a chance of a bonus-stat recruit.
+- If the active party Digimon faints, the next living party member is swapped in automatically; if the whole party faints, battling pauses until the player clicks "Regroup". The player can also manually swap to any living party member at any time via the "Your Team" roster at the bottom of the Battle page (each card shows species/level/HP and a Send Out button; the current combatant is marked Active and fainted members are disabled).
+- Defeating a wild Digimon fills its per-species DigiDex "scan" meter by an amount based on its level (`getScanGainFromDefeat` in src/utils/scanning.ts) instead of a catch-with-balls mechanic or damage-based gain. At 100% the Digimon can be recruited (from the Battle page's Recruit button or the DigiDex, see section 11); at 200% there's a chance of a bonus-stat recruit. Recruiting is allowed even if the species is already owned - each recruit gets its own instance id, and the scan meter resets to 0 afterward so another copy has to be earned again.
 - Defeating an enemy grants Bits and EXP (`resolveVictoryRewards`), rolls item drops, unlocks a `first-victory` badge and a per-route `cleared-<routeId>` badge, and records statistics in the player store.
 
 Important details:
@@ -176,11 +178,12 @@ Implemented in:
 Current behavior:
 - The DigiDex lists every species in `sampleDigimon` with a status of `unseen`, `scanned`, `ready`, or `owned` (`getDigidexStatus`).
 - A species counts as "seen" once it has been encountered in battle (its id gets seeded into `scanProgress`); `unseen` entries are redacted (name/description hidden, generic icon).
-- `getOwnedDigimonIds` treats party members, Digital Space residents, and every form in their digivolution history as owned, so evolved/de-evolved forms show up correctly.
-- Each non-unseen entry shows its scan percentage via a progress bar, and calls out when a species has reached the 200% bonus-stat tier.
+- `getOwnedDigimonIds` treats party members, Digital Space residents, and every form in their digivolution history as owned, so evolved/de-evolved forms show up correctly. Party/Digital Space slots hold instance ids (not species ids), since a species can be owned multiple times; the species itself is always resolved through `digivolutionStates`.
+- Each non-unseen entry (including already-`owned` ones) shows its scan percentage via a progress bar, and calls out when a species has reached the 200% bonus-stat tier.
+- The DigiDex has its own Recruit button that appears whenever scan progress is at/above 100%, regardless of ownership status, calling the same `recruitFromScan` store action used by the Battle page's Recruit button.
 
 Important details:
-- The DigiDex is read-only; recruiting still happens from the Battle page's Recruit button once a species reaches 100% scanned.
+- Recruiting is not gated on ownership - trainers can stack multiple copies of the same species, each with independent progression/digivolution/stat-bonus state keyed by its own instance id.
 
 ## 12. Current limitations to keep in mind
 The project is a foundation, not a complete game. The main gaps are:

@@ -11,6 +11,12 @@
   transform: translateY(-1px);
 }
 
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  transform: none;
+}
+
 .primary {
   background: linear-gradient(135deg, #7c3aed, #2563eb);
   color: white;

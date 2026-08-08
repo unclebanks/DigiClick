@@ -2,9 +2,9 @@ import type { DigimonStats, DigimonStatBonus } from '../types/game'
 
 export const SCAN_RECRUIT_THRESHOLD = 100
 export const SCAN_MAX = 200
-export const SCAN_BONUS_CHANCE = 0.4
 const BASE_SCAN_GAIN = 15
 const SCAN_GAIN_PER_LEVEL = 2
+const MAX_SCAN_BONUS_RATIO = 0.1
 
 // DigiDex research data is only gathered by defeating a Digimon, not by damage dealt mid-fight.
 // Tougher (higher level) Digimon yield more data per defeat, so they scan faster per encounter.
@@ -20,21 +20,29 @@ export function canRecruitFromScan(progress: number): boolean {
   return progress >= SCAN_RECRUIT_THRESHOLD
 }
 
+// True once scan progress has gone past 100% and is earning a stat bonus.
 export function hasBonusScanTier(progress: number): boolean {
-  return progress >= SCAN_MAX
+  return progress > SCAN_RECRUIT_THRESHOLD
 }
 
-// A fully scanned (200%) Digimon has a chance to be recruited with a small stat bonus.
-export function rollScanStatBonus(
-  baseStats: DigimonStats,
-  progress: number,
-  rng: () => number = Math.random,
-): DigimonStatBonus | undefined {
-  if (!hasBonusScanTier(progress) || rng() > SCAN_BONUS_CHANCE) {
-    return undefined
+// Scan progress past 100% (up to the 200% cap) grants a proportional stat bonus - e.g. scanning
+// halfway between 100% and 200% grants half of the max +10% bonus.
+export function getScanBonusRatio(progress: number): number {
+  const overflow = Math.min(SCAN_MAX, Math.max(0, progress)) - SCAN_RECRUIT_THRESHOLD
+
+  if (overflow <= 0) {
+    return 0
   }
 
-  const bonusRatio = 0.1
+  return (overflow / (SCAN_MAX - SCAN_RECRUIT_THRESHOLD)) * MAX_SCAN_BONUS_RATIO
+}
+
+export function getScanStatBonus(baseStats: DigimonStats, progress: number): DigimonStatBonus | undefined {
+  const bonusRatio = getScanBonusRatio(progress)
+
+  if (bonusRatio <= 0) {
+    return undefined
+  }
 
   return {
     attack: Math.round(baseStats.attack * bonusRatio),

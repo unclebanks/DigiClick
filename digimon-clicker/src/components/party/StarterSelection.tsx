@@ -1,5 +1,4 @@
 import { sampleDigimon } from '../../data/digimon'
-import { Button } from '../common/Button'
 import styles from './StarterSelection.module.css'
 
 interface StarterSelectionProps {
@@ -19,7 +18,7 @@ export function StarterSelection({ onSelect }: StarterSelectionProps) {
             <span className={styles.emoji}>{digimon.emoji}</span>
             <strong>{digimon.name}</strong>
             <span>{digimon.description}</span>
-            <Button variant="secondary">Select</Button>
+            <span className={styles.selectBadge}>Select</span>
           </button>
         ))}
       </div>

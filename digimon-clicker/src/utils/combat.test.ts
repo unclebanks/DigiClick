@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { getAttackIntervalMs, resolveAttack, resolveVictoryRewards } from './combat'
+import { getAttackIntervalMs, getManualAttackDamage, resolveAttack, resolveVictoryRewards } from './combat'
 
 const makeCombatant = (overrides: Partial<Parameters<typeof resolveAttack>[0]> = {}) => ({
   id: 'agumon',
@@ -77,5 +77,21 @@ describe('resolveVictoryRewards', () => {
     expect(rewards.bits).toBe(25)
     expect(rewards.exp).toBe(50)
     expect(rewards.droppedItemIds).toEqual(['training-chip'])
+  })
+})
+
+describe('getManualAttackDamage', () => {
+  it('deals 1 damage by default with only a single Digimon owned', () => {
+    expect(getManualAttackDamage(1)).toBe(1)
+    expect(getManualAttackDamage(0)).toBe(1)
+  })
+
+  it('scales up with every 5 additional Digimon owned', () => {
+    expect(getManualAttackDamage(6)).toBe(2)
+    expect(getManualAttackDamage(11)).toBe(3)
+  })
+
+  it('adds a reserved item bonus on top of the digimon scaling', () => {
+    expect(getManualAttackDamage(1, 3)).toBe(4)
   })
 })

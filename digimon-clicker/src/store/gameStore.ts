@@ -3,7 +3,7 @@ import type { DigimonStats, DigitalSpaceEnvironment, DigivolutionState, PlayerSt
 import { createInitialPlayerStatistics } from '../types/game'
 import { createInitialDigimonProgression, gainDigimonExperience, resolveDigimonProgression } from '../utils/digimonProgression'
 import { createInitialDigivolutionState } from '../utils/evolution'
-import { addScanProgress, canRecruitFromScan, rollScanStatBonus } from '../utils/scanning'
+import { addScanProgress, canRecruitFromScan, getScanStatBonus } from '../utils/scanning'
 
 // This store is intentionally simple and centralized so future systems such as
 // save/load, offline progress, and battle state can build on a single source of truth.
@@ -22,7 +22,7 @@ interface GameStore extends PlayerState {
   recordVictory: (rewards: { bits: number, exp: number }) => void
   unlockBadge: (badgeId: string) => void
   gainScanProgress: (speciesId: string, amount: number) => void
-  recruitFromScan: (speciesId: string, baseStats: DigimonStats, rng?: () => number) => boolean
+  recruitFromScan: (speciesId: string, baseStats: DigimonStats) => boolean
 }
 
 const createInitialDigitalSpace = (): PlayerState['digitalSpace'] =>
@@ -42,6 +42,16 @@ function addToFirstAvailableEnvironment(
     environment.id === availableEnvironment?.id
       ? { ...environment, digimonIds: [...environment.digimonIds, digimonId] }
       : environment)
+}
+
+let recruitInstanceCounter = 0
+
+// Each recruit gets its own instance id (distinct from the species id) so the trainer can own
+// multiple copies of the same species without their progression/digivolution state colliding.
+function createDigimonInstanceId(speciesId: string): string {
+  recruitInstanceCounter += 1
+
+  return `${speciesId}--${Date.now().toString(36)}-${recruitInstanceCounter}`
 }
 
 const initialState: PlayerState = {
@@ -184,31 +194,30 @@ export const useGameStore = create<GameStore>((set, get) => ({
         [speciesId]: addScanProgress(state.scanProgress[speciesId] ?? 0, amount),
       },
     })),
-  recruitFromScan: (speciesId, baseStats, rng = Math.random) => {
+  recruitFromScan: (speciesId, baseStats) => {
     const state = get()
-    const alreadyOwned = state.partyDigimon.includes(speciesId)
-      || state.digitalSpace.some((environment) => environment.digimonIds.includes(speciesId))
     const progress = state.scanProgress[speciesId] ?? 0
 
-    if (alreadyOwned || !canRecruitFromScan(progress)) {
+    if (!canRecruitFromScan(progress)) {
       return false
     }
 
-    const bonus = rollScanStatBonus(baseStats, progress, rng)
+    const instanceId = createDigimonInstanceId(speciesId)
+    const bonus = getScanStatBonus(baseStats, progress)
     const hasPartyRoom = state.partyDigimon.length < 6
 
     set((current) => ({
-      partyDigimon: hasPartyRoom ? [...current.partyDigimon, speciesId] : current.partyDigimon,
-      digitalSpace: hasPartyRoom ? current.digitalSpace : addToFirstAvailableEnvironment(current.digitalSpace, speciesId),
+      partyDigimon: hasPartyRoom ? [...current.partyDigimon, instanceId] : current.partyDigimon,
+      digitalSpace: hasPartyRoom ? current.digitalSpace : addToFirstAvailableEnvironment(current.digitalSpace, instanceId),
       digimonProgression: {
         ...current.digimonProgression,
-        [speciesId]: createInitialDigimonProgression(),
+        [instanceId]: createInitialDigimonProgression(),
       },
       digivolutionStates: {
         ...current.digivolutionStates,
-        [speciesId]: createInitialDigivolutionState(speciesId),
+        [instanceId]: createInitialDigivolutionState(speciesId),
       },
-      digimonBonuses: bonus ? { ...current.digimonBonuses, [speciesId]: bonus } : current.digimonBonuses,
+      digimonBonuses: bonus ? { ...current.digimonBonuses, [instanceId]: bonus } : current.digimonBonuses,
       scanProgress: { ...current.scanProgress, [speciesId]: 0 },
     }))
 

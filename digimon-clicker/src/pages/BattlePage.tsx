@@ -7,13 +7,14 @@ import { useGameStore } from '../store/gameStore'
 import { sampleDigimon } from '../data/digimon'
 import { battleRoutesByRegion, sampleBattleRoutes } from '../data/areas'
 import { getDefaultBattleRoute, getEncounterLevel, isRouteUnlocked, pickRandomEncounterId } from '../utils/battleRoutes'
-import { getAttackIntervalMs, resolveAttack, resolveVictoryRewards } from '../utils/combat'
+import { getAttackIntervalMs, getManualAttackDamage, resolveAttack, resolveVictoryRewards } from '../utils/combat'
 import type { CombatantState } from '../utils/combat'
 import { describeAttributeMatchup } from '../utils/digimonAttributes'
 import { calculateDigimonStats } from '../utils/digimonStats'
 import { resolveDigimonProgression } from '../utils/digimonProgression'
 import { createInitialDigivolutionState } from '../utils/evolution'
-import { SCAN_RECRUIT_THRESHOLD, getScanGainFromDefeat } from '../utils/scanning'
+import { getOwnedDigimonIds } from '../utils/digidex'
+import { SCAN_MAX, SCAN_RECRUIT_THRESHOLD, getScanGainFromDefeat } from '../utils/scanning'
 import styles from '../styles/pages.module.css'
 
 export function BattlePage() {
@@ -30,6 +31,7 @@ export function BattlePage() {
   const gainDigimonExperience = useGameStore((state) => state.gainDigimonExperience)
   const playerLevel = useGameStore((state) => state.playerLevel)
   const partyDigimon = useGameStore((state) => state.partyDigimon)
+  const digitalSpace = useGameStore((state) => state.digitalSpace)
   const digimonProgression = useGameStore((state) => state.digimonProgression)
   const digivolutionStates = useGameStore((state) => state.digivolutionStates)
   const digimonBonuses = useGameStore((state) => state.digimonBonuses)
@@ -47,22 +49,26 @@ export function BattlePage() {
   )
 
   const availableRoutes = useMemo(() => battleRoutesByRegion[selectedRegion] ?? [], [selectedRegion])
-  const encounterLevel = useMemo(() => getEncounterLevel(currentRoute, playerLevel), [currentRoute, playerLevel])
+  // Only used to roll the level for the *next* encounter - the active encounter's own level is
+  // locked in at roll time (below) so it doesn't retroactively change if the player levels up mid-fight.
+  const nextEncounterLevel = useMemo(() => getEncounterLevel(currentRoute, playerLevel), [currentRoute, playerLevel])
 
   // Re-rolled whenever a new route is entered or the current wild Digimon is defeated.
   const [encounterSpeciesId, setEncounterSpeciesId] = useState(() => pickRandomEncounterId(currentRoute))
+  const [encounterLevelLock, setEncounterLevelLock] = useState(() => getEncounterLevel(currentRoute, playerLevel))
   const [lastRouteId, setLastRouteId] = useState(currentRoute.id)
 
   if (currentRoute.id !== lastRouteId) {
     setLastRouteId(currentRoute.id)
     setEncounterSpeciesId(pickRandomEncounterId(currentRoute))
+    setEncounterLevelLock(nextEncounterLevel)
   }
 
   const activeEncounter = useMemo(() => {
     const species = sampleDigimon.find((digimon) => digimon.id === encounterSpeciesId)
 
-    return species ? { ...species, level: Math.max(species.level, encounterLevel) } : undefined
-  }, [encounterSpeciesId, encounterLevel])
+    return species ? { ...species, level: Math.max(species.level, encounterLevelLock) } : undefined
+  }, [encounterSpeciesId, encounterLevelLock])
 
   const enemyStats = useMemo(
     () => (activeEncounter ? calculateDigimonStats(activeEncounter.baseStats, activeEncounter.level) : null),
@@ -71,20 +77,18 @@ export function BattlePage() {
 
   const activeMemberId = partyDigimon[activeMemberIndex]
 
-  const activeMember = useMemo(() => {
-    if (!activeMemberId) {
-      return undefined
-    }
-
-    const digivolutionState = digivolutionStates[activeMemberId] ?? createInitialDigivolutionState(activeMemberId)
+  // Shared by the active combatant and the team roster below - resolves a party slot's instance
+  // id to its current species/stats through its digivolution state.
+  const resolvePartyMember = (baseId: string) => {
+    const digivolutionState = digivolutionStates[baseId] ?? createInitialDigivolutionState(baseId)
     const species = sampleDigimon.find((digimon) => digimon.id === digivolutionState.currentFormId)
 
     if (!species) {
       return undefined
     }
 
-    const progression = resolveDigimonProgression(digimonProgression[activeMemberId])
-    const bonus = digimonBonuses[activeMemberId]
+    const progression = resolveDigimonProgression(digimonProgression[baseId])
+    const bonus = digimonBonuses[baseId]
     const stats = calculateDigimonStats(species.baseStats, progression.level, {
       statMultiplier: digivolutionState.penaltyMultiplier,
       attackBonus: bonus?.attack,
@@ -93,12 +97,39 @@ export function BattlePage() {
       hpBonus: bonus?.hp,
     })
 
-    return { baseId: activeMemberId, species, progression, stats }
-  }, [activeMemberId, digivolutionStates, digimonProgression, digimonBonuses])
+    return { baseId, species, progression, stats }
+  }
+
+  const activeMember = useMemo(
+    () => (activeMemberId ? resolvePartyMember(activeMemberId) : undefined),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [activeMemberId, digivolutionStates, digimonProgression, digimonBonuses],
+  )
 
   const activeMemberHp = activeMember ? partyHp[activeMember.baseId] ?? activeMember.stats.hp : 0
   const scanValue = activeEncounter ? scanProgress[activeEncounter.id] ?? 0 : 0
   const canRecruit = scanValue >= SCAN_RECRUIT_THRESHOLD
+
+  const partyRoster = useMemo(
+    () => partyDigimon
+      .map((baseId) => resolvePartyMember(baseId))
+      .filter((member): member is NonNullable<typeof member> => member !== undefined)
+      .map((member) => ({ ...member, hp: partyHp[member.baseId] ?? member.stats.hp })),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [partyDigimon, digivolutionStates, digimonProgression, digimonBonuses, partyHp],
+  )
+  // The active combatant is already shown front-and-center above, so the bench only lists the rest.
+  const benchRoster = useMemo(
+    () => partyRoster.filter((member) => member.baseId !== activeMemberId),
+    [partyRoster, activeMemberId],
+  )
+
+  const totalDigimonOwned = useMemo(
+    () => getOwnedDigimonIds(partyDigimon, digitalSpace, digivolutionStates).size,
+    [partyDigimon, digitalSpace, digivolutionStates],
+  )
+  // Item-based upgrades aren't implemented yet, so the manual attack only scales with Digimon owned for now.
+  const manualAttackDamage = getManualAttackDamage(totalDigimonOwned)
 
   const appendLog = (message: string) => {
     setLogEntries((previous) => [message, ...previous].slice(0, 5))
@@ -106,8 +137,10 @@ export function BattlePage() {
 
   // Reset the wild Digimon's health whenever a new encounter or route is selected. This follows
   // React's "adjusting state during render" pattern instead of a setState-in-effect side effect.
+  // lastEncounterKey starts as null (never a real key) so this also fires correctly on first mount,
+  // instead of leaving enemyHp stuck at 0 until the first attack lands.
   const encounterKey = `${activeEncounter?.id ?? 'none'}-${currentRoute.id}`
-  const [lastEncounterKey, setLastEncounterKey] = useState(encounterKey)
+  const [lastEncounterKey, setLastEncounterKey] = useState<string | null>(null)
 
   if (encounterKey !== lastEncounterKey) {
     setLastEncounterKey(encounterKey)
@@ -156,6 +189,7 @@ export function BattlePage() {
     // check further down catches the case where a different species is rolled.
     setEnemyHp(enemyStats.hp)
     setEncounterSpeciesId(pickRandomEncounterId(currentRoute))
+    setEncounterLevelLock(nextEncounterLevel)
   }
 
   const handlePartyMemberFainted = () => {
@@ -243,36 +277,83 @@ export function BattlePage() {
     }
   }
 
+  const handleManualAttack = () => {
+    if (!isBattling || !activeEncounter || !enemyStats) {
+      return
+    }
+
+    const nextEnemyHp = Math.max(0, enemyHp - manualAttackDamage)
+
+    recordCombatEvent({ damageDealt: manualAttackDamage })
+    setEnemyHp(nextEnemyHp)
+    appendLog(`You struck ${activeEncounter.name} for ${manualAttackDamage} damage!`)
+
+    if (nextEnemyHp === 0) {
+      handleEnemyDefeated()
+    }
+  }
+
   // Keep the ref pointed at the latest closure so the intervals below always act on fresh state.
   useEffect(() => {
     performAttackRef.current = performAttack
   })
+
+  // Split into two independent timers so a change on one side (e.g. the player's Digimon fainting
+  // and swapping, or the enemy being defeated and replaced) doesn't reset the other side's clock -
+  // that combined reset was the cause of the "everything freezes for a second" feeling. Each timer
+  // also fires an immediate attack when it (re)starts, instead of always waiting a full interval
+  // before the first hit.
+  useEffect(() => {
+    if (!isBattling || !activeMember || !activeEncounter || !enemyStats) {
+      return
+    }
+
+    const intervalMs = getAttackIntervalMs(activeMember.stats.speed)
+
+    performAttackRef.current?.('player')
+    const timer = window.setInterval(() => performAttackRef.current?.('player'), intervalMs)
+
+    return () => window.clearInterval(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isBattling, activeMember?.baseId, activeMember?.stats.speed])
 
   useEffect(() => {
     if (!isBattling || !activeMember || !activeEncounter || !enemyStats) {
       return
     }
 
-    const playerIntervalMs = getAttackIntervalMs(activeMember.stats.speed)
-    const enemyIntervalMs = getAttackIntervalMs(enemyStats.speed)
+    const intervalMs = getAttackIntervalMs(enemyStats.speed)
 
-    const playerTimer = window.setInterval(() => performAttackRef.current?.('player'), playerIntervalMs)
-    const enemyTimer = window.setInterval(() => performAttackRef.current?.('enemy'), enemyIntervalMs)
+    performAttackRef.current?.('enemy')
+    const timer = window.setInterval(() => performAttackRef.current?.('enemy'), intervalMs)
 
-    return () => {
-      window.clearInterval(playerTimer)
-      window.clearInterval(enemyTimer)
-    }
-    // Intervals are only re-created when the battler or its speed actually changes, not on
-    // every render; performAttackRef always calls into the freshest attack logic regardless.
+    return () => window.clearInterval(timer)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isBattling, activeMember?.baseId, activeMember?.stats.speed, activeEncounter?.id, enemyStats?.speed])
+  }, [isBattling, activeEncounter?.id, enemyStats?.speed])
 
   const handleRegroup = () => {
     setPartyHp({})
     setActiveMemberIndex(0)
     setIsBattling(true)
     appendLog('Your team rests and returns to the fight.')
+  }
+
+  const handleSendOut = (baseId: string) => {
+    const targetIndex = partyDigimon.indexOf(baseId)
+    const member = partyRoster.find((entry) => entry.baseId === baseId)
+
+    if (targetIndex === -1 || targetIndex === activeMemberIndex || !member) {
+      return
+    }
+
+    if (member.hp <= 0) {
+      appendLog(`${member.species.name} has fainted and can't battle right now.`)
+      return
+    }
+
+    setActiveMemberIndex(targetIndex)
+    setIsBattling(true)
+    appendLog(`Go, ${member.species.name}!`)
   }
 
   const handleRecruit = () => {
@@ -319,7 +400,7 @@ export function BattlePage() {
               <p>{currentRoute.region} • {currentRoute.name}</p>
               <p>Lv. {activeEncounter?.level ?? 1} • {activeEncounter?.type ?? 'Free'}</p>
               <ProgressBar label="HP" value={enemyStats ? Math.round((enemyHp / enemyStats.hp) * 100) : 0} />
-              <ProgressBar label="Scan" value={Math.min(100, scanValue)} />
+              <ProgressBar label="Scan" value={scanValue} max={SCAN_MAX} />
               <p className={styles.statRow}>
                 <span>ATK {enemyStats?.attack ?? 0}</span>
                 <span>DEF {enemyStats?.defense ?? 0}</span>
@@ -347,6 +428,9 @@ export function BattlePage() {
                 <span>DEF {activeMember?.stats.defense ?? 0}</span>
                 <span>SPD {activeMember?.stats.speed ?? 0}</span>
               </p>
+              <Button onClick={handleManualAttack} disabled={!isBattling || !activeEncounter}>
+                <Sword size={16} /> Attack ({manualAttackDamage} dmg)
+              </Button>
               {!isBattling && (
                 <Button onClick={handleRegroup}>Regroup</Button>
               )}
@@ -359,6 +443,7 @@ export function BattlePage() {
             </label>
             <select
               id="region-select"
+              className={styles.regionSelect}
               value={selectedRegion}
               onChange={(event) => handleRegionSelect(event.target.value)}
             >
@@ -388,6 +473,35 @@ export function BattlePage() {
               ))}
             </ul>
           </div>
+        </div>
+
+        <div className={styles.teamSection}>
+          <p className={styles.eyebrow}>Your Team</p>
+          {benchRoster.length === 0 ? (
+            <p className={styles.dexText}>No other Digimon in your party right now.</p>
+          ) : (
+            <div className={styles.teamRoster}>
+              {benchRoster.map((member) => {
+                const isFainted = member.hp <= 0
+
+                return (
+                  <div key={member.baseId} className={styles.teamMember}>
+                    <div className={styles.dexEmoji}>{member.species.emoji}</div>
+                    <strong>{member.species.name}</strong>
+                    <p className={styles.dexText}>Lv. {member.progression.level}</p>
+                    <ProgressBar label="HP" value={Math.round((member.hp / member.stats.hp) * 100)} />
+                    <Button
+                      variant="secondary"
+                      disabled={isFainted}
+                      onClick={() => handleSendOut(member.baseId)}
+                    >
+                      {isFainted ? 'Fainted' : 'Send Out'}
+                    </Button>
+                  </div>
+                )
+              })}
+            </div>
+          )}
         </div>
       </Card>
     </div>

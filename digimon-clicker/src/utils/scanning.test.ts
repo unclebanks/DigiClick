@@ -2,9 +2,10 @@ import { describe, expect, it } from 'vitest'
 import {
   addScanProgress,
   canRecruitFromScan,
+  getScanBonusRatio,
   getScanGainFromDefeat,
+  getScanStatBonus,
   hasBonusScanTier,
-  rollScanStatBonus,
 } from './scanning'
 
 describe('scanning helpers', () => {
@@ -22,18 +23,26 @@ describe('scanning helpers', () => {
     expect(addScanProgress(5, -20)).toBe(0)
   })
 
-  it('unlocks recruiting at 100 percent and the bonus tier at 200 percent', () => {
+  it('unlocks recruiting at 100 percent and the bonus tier as soon as it is exceeded', () => {
     expect(canRecruitFromScan(99)).toBe(false)
     expect(canRecruitFromScan(100)).toBe(true)
-    expect(hasBonusScanTier(150)).toBe(false)
+    expect(hasBonusScanTier(100)).toBe(false)
+    expect(hasBonusScanTier(101)).toBe(true)
     expect(hasBonusScanTier(200)).toBe(true)
   })
 
-  it('only rolls a stat bonus once the bonus tier is reached', () => {
+  it('scales the bonus ratio linearly from 0% at 100 progress to 10% at 200 progress', () => {
+    expect(getScanBonusRatio(100)).toBe(0)
+    expect(getScanBonusRatio(150)).toBeCloseTo(0.05)
+    expect(getScanBonusRatio(200)).toBeCloseTo(0.1)
+    expect(getScanBonusRatio(250)).toBeCloseTo(0.1)
+  })
+
+  it('grants a proportional stat bonus once scan progress passes 100 percent', () => {
     const baseStats = { attack: 20, defense: 10, speed: 10, hp: 40 }
 
-    expect(rollScanStatBonus(baseStats, 150, () => 0)).toBeUndefined()
-    expect(rollScanStatBonus(baseStats, 200, () => 0.99)).toBeUndefined()
-    expect(rollScanStatBonus(baseStats, 200, () => 0)).toEqual({ attack: 2, defense: 1, speed: 1, hp: 4 })
+    expect(getScanStatBonus(baseStats, 100)).toBeUndefined()
+    expect(getScanStatBonus(baseStats, 150)).toEqual({ attack: 1, defense: 1, speed: 1, hp: 2 })
+    expect(getScanStatBonus(baseStats, 200)).toEqual({ attack: 2, defense: 1, speed: 1, hp: 4 })
   })
 })

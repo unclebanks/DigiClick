@@ -3,23 +3,34 @@ import { sampleDigimon } from '../data/digimon'
 import { Card } from '../components/common/Card'
 import { Button } from '../components/common/Button'
 import { resolveDigimonProgression } from '../utils/digimonProgression'
+import { createInitialDigivolutionState } from '../utils/evolution'
 import styles from '../styles/pages.module.css'
 
 export function PartyPage() {
   const partyDigimon = useGameStore((state) => state.partyDigimon)
   const digitalSpace = useGameStore((state) => state.digitalSpace)
   const digimonProgression = useGameStore((state) => state.digimonProgression)
+  const digivolutionStates = useGameStore((state) => state.digivolutionStates)
   const moveToParty = useGameStore((state) => state.moveToParty)
   const moveToDigitalSpace = useGameStore((state) => state.moveToDigitalSpace)
 
-  const partyMembers = sampleDigimon
-    .filter((digimon) => partyDigimon.includes(digimon.id))
-    .map((digimon) => ({
-      ...digimon,
-      ...resolveDigimonProgression(digimonProgression[digimon.id]),
-    }))
+  // partyDigimon/digitalSpace store instance ids, not species ids directly - a species can be
+  // owned more than once, so the species itself always comes from the digivolution state.
+  const resolveMember = (baseId: string) => {
+    const digivolutionState = digivolutionStates[baseId] ?? createInitialDigivolutionState(baseId)
+    const species = sampleDigimon.find((digimon) => digimon.id === digivolutionState.currentFormId)
+    const progression = resolveDigimonProgression(digimonProgression[baseId])
+
+    return species ? { baseId, species, progression } : null
+  }
+
+  const partyMembers = partyDigimon
+    .map(resolveMember)
+    .filter((member): member is NonNullable<typeof member> => member !== null)
+
   const storedDigimon = digitalSpace.flatMap((environment) =>
     environment.digimonIds.map((digimonId) => ({
+      member: resolveMember(digimonId),
       digimonId,
       environmentName: environment.name,
     })),
@@ -30,11 +41,11 @@ export function PartyPage() {
       <Card title="Party">
         <p>Party size: {partyDigimon.length}/6</p>
         <div className={styles.grid}>
-          {partyMembers.map((digimon) => (
-            <div key={digimon.id} className={styles.cardListItem}>
-              <strong>{digimon.name}</strong>
-              <p>{digimon.stage}</p>
-              <Button variant="secondary" onClick={() => moveToDigitalSpace(digimon.id)}>
+          {partyMembers.map(({ baseId, species }) => (
+            <div key={baseId} className={styles.cardListItem}>
+              <strong>{species.name}</strong>
+              <p>{species.stage}</p>
+              <Button variant="secondary" onClick={() => moveToDigitalSpace(baseId)}>
                 Send to Digital Space
               </Button>
             </div>
@@ -45,18 +56,15 @@ export function PartyPage() {
       <Card title="Digital Space">
         <p>30 environments with a cap of 30 Digimon each.</p>
         <div className={styles.grid}>
-          {storedDigimon.map((entry) => {
-            const digimon = sampleDigimon.find((candidate) => candidate.id === entry.digimonId)
-            return (
-              <div key={`${entry.digimonId}-${entry.environmentName}`} className={styles.cardListItem}>
-                <strong>{digimon?.name ?? entry.digimonId}</strong>
-                <p>{entry.environmentName}</p>
-                <Button variant="secondary" onClick={() => moveToParty(entry.digimonId)}>
-                  Bring to Party
-                </Button>
-              </div>
-            )
-          })}
+          {storedDigimon.map((entry) => (
+            <div key={`${entry.digimonId}-${entry.environmentName}`} className={styles.cardListItem}>
+              <strong>{entry.member?.species.name ?? entry.digimonId}</strong>
+              <p>{entry.environmentName}</p>
+              <Button variant="secondary" onClick={() => moveToParty(entry.digimonId)}>
+                Bring to Party
+              </Button>
+            </div>
+          ))}
         </div>
       </Card>
     </div>

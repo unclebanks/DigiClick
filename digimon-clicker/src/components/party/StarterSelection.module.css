@@ -31,3 +31,13 @@
 .emoji {
   font-size: 2rem;
 }
+
+.selectBadge {
+  justify-self: start;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  background: #f3f4f6;
+  color: #1f2937;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
