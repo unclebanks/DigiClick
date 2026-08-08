@@ -25,6 +25,12 @@ describe('attribute triangle', () => {
     expect(getAttributeMatchup('Virus', 'Free')).toBe('neutral')
   })
 
+  it('treats the digimon_cleaned.json extra attributes as neutral too', () => {
+    expect(getAttributeMatchup('Unknown', 'Vaccine')).toBe('neutral')
+    expect(getAttributeMatchup('Virus', 'Variable')).toBe('neutral')
+    expect(getAttributeMatchup('No Data', 'Data')).toBe('neutral')
+  })
+
   it('maps matchups to damage multipliers', () => {
     expect(getAttributeMultiplier('Vaccine', 'Virus')).toBe(1.5)
     expect(getAttributeMultiplier('Virus', 'Vaccine')).toBe(0.75)

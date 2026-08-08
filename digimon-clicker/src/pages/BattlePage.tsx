@@ -69,7 +69,7 @@ export function BattlePage() {
   }, [encounterSpeciesId, encounterLevelLock])
 
   const enemyStats = useMemo(
-    () => (activeEncounter ? calculateDigimonStats(activeEncounter.baseStats, activeEncounter.level) : null),
+    () => (activeEncounter ? calculateDigimonStats(activeEncounter.baseStats, activeEncounter.level, {}, activeEncounter.growthStats) : null),
     [activeEncounter],
   )
 
@@ -93,7 +93,7 @@ export function BattlePage() {
       defenseBonus: bonus?.defense,
       speedBonus: bonus?.speed,
       hpBonus: bonus?.hp,
-    })
+    }, species.growthStats)
 
     return { baseId, species, progression, stats }
   }

@@ -3,18 +3,24 @@ import type { DigimonAttribute } from '../types/game'
 export const ATTRIBUTE_ADVANTAGE_MULTIPLIER = 1.5
 export const ATTRIBUTE_DISADVANTAGE_MULTIPLIER = 0.75
 
-// Each attribute is strong against the one it maps to here. Free is neutral to everything.
+// Each attribute is strong against the one it maps to here. Everything else (Free, and the
+// digimon_cleaned.json extras Unknown/Variable/"No Data") sits outside the triangle as neutral.
 const STRONG_AGAINST: Record<DigimonAttribute, DigimonAttribute | null> = {
   Vaccine: 'Virus',
   Virus: 'Data',
   Data: 'Vaccine',
   Free: null,
+  Unknown: null,
+  Variable: null,
+  'No Data': null,
 }
+
+const NEUTRAL_ATTRIBUTES = new Set<DigimonAttribute>(['Free', 'Unknown', 'Variable', 'No Data'])
 
 export type AttributeMatchup = 'strong' | 'weak' | 'neutral'
 
 export function getAttributeMatchup(attacker: DigimonAttribute, defender: DigimonAttribute): AttributeMatchup {
-  if (attacker === 'Free' || defender === 'Free') {
+  if (NEUTRAL_ATTRIBUTES.has(attacker) || NEUTRAL_ATTRIBUTES.has(defender)) {
     return 'neutral'
   }
 

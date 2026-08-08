@@ -10,6 +10,7 @@ import { ProgressBar } from '../components/common/ProgressBar'
 import { StarterSelection } from '../components/party/StarterSelection'
 import { getLevelProgress } from '../utils/game'
 import { resolveDigimonProgression } from '../utils/digimonProgression'
+import { calculateDigimonStats } from '../utils/digimonStats'
 import {
   canSatisfyEvolutionRequirements,
   createInitialDigivolutionState,
@@ -43,7 +44,18 @@ export function HomePage() {
         ?? sampleDigimon.find((digimon) => digimon.id === baseId)
       const progression = resolveDigimonProgression(digimonProgression[baseId])
 
-      return species ? { baseId, digivolutionState, species, progression } : null
+      if (!species) {
+        return null
+      }
+
+      const stats = calculateDigimonStats(
+        species.baseStats,
+        progression.level,
+        { statMultiplier: digivolutionState.penaltyMultiplier },
+        species.growthStats,
+      )
+
+      return { baseId, digivolutionState, species, progression, stats }
     })
     .filter((member): member is NonNullable<typeof member> => member !== null)
 
@@ -52,6 +64,7 @@ export function HomePage() {
       (entry) => entry.from === digivolutionState.currentFormId && entry.to === toId,
     )
     const progression = resolveDigimonProgression(digimonProgression[baseId])
+    const member = partyMembers.find((entry) => entry.baseId === baseId)
 
     if (!evolution) {
       return
@@ -62,6 +75,7 @@ export function HomePage() {
       inventory,
       currentAreaId: currentArea,
       badges,
+      stats: member?.stats,
     })
 
     if (!satisfied || currency < evolution.cost) {
@@ -122,7 +136,7 @@ export function HomePage() {
       )}
 
       <section className={styles.grid}>
-        {partyMembers.map(({ baseId, digivolutionState, species, progression }) => (
+        {partyMembers.map(({ baseId, digivolutionState, species, progression, stats }) => (
           <DigimonCard
             key={baseId}
             digimon={species}
@@ -138,6 +152,7 @@ export function HomePage() {
                 inventory,
                 currentAreaId: currentArea,
                 badges,
+                stats,
               }),
             }))}
             onEvolve={(toId) => handleEvolve(baseId, digivolutionState, toId)}

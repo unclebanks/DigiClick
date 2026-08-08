@@ -1,23 +1,102 @@
-import type { Evolution } from '../types/game'
-import { badgeReq, itemReq, levelReq, statReq } from '../utils/evolution'
+import type { DigimonStats, Evolution, EvolutionRequirement } from '../types/game'
+import { statReq } from '../utils/evolution'
+import { sampleDigimon } from './digimon'
+import { getRawDigimonBySlug } from './digimonSource'
+import type { RawStatKey } from './digimonSource'
 
-export const sampleEvolutions: Evolution[] = [
-  { id: 'botamon-koromon', from: 'botamon', to: 'koromon', cost: 25, requires: [levelReq(5)] },
-  { id: 'koromon-agumon', from: 'koromon', to: 'agumon', cost: 40, requires: [levelReq(15), statReq('hp', 50)] },
-  { id: 'koromon-guilmon', from: 'koromon', to: 'guilmon', cost: 40, requires: [levelReq(15), statReq('attack', 50)] },
-  { id: 'agumon-greymon', from: 'agumon', to: 'greymon', cost: 80, requires: [levelReq(25)] },
-  { id: 'guilmon-growlmon', from: 'guilmon', to: 'growlmon', cost: 80, requires: [levelReq(25)] },
-  { id: 'greymon-metalgreymon', from: 'greymon', to: 'metalgreymon', cost: 140, requires: [levelReq(8), itemReq('healing-herb')] },
-  { id: 'metalgreymon-wargreymon', from: 'metalgreymon', to: 'wargreymon', cost: 220, requires: [levelReq(10)] },
-  { id: 'gabumon-garurumon', from: 'gabumon', to: 'garurumon', cost: 70, requires: [levelReq(4)] },
-  { id: 'garurumon-weregarurumon', from: 'garurumon', to: 'weregarurumon', cost: 130, requires: [levelReq(6)] },
-  { id: 'biyomon-veemon', from: 'biyomon', to: 'veemon', cost: 95, requires: [levelReq(4), itemReq('data-disk')] },
-  { id: 'veemon-greymon', from: 'veemon', to: 'greymon', cost: 180, requires: [levelReq(7), badgeReq('first-victory')] },
-  { id: 'gatomon-angewomon', from: 'gatomon', to: 'angewomon', cost: 110, requires: [levelReq(5)] },
-  { id: 'angewomon-magnaangemon', from: 'angewomon', to: 'magnaangemon', cost: 220, requires: [levelReq(9)] },
-  { id: 'patamon-gomamon', from: 'patamon', to: 'gomamon', cost: 55, requires: [levelReq(3)] },
-  { id: 'palmon-togemon', from: 'palmon', to: 'togemon', cost: 65, requires: [levelReq(3)] },
-  { id: 'togemon-lillymon', from: 'togemon', to: 'lillymon', cost: 140, requires: [levelReq(6)] },
-  { id: 'lillymon-rosemon', from: 'lillymon', to: 'rosemon', cost: 200, requires: [levelReq(8)] },
-  { id: 'agumon-veemon', from: 'agumon', to: 'veemon', cost: 115, requires: [levelReq(4), itemReq('egg-of-courage')] },
-]
+// Phase 5 of the JSON migration (see /memories/repo/digimon-json-migration-plan.md): sampleEvolutions
+// is generated from digimon_cleaned.json's evolvesTo + evolutionCondition, kept to edges where both
+// ends are in our current sampleDigimon roster. digimon_cleaned.json has no bits-cost concept, so
+// cost is derived from the target's generation (see BASE_EVOLUTION_COST_BY_GENERATION).
+//
+// Stat-condition thresholds are used AS-IS from the source data, NOT rescaled like baseStats is
+// (JSON_STAT_SCALE_DIVISOR in digimon.ts) - per direction, the plan is to eventually rework the
+// whole game around the JSON's larger numbers, so these thresholds are deliberately left unscaled
+// even though most won't be reachable yet against today's small stat numbers. Adjust later, not now.
+//
+// requiredItem/jogressPartners/talent/agentSkills evolutionConditions have no equivalent in our
+// evolution model yet and are silently dropped from `requires` (the edge stays reachable via
+// whichever stat/level/cost gates it also has) - only `paildramon -> imperialdramon` in our current
+// roster has a jogress condition (needs ExVeemon + Stingmon as partners in the source game).
+
+const BASE_EVOLUTION_COST_BY_GENERATION: Record<string, number> = {
+  Fresh: 15,
+  'In-Training': 25,
+  Rookie: 40,
+  Champion: 80,
+  Armor: 90,
+  Hybrid: 90,
+  Ultimate: 140,
+  Mega: 220,
+  'Mega +': 300,
+}
+
+const DEFAULT_EVOLUTION_COST = 100
+
+const STAT_KEY_MAP: Record<RawStatKey, keyof DigimonStats> = {
+  HP: 'hp',
+  ATK: 'attack',
+  DEF: 'defense',
+  SPD: 'speed',
+  SP: 'sp',
+  INT: 'int',
+  SPI: 'spi',
+}
+
+// Our id doesn't always match the JSON slug (naming differs between game continuities) - mirrors
+// the same overrides used in digimon.ts.
+const SLUG_OVERRIDES: Record<string, string> = {
+  omegamon: 'omnimon',
+  imperialdramon: 'imperialdramon-dm',
+}
+
+const digimonIds = new Set(sampleDigimon.map((digimon) => digimon.id))
+
+const idBySlug: Record<string, string> = {}
+
+for (const id of digimonIds) {
+  idBySlug[SLUG_OVERRIDES[id] ?? id] = id
+}
+
+function buildRequirements(stats: Record<string, { op: string, value: number }> | undefined): EvolutionRequirement[] {
+  if (!stats) {
+    return []
+  }
+
+  return Object.entries(stats).map(([statKey, condition]) => statReq(STAT_KEY_MAP[statKey as RawStatKey], condition.value))
+}
+
+function costForGeneration(generation: string): number {
+  return BASE_EVOLUTION_COST_BY_GENERATION[generation] ?? DEFAULT_EVOLUTION_COST
+}
+
+const generatedEvolutions: Evolution[] = []
+
+for (const id of digimonIds) {
+  const raw = getRawDigimonBySlug(SLUG_OVERRIDES[id] ?? id)
+
+  if (!raw) {
+    continue // manual-fallback species (no digimon_cleaned.json match) have no evolution data to source
+  }
+
+  for (const targetSlug of raw.evolvesTo) {
+    const targetId = idBySlug[targetSlug]
+
+    if (!targetId) {
+      continue // target isn't in our current curated roster yet (see Phase 6)
+    }
+
+    const targetSpecies = sampleDigimon.find((digimon) => digimon.id === targetId)
+
+    generatedEvolutions.push({
+      id: `${id}-${targetId}`,
+      from: id,
+      to: targetId,
+      cost: costForGeneration(targetSpecies?.stage ?? ''),
+      requires: buildRequirements(raw.evolutionCondition.stats),
+    })
+  }
+}
+
+export const sampleEvolutions: Evolution[] = generatedEvolutions
+

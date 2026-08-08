@@ -1,185 +1,124 @@
-import type { Digimon } from '../types/game'
+﻿import type { Digimon, DigimonAttribute, DigimonStats, StatGrowthRange } from '../types/game'
+import { getRawDigimonBySlug, rawDigimonList } from './digimonSource'
+import type { RawDigimonWithSlug } from './digimonSource'
 
-export const sampleDigimon: Digimon[] = [
-  {
-    id: 'botamon',
-    name: 'Botamon',
-    stage: 'Fresh',
-    description: 'A tiny slime Digimon that recently hatched from a Digi-Egg.',
-    personality: 'Playful',
-    type: 'Data',
-    basePower: 8,
-    emoji: '🍼',
-    baseStats: { attack: 8, defense: 6, speed: 7, hp: 22 },
-  },
-  {
-    id: 'koromon',
-    name: 'Koromon',
-    stage: 'In-Training',
-    description: 'A cheerful in-training Digimon that grows quickly through care.',
-    personality: 'Curious',
-    type: 'Vaccine',
-    basePower: 12,
-    emoji: '🌱',
-    baseStats: { attack: 12, defense: 8, speed: 9, hp: 28 },
-  },
-  {
-    id: 'agumon',
-    name: 'Agumon',
-    stage: 'Rookie',
-    description: 'A brave reptile Digimon with a burning heart and fierce loyalty.',
-    personality: 'Loyal',
-    type: 'Vaccine',
-    basePower: 18,
-    emoji: '🦖',
-    baseStats: { attack: 16, defense: 12, speed: 12, hp: 35 },
-    drops: [{ itemId: 'healing-herb', chance: 0.2 }],
-  },
-  {
-    id: 'greymon',
-    name: 'Greymon',
-    stage: 'Champion',
-    description: 'A giant dinosaur warrior whose breath burns with intense flame.',
-    personality: 'Bold',
-    type: 'Vaccine',
-    basePower: 26,
-    emoji: '🦕',
-    baseStats: { attack: 24, defense: 18, speed: 14, hp: 44 },
-  },
-  {
-    id: 'metalgreymon',
-    name: 'MetalGreymon',
-    stage: 'Ultimate',
-    description: 'A cybernetic warrior armed with Trident Arm and Giga Blasters.',
-    personality: 'Determined',
-    type: 'Vaccine',
-    basePower: 36,
-    emoji: '🤖',
-    baseStats: { attack: 32, defense: 28, speed: 16, hp: 56 },
-  },
-  {
-    id: 'wargreymon',
-    name: 'WarGreymon',
-    stage: 'Mega',
-    description: 'The ultimate dragon warrior clad in Chrome Digizoid armor.',
-    personality: 'Heroic',
-    type: 'Vaccine',
-    basePower: 48,
-    emoji: '⚔️',
-    baseStats: { attack: 40, defense: 30, speed: 18, hp: 70 },
-  },
-  {
-    id: 'guilmon',
-    name: 'Guilmon',
-    stage: 'Rookie',
-    description: 'A youthful reptilian Digimon with a fierce, dragon-like combat potential.',
-    personality: 'Curious',
-    type: 'Virus',
-    basePower: 18,
-    emoji: '🦖',
-    baseStats: { attack: 16, defense: 12, speed: 12, hp: 35 },
-    drops:[{ itemId: 'dragon-scale', chance: 0.2 }],
-  },
-  {
-    id: 'growlmon',
-    name: 'Growlmon',
-    stage: 'Champion',
-    description: 'A fearsome dragon Digimon known as the "Deep Crimson Dragon" with sharp elbow blades.',
-    personality: 'Aggressive',
-    type: 'Virus',
-    basePower: 26,
-    emoji: '🐉',
-    baseStats: { attack: 24, defense: 18, speed: 14, hp: 44 },
-  },
-  {
-    id: 'wargrowlmon',
-    name: 'WarGrowlmon',
-    stage: 'Ultimate',
-    description: 'A cyborg dragon warrior mechanized with Chrome Digizoid armor and powerful Pendulum Blades.',
-    personality: 'Resolute',
-    type: 'Virus',
-    basePower: 36,
-    emoji: '🦾',
-    baseStats: { attack: 32, defense: 28, speed: 16, hp: 56 },
-  },
-  {
-    id: 'gallantmon',
-    name: 'Gallantmon',
-    stage: 'Mega',
-    description: 'A Holy Knight Digimon clad in sacred armor, wielding the holy lance Gram and shield Aegis.',
-    personality: 'Chivalrous',
-    type: 'Virus',
-    basePower: 48,
-    emoji: '🛡️',
-    baseStats: { attack: 40, defense: 30, speed: 18, hp: 70 },
-  },
-  {
-    id: 'punimon',
-    name: 'Punimon',
-    stage: 'Fresh',
-    description: 'A soft, gel-like baby Digimon.',
-    personality: 'Gentle',
-    type: 'Data',
-    basePower: 8,
-    emoji: '🔴',
-    baseStats: { attack: 7, defense: 7, speed: 8, hp: 20 },
-  },
-  {
-    id: 'tsunomon',
-    name: 'Tsunomon',
-    stage: 'In-Training',
-    description: 'An energetic creature with a sharp horn on its head.',
-    personality: 'Feisty',
-    type: 'Data',
-    basePower: 12,
-    emoji: '🦄',
-    baseStats: { attack: 11, defense: 9, speed: 11, hp: 26 },
-  },
-  {
-    id: 'gabumon',
-    name: 'Gabumon',
-    stage: 'Rookie',
-    description: 'A shy Digimon that wears Garurumon fur to protect itself.',
-    personality: 'Protective',
-    type: 'Data',
-    basePower: 16,
-    emoji: '🦊',
-    baseStats: { attack: 14, defense: 11, speed: 11, hp: 32 },
-  },
-  {
-    id: 'garurumon',
-    name: 'Garurumon',
-    stage: 'Champion',
-    description: 'A swift, blue wolf Digimon covered in crystalline fur.',
-    personality: 'Steady',
-    type: 'Vaccine',
-    basePower: 24,
-    emoji: '🐺',
-    baseStats: { attack: 20, defense: 16, speed: 15, hp: 40 },
-  },
-  {
-    id: 'weregarurumon',
-    name: 'WereGarurumon',
-    stage: 'Ultimate',
-    description: 'A bipedal wolf warrior with powerful brawling kick techniques.',
-    personality: 'Fierce',
-    type: 'Vaccine',
-    basePower: 34,
-    emoji: '🥊',
-    baseStats: { attack: 28, defense: 24, speed: 18, hp: 54 }
-  },
-  {
-    id: 'metalgarurumon',
-    name: 'MetalGarurumon',
-    stage: 'Mega',
-    description: 'A fully mechanized wolf that freezes foes with Cocytus Breath.',
-    personality: 'Resolute',
-    type: 'Data',
-    basePower: 48,
-    emoji: '❄️',
-    baseStats: { attack: 38, defense: 32, speed: 20, hp: 72 }
-  },
-  {
+// Phase 4 of the JSON migration (see /memories/repo/digimon-json-migration-plan.md): sampleDigimon
+// is now generated from digimon_cleaned.json for every species that has a match there. A handful
+// of classic baby/in-training forms aren't in that game's roster at all - those stay hand-authored
+// (see `manual(...)` entries below) exactly as they were before this migration.
+//
+// Phase 6: the rest of the 475-species dataset (everything not individually curated below) is
+// bulk-imported at the bottom of this file, using generation-based fallbacks for the fields
+// digimon_cleaned.json doesn't provide (emoji/basePower/personality) - see `buildBulkDigimon`.
+
+// digimon_cleaned.json's RPG stat numbers (hundreds-to-thousands) are on a much bigger scale than
+// this clicker's combat math was tuned around (single/double digits) - getAttackIntervalMs, the
+// flat bits/exp reward formulas, etc. would all break if we used the raw numbers directly. This is
+// a single tunable knob: scale every stat down by the same divisor so the numbers land back near
+// our existing balance, while preserving each species' relative proportions and lv1->lv99 growth.
+const JSON_STAT_SCALE_DIVISOR = 20
+
+function scaleStat(value: number): number {
+  return Math.max(1, Math.round(value / JSON_STAT_SCALE_DIVISOR))
+}
+
+const KNOWN_ATTRIBUTES = new Set<DigimonAttribute>(['Vaccine', 'Data', 'Virus', 'Free', 'Unknown', 'Variable', 'No Data'])
+
+function toDigimonAttribute(attribute: string): DigimonAttribute {
+  if (!KNOWN_ATTRIBUTES.has(attribute as DigimonAttribute)) {
+    throw new Error(`digimon.ts: unrecognized attribute "${attribute}" from digimon_cleaned.json`)
+  }
+
+  return attribute as DigimonAttribute
+}
+
+interface SourcedDigimonDescriptor {
+  kind: 'sourced'
+  id: string
+  emoji: string
+  basePower: number
+  personality: string
+  drops?: Digimon['drops']
+  // Only needed where our id doesn't match the JSON slug (naming differs between continuities),
+  // e.g. our `omegamon` is JSON's `omnimon`, and `imperialdramon` is JSON's `imperialdramon-dm`.
+  slug?: string
+}
+
+interface ManualDigimonDescriptor {
+  kind: 'manual'
+  digimon: Digimon
+}
+
+type DigimonDescriptor = SourcedDigimonDescriptor | ManualDigimonDescriptor
+
+function sourced(descriptor: Omit<SourcedDigimonDescriptor, 'kind'>): DigimonDescriptor {
+  return { kind: 'sourced', ...descriptor }
+}
+
+function manual(digimon: Digimon): DigimonDescriptor {
+  return { kind: 'manual', digimon }
+}
+
+function buildStatsFromRaw(raw: RawDigimonWithSlug): { baseStats: DigimonStats, growthStats: StatGrowthRange } {
+  return {
+    baseStats: {
+      attack: scaleStat(raw.stats.ATK.lv1),
+      defense: scaleStat(raw.stats.DEF.lv1),
+      speed: scaleStat(raw.stats.SPD.lv1),
+      hp: scaleStat(raw.stats.HP.lv1),
+      sp: scaleStat(raw.stats.SP.lv1),
+      int: scaleStat(raw.stats.INT.lv1),
+      spi: scaleStat(raw.stats.SPI.lv1),
+    },
+    growthStats: {
+      attack: scaleStat(raw.stats.ATK.lv99),
+      defense: scaleStat(raw.stats.DEF.lv99),
+      speed: scaleStat(raw.stats.SPD.lv99),
+      hp: scaleStat(raw.stats.HP.lv99),
+    },
+  }
+}
+
+function buildDigimonFromSource(descriptor: SourcedDigimonDescriptor): Digimon {
+  const raw = getRawDigimonBySlug(descriptor.slug ?? descriptor.id)
+
+  if (!raw) {
+    throw new Error(`digimon.ts: no digimon_cleaned.json entry found for slug "${descriptor.slug ?? descriptor.id}" (id "${descriptor.id}")`)
+  }
+
+  return {
+    id: descriptor.id,
+    name: raw.name,
+    stage: raw.generation,
+    description: raw.description,
+    personality: descriptor.personality,
+    type: toDigimonAttribute(raw.attribute),
+    basePower: descriptor.basePower,
+    emoji: descriptor.emoji,
+    speciesType: raw.type,
+    ...buildStatsFromRaw(raw),
+    drops: descriptor.drops,
+  }
+}
+
+const digimonDescriptors: DigimonDescriptor[] = [
+  sourced({ id: 'botamon', emoji: '🍼', basePower: 8, personality: 'Playful' }),
+  sourced({ id: 'koromon', emoji: '🌱', basePower: 12, personality: 'Curious' }),
+  sourced({ id: 'agumon', emoji: '🦖', basePower: 18, personality: 'Loyal', drops: [{ itemId: 'healing-herb', chance: 0.2 }] }),
+  sourced({ id: 'greymon', emoji: '🦕', basePower: 26, personality: 'Bold' }),
+  sourced({ id: 'metalgreymon', emoji: '🤖', basePower: 36, personality: 'Determined' }),
+  sourced({ id: 'wargreymon', emoji: '⚔️', basePower: 48, personality: 'Heroic' }),
+  sourced({ id: 'guilmon', emoji: '🦖', basePower: 18, personality: 'Curious', drops: [{ itemId: 'dragon-scale', chance: 0.2 }] }),
+  sourced({ id: 'growlmon', emoji: '🐉', basePower: 26, personality: 'Aggressive' }),
+  sourced({ id: 'wargrowlmon', emoji: '🦾', basePower: 36, personality: 'Resolute' }),
+  sourced({ id: 'gallantmon', emoji: '🛡️', basePower: 48, personality: 'Chivalrous' }),
+  sourced({ id: 'punimon', emoji: '🔴', basePower: 8, personality: 'Gentle' }),
+  sourced({ id: 'tsunomon', emoji: '🦄', basePower: 12, personality: 'Feisty' }),
+  sourced({ id: 'gabumon', emoji: '🦊', basePower: 16, personality: 'Protective' }),
+  sourced({ id: 'garurumon', emoji: '🐺', basePower: 24, personality: 'Steady' }),
+  sourced({ id: 'weregarurumon', emoji: '🥊', basePower: 34, personality: 'Fierce' }),
+  sourced({ id: 'metalgarurumon', emoji: '❄️', basePower: 48, personality: 'Resolute' }),
+  manual({
     id: 'nyokimon',
     name: 'Nyokimon',
     stage: 'Fresh',
@@ -188,119 +127,19 @@ export const sampleDigimon: Digimon[] = [
     type: 'Data',
     basePower: 7,
     emoji: '🌱',
-    baseStats: { attack: 6, defense: 6, speed: 8, hp: 20 }
-  },
-  {
-    id: 'yokomon',
-    name: 'Yokomon',
-    stage: 'In-Training',
-    description: 'A flower-headed Digimon that drifts gracefully through breezes.',
-    personality: 'Gentle',
-    type: 'Data',
-    basePower: 11,
-    emoji: '🌸',
-    baseStats: { attack: 10, defense: 8, speed: 10, hp: 25 }
-  },
-  {
-    id: 'biyomon',
-    name: 'Biyomon',
-    stage: 'Rookie',
-    description: 'A cheerful bird Digimon that loves to fly and stay close to friends.',
-    personality: 'Energetic',
-    type: 'Data',
-    basePower: 15,
-    emoji: '🕊️',
-    baseStats: { attack: 13, defense: 10, speed: 13, hp: 30 }
-  },
-  {
-    id: 'birdramon',
-    name: 'Birdramon',
-    stage: 'Champion',
-    description: 'A giant fiery bird enveloped in blazing crimson flames.',
-    personality: 'Daring',
-    type: 'Vaccine',
-    basePower: 23,
-    emoji: '🔥',
-    baseStats: { attack: 20, defense: 14, speed: 16, hp: 38 }
-  },
-  {
-    id: 'garudamon',
-    name: 'Garudamon',
-    stage: 'Ultimate',
-    description: 'A bird-man guardian that commands the flames of justice.',
-    personality: 'Noble',
-    type: 'Vaccine',
-    basePower: 33,
-    emoji: '🦅',
-    baseStats: { attack: 27, defense: 22, speed: 17, hp: 52 }
-  },
-  {
-    id: 'phoenixmon',
-    name: 'Phoenixmon',
-    stage: 'Mega',
-    description: 'A holy avian deity with four majestic golden wings.',
-    personality: 'Divine',
-    type: 'Vaccine',
-    basePower: 46,
-    emoji: '👑',
-    baseStats: { attack: 36, defense: 28, speed: 20, hp: 68 }
-  },
-  {
-    id: 'pabumon',
-    name: 'Pabumon',
-    stage: 'Fresh',
-    description: 'A bubble Digimon that loves exploring sticky textures.',
-    personality: 'Curious',
-    type: 'Data',
-    basePower: 8,
-    emoji: '🧼',
-    baseStats: { attack: 6, defense: 8, speed: 6, hp: 22 }
-  },
-  {
-    id: 'motimon',
-    name: 'Motimon',
-    stage: 'In-Training',
-    description: 'A soft, squishy Digimon with high analytical intelligence.',
-    personality: 'Tolerant',
-    type: 'Vaccine',
-    basePower: 12,
-    emoji: '🍡',
-    baseStats: { attack: 9, defense: 11, speed: 8, hp: 28 }
-  },
-  {
-    id: 'tentomon',
-    name: 'Tentomon',
-    stage: 'Rookie',
-    description: 'An insectoid Digimon with an inquisitive mind and electric attacks.',
-    personality: 'Inquisitive',
-    type: 'Vaccine',
-    basePower: 16,
-    emoji: '🐞',
-    baseStats: { attack: 13, defense: 13, speed: 11, hp: 32 }
-  },
-  {
-    id: 'kabuterimon',
-    name: 'Kabuterimon',
-    stage: 'Champion',
-    description: 'A massive armored beetle that shoots Electro Shocker bolts.',
-    personality: 'Logical',
-    type: 'Vaccine',
-    basePower: 25,
-    emoji: '⚡',
-    baseStats: { attack: 22, defense: 20, speed: 13, hp: 42 },
-  },
-  {
-    id: 'megakabuterimon',
-    name: 'MegaKabuterimon',
-    stage: 'Ultimate',
-    description: 'An enlarged rhino beetle with indestructible head armor.',
-    personality: 'Stalwart',
-    type: 'Vaccine',
-    basePower: 35,
-    emoji: '🛡️',
-    baseStats: { attack: 30, defense: 30, speed: 14, hp: 58 },
-  },
-  {
+    baseStats: { attack: 6, defense: 6, speed: 8, hp: 20 },
+  }),
+  sourced({ id: 'yokomon', emoji: '🌸', basePower: 11, personality: 'Gentle' }),
+  sourced({ id: 'biyomon', emoji: '🕊️', basePower: 15, personality: 'Energetic' }),
+  sourced({ id: 'birdramon', emoji: '🔥', basePower: 23, personality: 'Daring' }),
+  sourced({ id: 'garudamon', emoji: '🦅', basePower: 33, personality: 'Noble' }),
+  sourced({ id: 'phoenixmon', emoji: '👑', basePower: 46, personality: 'Divine' }),
+  sourced({ id: 'pabumon', emoji: '🧼', basePower: 8, personality: 'Curious' }),
+  sourced({ id: 'motimon', emoji: '🍡', basePower: 12, personality: 'Tolerant' }),
+  sourced({ id: 'tentomon', emoji: '🐞', basePower: 16, personality: 'Inquisitive' }),
+  sourced({ id: 'kabuterimon', emoji: '⚡', basePower: 25, personality: 'Logical' }),
+  sourced({ id: 'megakabuterimon', emoji: '🛡️', basePower: 35, personality: 'Stalwart' }),
+  manual({
     id: 'yuramon',
     name: 'Yuramon',
     stage: 'Fresh',
@@ -310,63 +149,13 @@ export const sampleDigimon: Digimon[] = [
     basePower: 7,
     emoji: '🌾',
     baseStats: { attack: 6, defense: 6, speed: 7, hp: 20 },
-  },
-  {
-    id: 'tanemon',
-    name: 'Tanemon',
-    stage: 'In-Training',
-    description: 'A seed-like Digimon that burrows into rich soil.',
-    personality: 'Friendly',
-    type: 'Data',
-    basePower: 11,
-    emoji: '🌱',
-    baseStats: { attack: 9, defense: 9, speed: 9, hp: 26 },
-  },
-  {
-    id: 'palmon',
-    name: 'Palmon',
-    stage: 'Rookie',
-    description: 'A plant Digimon with a tropical flower blooming on its head.',
-    personality: 'Sassy',
-    type: 'Data',
-    basePower: 15,
-    emoji: '🌿',
-    baseStats: { attack: 12, defense: 11, speed: 12, hp: 30 },
-  },
-  {
-    id: 'togemon',
-    name: 'Togemon',
-    stage: 'Champion',
-    description: 'A brawling cactus Digimon wearing boxing gloves.',
-    personality: 'Feisty',
-    type: 'Data',
-    basePower: 23,
-    emoji: '🌵',
-    baseStats: { attack: 20, defense: 17, speed: 12, hp: 40 },
-  },
-  {
-    id: 'lillymon',
-    name: 'Lillymon',
-    stage: 'Ultimate',
-    description: 'A fairy born from blooming flower petals with a Flower Cannon.',
-    personality: 'Graceful',
-    type: 'Data',
-    basePower: 33,
-    emoji: '🧚',
-    baseStats: { attack: 27, defense: 21, speed: 18, hp: 50 },
-  },
-  {
-    id: 'rosemon',
-    name: 'Rosemon',
-    stage: 'Mega',
-    description: 'The queen of flowers who wields a whip of thorns.',
-    personality: 'Elegant',
-    type: 'Data',
-    basePower: 46,
-    emoji: '🌹',
-    baseStats: { attack: 36, defense: 26, speed: 18, hp: 65 },
-  },
-  {
+  }),
+  sourced({ id: 'tanemon', emoji: '🌱', basePower: 11, personality: 'Friendly' }),
+  sourced({ id: 'palmon', emoji: '🌿', basePower: 15, personality: 'Sassy' }),
+  sourced({ id: 'togemon', emoji: '🌵', basePower: 23, personality: 'Feisty' }),
+  sourced({ id: 'lillymon', emoji: '🧚', basePower: 33, personality: 'Graceful' }),
+  sourced({ id: 'rosemon', emoji: '🌹', basePower: 46, personality: 'Elegant' }),
+  manual({
     id: 'pitimon',
     name: 'Pitimon',
     stage: 'Fresh',
@@ -376,118 +165,18 @@ export const sampleDigimon: Digimon[] = [
     basePower: 7,
     emoji: '💧',
     baseStats: { attack: 6, defense: 7, speed: 7, hp: 21 },
-  },
-  {
-    id: 'bukamon',
-    name: 'Bukamon',
-    stage: 'In-Training',
-    description: 'An aquatic swimmer with a cheerful demeanor.',
-    personality: 'Jolly',
-    type: 'Data',
-    basePower: 11,
-    emoji: '🫧',
-    baseStats: { attack: 10, defense: 9, speed: 10, hp: 27 },
-  },
-  {
-    id: 'gomamon',
-    name: 'Gomamon',
-    stage: 'Rookie',
-    description: 'A marine mammal Digimon that summons Marching Fishes.',
-    personality: 'Loyal',
-    type: 'Vaccine',
-    basePower: 16,
-    emoji: '🐬',
-    baseStats: { attack: 13, defense: 12, speed: 12, hp: 33 },
-  },
-  {
-    id: 'ikkakumon',
-    name: 'Ikkakumon',
-    stage: 'Champion',
-    description: 'A giant walrus Digimon whose horn shoots Harpoon Torpedoes.',
-    personality: 'Brave',
-    type: 'Vaccine',
-    basePower: 24,
-    emoji: '🦭',
-    baseStats: { attack: 21, defense: 19, speed: 11, hp: 43 },
-  },
-  {
-    id: 'zudomon',
-    name: 'Zudomon',
-    stage: 'Ultimate',
-    description: 'A heavily armored ocean titan wielding the Vulcan Hammer.',
-    personality: 'Mighty',
-    type: 'Vaccine',
-    basePower: 35,
-    emoji: '🔨',
-    baseStats: { attack: 30, defense: 27, speed: 13, hp: 58 },
-  },
-  {
-    id: 'poyomon',
-    name: 'Poyomon',
-    stage: 'Fresh',
-    description: 'A translucent, jelly-like baby Digimon.',
-    personality: 'Gentle',
-    type: 'Data',
-    basePower: 7,
-    emoji: '🫧',
-    baseStats: { attack: 5, defense: 7, speed: 6, hp: 20 },
-  },
-  {
-    id: 'tokomon',
-    name: 'Tokomon',
-    stage: 'In-Training',
-    description: 'A cute, round Digimon hiding a surprisingly sharp set of teeth.',
-    personality: 'Cheeky',
-    type: 'Data',
-    basePower: 11,
-    emoji: '🐹',
-    baseStats: { attack: 10, defense: 8, speed: 9, hp: 26 },
-  },
-  {
-    id: 'patamon',
-    name: 'Patamon',
-    stage: 'Rookie',
-    description: 'A cheerful mammal Digimon with large wing-like ears.',
-    personality: 'Cheerful',
-    type: 'Data',
-    basePower: 15,
-    emoji: '🪽',
-    baseStats: { attack: 12, defense: 10, speed: 11, hp: 30 },
-  },
-  {
-    id: 'angemon',
-    name: 'Angemon',
-    stage: 'Champion',
-    description: 'A holy six-winged angel that drives out darkness with Hand of Fate.',
-    personality: 'Calm',
-    type: 'Vaccine',
-    basePower: 26,
-    emoji: '🕯️',
-    baseStats: { attack: 23, defense: 18, speed: 15, hp: 42 },
-  },
-  {
-    id: 'magnaangemon',
-    name: 'MagnaAngemon',
-    stage: 'Ultimate',
-    description: 'An eight-winged archangel who opens Gate of Destiny.',
-    personality: 'Noble',
-    type: 'Vaccine',
-    basePower: 37,
-    emoji: '👼',
-    baseStats: { attack: 31, defense: 26, speed: 17, hp: 56 },
-  },
-  {
-    id: 'seraphimon',
-    name: 'Seraphimon',
-    stage: 'Mega',
-    description: 'The highest-ranking holy Digimon clad in shining silver armor.',
-    personality: 'Divine',
-    type: 'Vaccine',
-    basePower: 49,
-    emoji: '✨',
-    baseStats: { attack: 39, defense: 31, speed: 19, hp: 70 },
-  },
-  {
+  }),
+  sourced({ id: 'bukamon', emoji: '🫧', basePower: 11, personality: 'Jolly' }),
+  sourced({ id: 'gomamon', emoji: '🐬', basePower: 16, personality: 'Loyal' }),
+  sourced({ id: 'ikkakumon', emoji: '🦭', basePower: 24, personality: 'Brave' }),
+  sourced({ id: 'zudomon', emoji: '🔨', basePower: 35, personality: 'Mighty' }),
+  sourced({ id: 'poyomon', emoji: '🫧', basePower: 7, personality: 'Gentle' }),
+  sourced({ id: 'tokomon', emoji: '🐹', basePower: 11, personality: 'Cheeky' }),
+  sourced({ id: 'patamon', emoji: '🪽', basePower: 15, personality: 'Cheerful' }),
+  sourced({ id: 'angemon', emoji: '🕯️', basePower: 26, personality: 'Calm' }),
+  sourced({ id: 'magnaangemon', emoji: '👼', basePower: 37, personality: 'Noble' }),
+  sourced({ id: 'seraphimon', emoji: '✨', basePower: 49, personality: 'Divine' }),
+  manual({
     id: 'snowbotamon',
     name: 'SnowBotamon',
     stage: 'Fresh',
@@ -497,151 +186,21 @@ export const sampleDigimon: Digimon[] = [
     basePower: 7,
     emoji: '❄️',
     baseStats: { attack: 6, defense: 6, speed: 7, hp: 20 },
-  },
-  {
-    id: 'nyaromon',
-    name: 'Nyaromon',
-    stage: 'In-Training',
-    description: 'A cat-like in-training Digimon with a mischievous tail.',
-    personality: 'Playful',
-    type: 'Data',
-    basePower: 11,
-    emoji: '🐱',
-    baseStats: { attack: 10, defense: 8, speed: 11, hp: 25 },
-  },
-  {
-    id: 'salamon',
-    name: 'Salamon',
-    stage: 'Rookie',
-    description: 'A holy puppy Digimon with high-pitched protective barks.',
-    personality: 'Timid',
-    type: 'Vaccine',
-    basePower: 14,
-    emoji: '🐶',
-    baseStats: { attack: 11, defense: 10, speed: 12, hp: 29 },
-  },
-  {
-    id: 'gatomon',
-    name: 'Gatomon',
-    stage: 'Champion',
-    description: 'A feline champion equipped with Holy Ring power and sharp claws.',
-    personality: 'Mysterious',
-    type: 'Vaccine',
-    basePower: 25,
-    emoji: '🐾',
-    baseStats: { attack: 22, defense: 17, speed: 16, hp: 40 },
-  },
-  {
-    id: 'angewomon',
-    name: 'Angewomon',
-    stage: 'Ultimate',
-    description: 'A beautiful archangel Digimon firing Celestial Arrows of light.',
-    personality: 'Graceful',
-    type: 'Vaccine',
-    basePower: 36,
-    emoji: '🏹',
-    baseStats: { attack: 31, defense: 25, speed: 18, hp: 54 },
-  },
-  {
-    id: 'magnadramon',
-    name: 'Magnadramon',
-    stage: 'Mega',
-    description: 'A sacred pink holy dragon emitting divine energy.',
-    personality: 'Radiant',
-    type: 'Vaccine',
-    basePower: 47,
-    emoji: '🐉',
-    baseStats: { attack: 38, defense: 30, speed: 18, hp: 68 },
-  },
-  {
-    id: 'devimon',
-    name: 'Devimon',
-    stage: 'Champion',
-    description: 'A fallen angel that corrupts Digimon with Black Gears.',
-    personality: 'Malevolent',
-    type: 'Virus',
-    basePower: 28,
-    emoji: '😈',
-    baseStats: { attack: 25, defense: 16, speed: 15, hp: 45 },
-  },
-  {
-    id: 'etemon',
-    name: 'Etemon',
-    stage: 'Ultimate',
-    description: 'A showy puppet Digimon controlling the Dark Network.',
-    personality: 'Arrogant',
-    type: 'Virus',
-    basePower: 35,
-    emoji: '🐒',
-    baseStats: { attack: 30, defense: 24, speed: 17, hp: 55 },
-  },
-  {
-    id: 'myotismon',
-    name: 'Myotismon',
-    stage: 'Ultimate',
-    description: 'An undead vampire king who commands swarms of bats.',
-    personality: 'Ruthless',
-    type: 'Virus',
-    basePower: 38,
-    emoji: '🦇',
-    baseStats: { attack: 33, defense: 27, speed: 17, hp: 58 },
-  },
-  {
-    id: 'metalseadramon',
-    name: 'MetalSeadramon',
-    stage: 'Mega',
-    description: 'Dark Master ruler of the ocean clad in Chrome Digizoid.',
-    personality: 'Tyrannical',
-    type: 'Data',
-    basePower: 46,
-    emoji: '🐍',
-    baseStats: { attack: 37, defense: 31, speed: 16, hp: 68 },
-  },
-  {
-    id: 'puppetmon',
-    name: 'Puppetmon',
-    stage: 'Mega',
-    description: 'Dark Master ruler of the forest made from cursed wood.',
-    personality: 'Cruel',
-    type: 'Virus',
-    basePower: 45,
-    emoji: '🪆',
-    baseStats: { attack: 36, defense: 26, speed: 18, hp: 64 },
-  },
-  {
-    id: 'machinedramon',
-    name: 'Machinedramon',
-    stage: 'Mega',
-    description: 'Dark Master city ruler synthesized from 100% metal parts.',
-    personality: 'Cold',
-    type: 'Virus',
-    basePower: 48,
-    emoji: '⚙️',
-    baseStats: { attack: 41, defense: 33, speed: 14, hp: 72 },
-  },
-  {
-    id: 'piedmon',
-    name: 'Piedmon',
-    stage: 'Mega',
-    description: 'Leader of the Dark Masters; a demonic clown assassin.',
-    personality: 'Cunning',
-    type: 'Virus',
-    basePower: 49,
-    emoji: '🃏',
-    baseStats: { attack: 40, defense: 28, speed: 21, hp: 69 },
-  },
-  {
-    id: 'apocalymon',
-    name: 'Apocalymon',
-    stage: 'Super Ultimate',
-    description: 'The entity born from deleted Digimon seeking to erase reality.',
-    personality: 'Desperate',
-    type: 'Free',
-    basePower: 55,
-    emoji: '🌀',
-    baseStats: { attack: 45, defense: 35, speed: 20, hp: 85 },
-  },
-  {
+  }),
+  sourced({ id: 'nyaromon', emoji: '🐱', basePower: 11, personality: 'Playful' }),
+  sourced({ id: 'salamon', emoji: '🐶', basePower: 14, personality: 'Timid' }),
+  sourced({ id: 'gatomon', emoji: '🐾', basePower: 25, personality: 'Mysterious' }),
+  sourced({ id: 'angewomon', emoji: '🏹', basePower: 36, personality: 'Graceful' }),
+  sourced({ id: 'magnadramon', emoji: '🐉', basePower: 47, personality: 'Radiant' }),
+  sourced({ id: 'devimon', emoji: '😈', basePower: 28, personality: 'Malevolent' }),
+  sourced({ id: 'etemon', emoji: '🐒', basePower: 35, personality: 'Arrogant' }),
+  sourced({ id: 'myotismon', emoji: '🦇', basePower: 38, personality: 'Ruthless' }),
+  sourced({ id: 'metalseadramon', emoji: '🐍', basePower: 46, personality: 'Tyrannical' }),
+  sourced({ id: 'puppetmon', emoji: '🪆', basePower: 45, personality: 'Cruel' }),
+  sourced({ id: 'machinedramon', emoji: '⚙️', basePower: 48, personality: 'Cold' }),
+  sourced({ id: 'piedmon', emoji: '🃏', basePower: 49, personality: 'Cunning' }),
+  sourced({ id: 'apocalymon', emoji: '🌀', basePower: 55, personality: 'Desperate' }),
+  manual({
     id: 'chibomon',
     name: 'Chibomon',
     stage: 'Fresh',
@@ -651,8 +210,8 @@ export const sampleDigimon: Digimon[] = [
     basePower: 7,
     emoji: '💧',
     baseStats: { attack: 7, defense: 6, speed: 7, hp: 21 },
-  },
-  {
+  }),
+  manual({
     id: 'demiveemon',
     name: 'DemiVeemon',
     stage: 'In-Training',
@@ -662,170 +221,72 @@ export const sampleDigimon: Digimon[] = [
     basePower: 11,
     emoji: '🐉',
     baseStats: { attack: 11, defense: 8, speed: 10, hp: 27 },
-  },
-  {
-    id: 'veemon',
-    name: 'Veemon',
-    stage: 'Rookie',
-    description: 'A passionate dragon Rookie that harnesses ancient Digi-Eggs.',
-    personality: 'Energetic',
-    type: 'Free',
-    basePower: 17,
-    emoji: '🦕',
-    baseStats: { attack: 15, defense: 11, speed: 13, hp: 33 },
-  },
-  {
-    id: 'flamedramon',
-    name: 'Flamedramon',
-    stage: 'Champion',
-    description: 'Armor Digivolved form using the Digi-Egg of Courage.',
-    personality: 'Fiery',
-    type: 'Free',
-    basePower: 27,
-    emoji: '🔥',
-    baseStats: { attack: 25, defense: 17, speed: 16, hp: 42 },
-  },
-  {
-    id: 'exveemon',
-    name: 'ExVeemon',
-    stage: 'Champion',
-    description: 'A powerful mythical dragon with the iconic X on its chest.',
-    personality: 'Bold',
-    type: 'Vaccine',
-    basePower: 26,
-    emoji: '🦾',
-    baseStats: { attack: 23, defense: 18, speed: 15, hp: 43 },
-  },
-  {
-    id: 'paildramon',
-    name: 'Paildramon',
-    stage: 'Ultimate',
-    description: 'A DNA Digivolution combining ExVeemon and Stingmon.',
-    personality: 'Fierce',
-    type: 'Free',
-    basePower: 37,
-    emoji: '🔫',
-    baseStats: { attack: 33, defense: 26, speed: 18, hp: 57 },
-  },
-  {
-    id: 'imperialdramon',
-    name: 'Imperialdramon',
-    stage: 'Mega',
-    description: 'An ancient dragon dragon mode capable of changing into Fighter Mode.',
-    personality: 'Majestic',
-    type: 'Free',
-    basePower: 50,
-    emoji: '🐲',
-    baseStats: { attack: 42, defense: 32, speed: 19, hp: 75 },
-  },
-  {
-    id: 'hawkmon',
-    name: 'Hawkmon',
-    stage: 'Rookie',
-    description: 'A polite avian Digimon with keen eyesight and feather daggers.',
-    personality: 'Polite',
-    type: 'Free',
-    basePower: 16,
-    emoji: '🦅',
-    baseStats: { attack: 14, defense: 10, speed: 14, hp: 31 },
-  },
-  {
-    id: 'aquilamon',
-    name: 'Aquilamon',
-    stage: 'Champion',
-    description: 'A giant eagle with two horns that soars at supersonic speeds.',
-    personality: 'Keen',
-    type: 'Data',
-    basePower: 24,
-    emoji: '🪶',
-    baseStats: { attack: 21, defense: 15, speed: 17, hp: 39 },
-  },
-  {
-    id: 'armadillomon',
-    name: 'Armadillomon',
-    stage: 'Rookie',
-    description: 'A laid-back armadillo Digimon covered in a hard shell.',
-    personality: 'Easygoing',
-    type: 'Free',
-    basePower: 16,
-    emoji: '🛡️',
-    baseStats: { attack: 12, defense: 15, speed: 9, hp: 34 },
-  },
-  {
-    id: 'ankylomon',
-    name: 'Ankylomon',
-    stage: 'Champion',
-    description: 'An armored herbivore dinosaur with an iron tail hammer.',
-    personality: 'Sturdy',
-    type: 'Free',
-    basePower: 25,
-    emoji: '🧱',
-    baseStats: { attack: 19, defense: 23, speed: 10, hp: 46 },
-  },
-  {
-    id: 'wormmon',
-    name: 'Wormmon',
-    stage: 'Rookie',
-    description: 'A timid larva Digimon with deep devotion to its partner.',
-    personality: 'Timid',
-    type: 'Virus',
-    basePower: 14,
-    emoji: '🐛',
-    baseStats: { attack: 11, defense: 11, speed: 10, hp: 28 },
-  },
-  {
-    id: 'stingmon',
-    name: 'Stingmon',
-    stage: 'Champion',
-    description: 'An assassin insectoid warrior with lethal Spiking Finishers.',
-    personality: 'Silent',
-    type: 'Virus',
-    basePower: 25,
-    emoji: '🐝',
-    baseStats: { attack: 23, defense: 16, speed: 18, hp: 41 },
-  },
-  {
-    id: 'kimeramon',
-    name: 'Kimeramon',
-    stage: 'Ultimate',
-    description: 'A horrifying chimera synthesized by the Digimon Emperor.',
-    personality: 'Wild',
-    type: 'Data',
-    basePower: 38,
-    emoji: '☣️',
-    baseStats: { attack: 34, defense: 26, speed: 17, hp: 60 },
-  },
-  {
-    id: 'blackwargreymon',
-    name: 'BlackWarGreymon',
-    stage: 'Mega',
-    description: 'A dark counterpart created from 100 Control Spires searching for purpose.',
-    personality: 'Brooding',
-    type: 'Virus',
-    basePower: 49,
-    emoji: '🖤',
-    baseStats: { attack: 41, defense: 31, speed: 18, hp: 72 },
-  },
-  {
-    id: 'malomyotismon',
-    name: 'MaloMyotismon',
-    stage: 'Mega',
-    description: 'The ultimate dark evolution fed by human fears and dark desires.',
-    personality: 'Sinister',
-    type: 'Virus',
-    basePower: 52,
-    emoji: '👁️',
-    baseStats: { attack: 44, defense: 34, speed: 18, hp: 80 },
-  },
-  {
-    id: 'omegamon',
-    name: 'Omegamon',
-    stage: 'Mega',
-    description: 'A holy knight created from the bonds and fusion of WarGreymon and MetalGarurumon.',
-    personality: 'Legendary',
-    type: 'Vaccine',
-    basePower: 52,
-    emoji: '🛡️',
-    baseStats: { attack: 43, defense: 33, speed: 20, hp: 78 },
-  },
+  }),
+  sourced({ id: 'veemon', emoji: '🦕', basePower: 17, personality: 'Energetic' }),
+  sourced({ id: 'flamedramon', emoji: '🔥', basePower: 27, personality: 'Fiery' }),
+  sourced({ id: 'exveemon', emoji: '🦾', basePower: 26, personality: 'Bold' }),
+  sourced({ id: 'paildramon', emoji: '🔫', basePower: 37, personality: 'Fierce' }),
+  sourced({ id: 'imperialdramon', emoji: '🐲', basePower: 50, personality: 'Majestic', slug: 'imperialdramon-dm' }),
+  sourced({ id: 'hawkmon', emoji: '🦅', basePower: 16, personality: 'Polite' }),
+  sourced({ id: 'aquilamon', emoji: '🪶', basePower: 24, personality: 'Keen' }),
+  sourced({ id: 'armadillomon', emoji: '🛡️', basePower: 16, personality: 'Easygoing' }),
+  sourced({ id: 'ankylomon', emoji: '🧱', basePower: 25, personality: 'Sturdy' }),
+  sourced({ id: 'wormmon', emoji: '🐛', basePower: 14, personality: 'Timid' }),
+  sourced({ id: 'stingmon', emoji: '🐝', basePower: 25, personality: 'Silent' }),
+  sourced({ id: 'kimeramon', emoji: '☣️', basePower: 38, personality: 'Wild' }),
+  sourced({ id: 'blackwargreymon', emoji: '🖤', basePower: 49, personality: 'Brooding' }),
+  sourced({ id: 'malomyotismon', emoji: '👁️', basePower: 52, personality: 'Sinister' }),
+  sourced({ id: 'omegamon', emoji: '🛡️', basePower: 52, personality: 'Legendary', slug: 'omnimon' }),
 ]
+
+const curatedDigimon: Digimon[] = digimonDescriptors.map((descriptor) =>
+  descriptor.kind === 'manual' ? descriptor.digimon : buildDigimonFromSource(descriptor),
+)
+
+// Phase 6: bulk-import every remaining digimon_cleaned.json species not already curated above.
+// digimon_cleaned.json has no emoji/basePower/personality data at all, so these use coarse,
+// generation-tier-based placeholders instead of per-species hand authoring (475 species is too
+// many to hand-curate individually) - revisit/replace per-species as they get real attention.
+const DEFAULT_PERSONALITY = 'Undetermined'
+
+const DEFAULT_EMOJI_BY_GENERATION: Record<string, string> = {
+  Fresh: '🥚',
+  'In-Training': '🐣',
+  Rookie: '🐲',
+  Champion: '🐉',
+  Armor: '🛡️',
+  Hybrid: '🌀',
+  Ultimate: '👹',
+  Mega: '👑',
+  'Mega +': '☠️',
+}
+
+const DEFAULT_EMOJI = '❓'
+
+function buildBulkDigimon(raw: RawDigimonWithSlug): Digimon {
+  return {
+    id: raw.slug,
+    name: raw.name,
+    stage: raw.generation,
+    description: raw.description,
+    personality: DEFAULT_PERSONALITY,
+    type: toDigimonAttribute(raw.attribute),
+    basePower: scaleStat(raw.stats.ATK.lv1),
+    emoji: DEFAULT_EMOJI_BY_GENERATION[raw.generation] ?? DEFAULT_EMOJI,
+    speciesType: raw.type,
+    ...buildStatsFromRaw(raw),
+  }
+}
+
+const curatedSlugs = new Set(
+  digimonDescriptors
+    .filter((descriptor): descriptor is SourcedDigimonDescriptor => descriptor.kind === 'sourced')
+    .map((descriptor) => descriptor.slug ?? descriptor.id),
+)
+
+const bulkDigimon: Digimon[] = rawDigimonList
+  .filter((raw) => !curatedSlugs.has(raw.slug))
+  .map(buildBulkDigimon)
+
+export const sampleDigimon: Digimon[] = [...curatedDigimon, ...bulkDigimon]
+

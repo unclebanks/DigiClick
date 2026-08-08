@@ -184,6 +184,40 @@
   margin: 0;
 }
 
+.dexFilters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.dexSearchInput {
+  flex: 1 1 220px;
+  padding: 0.65rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid #ddd6fe;
+  background-color: white;
+  color: #334155;
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dexSearchInput:focus-visible {
+  outline: none;
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2);
+}
+
+.dexToggle {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  color: #334155;
+  font-weight: 600;
+}
+
 @media (max-width: 768px) {
   .heroPanel {
     grid-template-columns: 1fr;
