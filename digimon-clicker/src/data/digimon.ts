@@ -1,9 +1,6 @@
 import type { Digimon } from '../types/game'
 
 export const sampleDigimon: Digimon[] = [
-  // ==========================================
-  // SEASON 1: AGUMON LINE
-  // ==========================================
   {
     id: 'botamon',
     name: 'Botamon',
@@ -14,9 +11,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 8,
     emoji: '🍼',
     baseStats: { attack: 8, defense: 6, speed: 7, hp: 22 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'koromon',
@@ -28,9 +22,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 12,
     emoji: '🌱',
     baseStats: { attack: 12, defense: 8, speed: 9, hp: 28 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'agumon',
@@ -42,9 +33,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 18,
     emoji: '🦖',
     baseStats: { attack: 16, defense: 12, speed: 12, hp: 35 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
     drops: [{ itemId: 'healing-herb', chance: 0.2 }],
   },
   {
@@ -57,9 +45,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 26,
     emoji: '🦕',
     baseStats: { attack: 24, defense: 18, speed: 14, hp: 44 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'metalgreymon',
@@ -71,9 +56,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 36,
     emoji: '🤖',
     baseStats: { attack: 32, defense: 28, speed: 16, hp: 56 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'wargreymon',
@@ -85,14 +67,52 @@ export const sampleDigimon: Digimon[] = [
     basePower: 48,
     emoji: '⚔️',
     baseStats: { attack: 40, defense: 30, speed: 18, hp: 70 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
-
-  // ==========================================
-  // SEASON 1: GABUMON LINE
-  // ==========================================
+  {
+    id: 'guilmon',
+    name: 'Guilmon',
+    stage: 'Rookie',
+    description: 'A youthful reptilian Digimon with a fierce, dragon-like combat potential.',
+    personality: 'Curious',
+    type: 'Virus',
+    basePower: 18,
+    emoji: '🦖',
+    baseStats: { attack: 16, defense: 12, speed: 12, hp: 35 },
+    drops:[{ itemId: 'dragon-scale', chance: 0.2 }],
+  },
+  {
+    id: 'growlmon',
+    name: 'Growlmon',
+    stage: 'Champion',
+    description: 'A fearsome dragon Digimon known as the "Deep Crimson Dragon" with sharp elbow blades.',
+    personality: 'Aggressive',
+    type: 'Virus',
+    basePower: 26,
+    emoji: '🐉',
+    baseStats: { attack: 24, defense: 18, speed: 14, hp: 44 },
+  },
+  {
+    id: 'wargrowlmon',
+    name: 'WarGrowlmon',
+    stage: 'Ultimate',
+    description: 'A cyborg dragon warrior mechanized with Chrome Digizoid armor and powerful Pendulum Blades.',
+    personality: 'Resolute',
+    type: 'Virus',
+    basePower: 36,
+    emoji: '🦾',
+    baseStats: { attack: 32, defense: 28, speed: 16, hp: 56 },
+  },
+  {
+    id: 'gallantmon',
+    name: 'Gallantmon',
+    stage: 'Mega',
+    description: 'A Holy Knight Digimon clad in sacred armor, wielding the holy lance Gram and shield Aegis.',
+    personality: 'Chivalrous',
+    type: 'Virus',
+    basePower: 48,
+    emoji: '🛡️',
+    baseStats: { attack: 40, defense: 30, speed: 18, hp: 70 },
+  },
   {
     id: 'punimon',
     name: 'Punimon',
@@ -103,9 +123,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 8,
     emoji: '🔴',
     baseStats: { attack: 7, defense: 7, speed: 8, hp: 20 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'tsunomon',
@@ -117,9 +134,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 12,
     emoji: '🦄',
     baseStats: { attack: 11, defense: 9, speed: 11, hp: 26 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'gabumon',
@@ -131,9 +145,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 16,
     emoji: '🦊',
     baseStats: { attack: 14, defense: 11, speed: 11, hp: 32 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'garurumon',
@@ -145,9 +156,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 24,
     emoji: '🐺',
     baseStats: { attack: 20, defense: 16, speed: 15, hp: 40 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'weregarurumon',
@@ -158,10 +166,7 @@ export const sampleDigimon: Digimon[] = [
     type: 'Vaccine',
     basePower: 34,
     emoji: '🥊',
-    baseStats: { attack: 28, defense: 24, speed: 18, hp: 54 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
+    baseStats: { attack: 28, defense: 24, speed: 18, hp: 54 }
   },
   {
     id: 'metalgarurumon',
@@ -172,15 +177,8 @@ export const sampleDigimon: Digimon[] = [
     type: 'Data',
     basePower: 48,
     emoji: '❄️',
-    baseStats: { attack: 38, defense: 32, speed: 20, hp: 72 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
+    baseStats: { attack: 38, defense: 32, speed: 20, hp: 72 }
   },
-
-  // ==========================================
-  // SEASON 1: BIYOMON LINE
-  // ==========================================
   {
     id: 'nyokimon',
     name: 'Nyokimon',
@@ -190,10 +188,7 @@ export const sampleDigimon: Digimon[] = [
     type: 'Data',
     basePower: 7,
     emoji: '🌱',
-    baseStats: { attack: 6, defense: 6, speed: 8, hp: 20 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
+    baseStats: { attack: 6, defense: 6, speed: 8, hp: 20 }
   },
   {
     id: 'yokomon',
@@ -204,10 +199,7 @@ export const sampleDigimon: Digimon[] = [
     type: 'Data',
     basePower: 11,
     emoji: '🌸',
-    baseStats: { attack: 10, defense: 8, speed: 10, hp: 25 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
+    baseStats: { attack: 10, defense: 8, speed: 10, hp: 25 }
   },
   {
     id: 'biyomon',
@@ -218,10 +210,7 @@ export const sampleDigimon: Digimon[] = [
     type: 'Data',
     basePower: 15,
     emoji: '🕊️',
-    baseStats: { attack: 13, defense: 10, speed: 13, hp: 30 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
+    baseStats: { attack: 13, defense: 10, speed: 13, hp: 30 }
   },
   {
     id: 'birdramon',
@@ -232,10 +221,7 @@ export const sampleDigimon: Digimon[] = [
     type: 'Vaccine',
     basePower: 23,
     emoji: '🔥',
-    baseStats: { attack: 20, defense: 14, speed: 16, hp: 38 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
+    baseStats: { attack: 20, defense: 14, speed: 16, hp: 38 }
   },
   {
     id: 'garudamon',
@@ -246,10 +232,7 @@ export const sampleDigimon: Digimon[] = [
     type: 'Vaccine',
     basePower: 33,
     emoji: '🦅',
-    baseStats: { attack: 27, defense: 22, speed: 17, hp: 52 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
+    baseStats: { attack: 27, defense: 22, speed: 17, hp: 52 }
   },
   {
     id: 'phoenixmon',
@@ -260,15 +243,8 @@ export const sampleDigimon: Digimon[] = [
     type: 'Vaccine',
     basePower: 46,
     emoji: '👑',
-    baseStats: { attack: 36, defense: 28, speed: 20, hp: 68 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
+    baseStats: { attack: 36, defense: 28, speed: 20, hp: 68 }
   },
-
-  // ==========================================
-  // SEASON 1: TENTOMON LINE
-  // ==========================================
   {
     id: 'pabumon',
     name: 'Pabumon',
@@ -278,10 +254,7 @@ export const sampleDigimon: Digimon[] = [
     type: 'Data',
     basePower: 8,
     emoji: '🧼',
-    baseStats: { attack: 6, defense: 8, speed: 6, hp: 22 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
+    baseStats: { attack: 6, defense: 8, speed: 6, hp: 22 }
   },
   {
     id: 'motimon',
@@ -292,10 +265,7 @@ export const sampleDigimon: Digimon[] = [
     type: 'Vaccine',
     basePower: 12,
     emoji: '🍡',
-    baseStats: { attack: 9, defense: 11, speed: 8, hp: 28 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
+    baseStats: { attack: 9, defense: 11, speed: 8, hp: 28 }
   },
   {
     id: 'tentomon',
@@ -306,10 +276,7 @@ export const sampleDigimon: Digimon[] = [
     type: 'Vaccine',
     basePower: 16,
     emoji: '🐞',
-    baseStats: { attack: 13, defense: 13, speed: 11, hp: 32 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
+    baseStats: { attack: 13, defense: 13, speed: 11, hp: 32 }
   },
   {
     id: 'kabuterimon',
@@ -321,9 +288,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 25,
     emoji: '⚡',
     baseStats: { attack: 22, defense: 20, speed: 13, hp: 42 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'megakabuterimon',
@@ -335,14 +299,7 @@ export const sampleDigimon: Digimon[] = [
     basePower: 35,
     emoji: '🛡️',
     baseStats: { attack: 30, defense: 30, speed: 14, hp: 58 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
-
-  // ==========================================
-  // SEASON 1: PALMON LINE
-  // ==========================================
   {
     id: 'yuramon',
     name: 'Yuramon',
@@ -353,9 +310,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 7,
     emoji: '🌾',
     baseStats: { attack: 6, defense: 6, speed: 7, hp: 20 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'tanemon',
@@ -367,9 +321,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 11,
     emoji: '🌱',
     baseStats: { attack: 9, defense: 9, speed: 9, hp: 26 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'palmon',
@@ -381,9 +332,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 15,
     emoji: '🌿',
     baseStats: { attack: 12, defense: 11, speed: 12, hp: 30 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'togemon',
@@ -395,9 +343,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 23,
     emoji: '🌵',
     baseStats: { attack: 20, defense: 17, speed: 12, hp: 40 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'lillymon',
@@ -409,9 +354,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 33,
     emoji: '🧚',
     baseStats: { attack: 27, defense: 21, speed: 18, hp: 50 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'rosemon',
@@ -423,14 +365,7 @@ export const sampleDigimon: Digimon[] = [
     basePower: 46,
     emoji: '🌹',
     baseStats: { attack: 36, defense: 26, speed: 18, hp: 65 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
-
-  // ==========================================
-  // SEASON 1: GOMAMON LINE
-  // ==========================================
   {
     id: 'pitimon',
     name: 'Pitimon',
@@ -441,9 +376,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 7,
     emoji: '💧',
     baseStats: { attack: 6, defense: 7, speed: 7, hp: 21 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'bukamon',
@@ -455,9 +387,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 11,
     emoji: '🫧',
     baseStats: { attack: 10, defense: 9, speed: 10, hp: 27 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'gomamon',
@@ -469,9 +398,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 16,
     emoji: '🐬',
     baseStats: { attack: 13, defense: 12, speed: 12, hp: 33 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'ikkakumon',
@@ -483,9 +409,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 24,
     emoji: '🦭',
     baseStats: { attack: 21, defense: 19, speed: 11, hp: 43 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'zudomon',
@@ -497,14 +420,7 @@ export const sampleDigimon: Digimon[] = [
     basePower: 35,
     emoji: '🔨',
     baseStats: { attack: 30, defense: 27, speed: 13, hp: 58 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
-
-  // ==========================================
-  // SEASON 1: PATAMON LINE
-  // ==========================================
   {
     id: 'poyomon',
     name: 'Poyomon',
@@ -515,9 +431,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 7,
     emoji: '🫧',
     baseStats: { attack: 5, defense: 7, speed: 6, hp: 20 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'tokomon',
@@ -529,9 +442,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 11,
     emoji: '🐹',
     baseStats: { attack: 10, defense: 8, speed: 9, hp: 26 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'patamon',
@@ -543,9 +453,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 15,
     emoji: '🪽',
     baseStats: { attack: 12, defense: 10, speed: 11, hp: 30 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'angemon',
@@ -557,9 +464,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 26,
     emoji: '🕯️',
     baseStats: { attack: 23, defense: 18, speed: 15, hp: 42 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'magnaangemon',
@@ -571,9 +475,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 37,
     emoji: '👼',
     baseStats: { attack: 31, defense: 26, speed: 17, hp: 56 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'seraphimon',
@@ -585,14 +486,7 @@ export const sampleDigimon: Digimon[] = [
     basePower: 49,
     emoji: '✨',
     baseStats: { attack: 39, defense: 31, speed: 19, hp: 70 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
-
-  // ==========================================
-  // SEASON 1: GATOMON LINE
-  // ==========================================
   {
     id: 'snowbotamon',
     name: 'SnowBotamon',
@@ -603,9 +497,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 7,
     emoji: '❄️',
     baseStats: { attack: 6, defense: 6, speed: 7, hp: 20 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'nyaromon',
@@ -617,9 +508,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 11,
     emoji: '🐱',
     baseStats: { attack: 10, defense: 8, speed: 11, hp: 25 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'salamon',
@@ -631,9 +519,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 14,
     emoji: '🐶',
     baseStats: { attack: 11, defense: 10, speed: 12, hp: 29 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'gatomon',
@@ -645,9 +530,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 25,
     emoji: '🐾',
     baseStats: { attack: 22, defense: 17, speed: 16, hp: 40 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'angewomon',
@@ -659,9 +541,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 36,
     emoji: '🏹',
     baseStats: { attack: 31, defense: 25, speed: 18, hp: 54 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'magnadramon',
@@ -673,14 +552,7 @@ export const sampleDigimon: Digimon[] = [
     basePower: 47,
     emoji: '🐉',
     baseStats: { attack: 38, defense: 30, speed: 18, hp: 68 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
-
-  // ==========================================
-  // SEASON 1 VILLAINS & BOSSES
-  // ==========================================
   {
     id: 'devimon',
     name: 'Devimon',
@@ -691,9 +563,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 28,
     emoji: '😈',
     baseStats: { attack: 25, defense: 16, speed: 15, hp: 45 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'etemon',
@@ -705,9 +574,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 35,
     emoji: '🐒',
     baseStats: { attack: 30, defense: 24, speed: 17, hp: 55 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'myotismon',
@@ -719,9 +585,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 38,
     emoji: '🦇',
     baseStats: { attack: 33, defense: 27, speed: 17, hp: 58 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'metalseadramon',
@@ -733,9 +596,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 46,
     emoji: '🐍',
     baseStats: { attack: 37, defense: 31, speed: 16, hp: 68 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'puppetmon',
@@ -747,9 +607,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 45,
     emoji: '🪆',
     baseStats: { attack: 36, defense: 26, speed: 18, hp: 64 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'machinedramon',
@@ -761,9 +618,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 48,
     emoji: '⚙️',
     baseStats: { attack: 41, defense: 33, speed: 14, hp: 72 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'piedmon',
@@ -775,9 +629,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 49,
     emoji: '🃏',
     baseStats: { attack: 40, defense: 28, speed: 21, hp: 69 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'apocalymon',
@@ -789,14 +640,7 @@ export const sampleDigimon: Digimon[] = [
     basePower: 55,
     emoji: '🌀',
     baseStats: { attack: 45, defense: 35, speed: 20, hp: 85 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
-
-  // ==========================================
-  // SEASON 2: VEEMON & LINE / ARMOR
-  // ==========================================
   {
     id: 'chibomon',
     name: 'Chibomon',
@@ -807,9 +651,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 7,
     emoji: '💧',
     baseStats: { attack: 7, defense: 6, speed: 7, hp: 21 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'demiveemon',
@@ -821,9 +662,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 11,
     emoji: '🐉',
     baseStats: { attack: 11, defense: 8, speed: 10, hp: 27 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'veemon',
@@ -835,9 +673,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 17,
     emoji: '🦕',
     baseStats: { attack: 15, defense: 11, speed: 13, hp: 33 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'flamedramon',
@@ -849,9 +684,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 27,
     emoji: '🔥',
     baseStats: { attack: 25, defense: 17, speed: 16, hp: 42 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'exveemon',
@@ -863,9 +695,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 26,
     emoji: '🦾',
     baseStats: { attack: 23, defense: 18, speed: 15, hp: 43 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'paildramon',
@@ -877,9 +706,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 37,
     emoji: '🔫',
     baseStats: { attack: 33, defense: 26, speed: 18, hp: 57 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'imperialdramon',
@@ -891,14 +717,7 @@ export const sampleDigimon: Digimon[] = [
     basePower: 50,
     emoji: '🐲',
     baseStats: { attack: 42, defense: 32, speed: 19, hp: 75 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
-
-  // ==========================================
-  // SEASON 2: HAWKMON, ARMADILLOMON & WORMMON
-  // ==========================================
   {
     id: 'hawkmon',
     name: 'Hawkmon',
@@ -909,9 +728,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 16,
     emoji: '🦅',
     baseStats: { attack: 14, defense: 10, speed: 14, hp: 31 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'aquilamon',
@@ -923,9 +739,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 24,
     emoji: '🪶',
     baseStats: { attack: 21, defense: 15, speed: 17, hp: 39 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'armadillomon',
@@ -937,9 +750,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 16,
     emoji: '🛡️',
     baseStats: { attack: 12, defense: 15, speed: 9, hp: 34 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'ankylomon',
@@ -951,9 +761,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 25,
     emoji: '🧱',
     baseStats: { attack: 19, defense: 23, speed: 10, hp: 46 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'wormmon',
@@ -965,9 +772,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 14,
     emoji: '🐛',
     baseStats: { attack: 11, defense: 11, speed: 10, hp: 28 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'stingmon',
@@ -979,14 +783,7 @@ export const sampleDigimon: Digimon[] = [
     basePower: 25,
     emoji: '🐝',
     baseStats: { attack: 23, defense: 16, speed: 18, hp: 41 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
-
-  // ==========================================
-  // SEASON 2 VILLAINS & SPECIALS
-  // ==========================================
   {
     id: 'kimeramon',
     name: 'Kimeramon',
@@ -997,9 +794,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 38,
     emoji: '☣️',
     baseStats: { attack: 34, defense: 26, speed: 17, hp: 60 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'blackwargreymon',
@@ -1011,9 +805,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 49,
     emoji: '🖤',
     baseStats: { attack: 41, defense: 31, speed: 18, hp: 72 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'malomyotismon',
@@ -1025,9 +816,6 @@ export const sampleDigimon: Digimon[] = [
     basePower: 52,
     emoji: '👁️',
     baseStats: { attack: 44, defense: 34, speed: 18, hp: 80 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
   {
     id: 'omegamon',
@@ -1039,8 +827,5 @@ export const sampleDigimon: Digimon[] = [
     basePower: 52,
     emoji: '🛡️',
     baseStats: { attack: 43, defense: 33, speed: 20, hp: 78 },
-    level: 1,
-    exp: 0,
-    expToNextLevel: 100,
   },
 ]

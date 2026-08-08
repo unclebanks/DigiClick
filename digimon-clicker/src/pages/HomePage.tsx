@@ -30,7 +30,7 @@ export function HomePage() {
   const partyDigimon = useGameStore((state) => state.partyDigimon)
   const selectStarter = useGameStore((state) => state.selectStarter)
   const digimonProgression = useGameStore((state) => state.digimonProgression)
-  const gainDigimonExperience = useGameStore((state) => state.gainDigimonExperience)
+  const resetDigimonProgression = useGameStore((state) => state.resetDigimonProgression)
   const inventory = useGameStore((state) => state.inventory)
   const badges = useGameStore((state) => state.badges)
   const statistics = useGameStore((state) => state.statistics)
@@ -70,6 +70,7 @@ export function HomePage() {
 
     addCurrency(-evolution.cost)
     setDigivolutionState(baseId, evolveDigimonState(digivolutionState, toId))
+    resetDigimonProgression(baseId)
   }
 
   const handleDedigivolve = (baseId: string, digivolutionState: DigivolutionState) => {
@@ -95,14 +96,6 @@ export function HomePage() {
               This template keeps the first steps simple so you can focus on learning the game loop.
             </p>
             <div className={styles.actions}>
-              <Button onClick={() => {
-                addCurrency(10)
-                if (partyDigimon[0]) {
-                  gainDigimonExperience(partyDigimon[0], 20)
-                }
-              }}>
-                Collect 10 Bits
-              </Button>
               <Button variant="secondary" onClick={() => navigate('/battle')}>
                 Enter Battle
               </Button>
@@ -118,6 +111,12 @@ export function HomePage() {
               <span>Defeated {statistics.defeated}</span>
               <span>Badges {Object.keys(badges).length}</span>
             </p>
+            <p className={styles.statRow}>
+              <span>Bits earned {statistics.bitsEarned}</span>
+              <span>Total EXP {statistics.totalExpEarned}</span>
+              <span>Crits {statistics.criticalHits}</span>
+              <span>Misses {statistics.misses}</span>
+            </p>
           </Card>
         </section>
       )}
@@ -126,7 +125,10 @@ export function HomePage() {
         {partyMembers.map(({ baseId, digivolutionState, species, progression }) => (
           <DigimonCard
             key={baseId}
-            digimon={{ ...species, ...progression }}
+            digimon={species}
+            level={progression.level}
+            exp={progression.exp}
+            expToNextLevel={progression.expToNextLevel}
             canDedigivolve={digivolutionState.history.length > 1}
             evolutionOptions={getEvolutionOptions(digivolutionState.currentFormId, sampleEvolutions).map((evolution) => ({
               evolution,

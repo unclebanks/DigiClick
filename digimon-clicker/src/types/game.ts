@@ -18,9 +18,6 @@ export interface Digimon {
   basePower: number
   emoji: string
   baseStats: DigimonStats
-  level: number
-  exp: number
-  expToNextLevel: number
   drops?: Array<{ itemId: string, chance: number }>
 }
 
@@ -91,7 +88,6 @@ export interface DigimonStatBonus {
 export interface PlayerStatistics {
   encountered: number
   defeated: number
-  fled: number
   criticalHits: number
   misses: number
   totalDamageDealt: number
@@ -104,7 +100,6 @@ export function createInitialPlayerStatistics(): PlayerStatistics {
   return {
     encountered: 0,
     defeated: 0,
-    fled: 0,
     criticalHits: 0,
     misses: 0,
     totalDamageDealt: 0,

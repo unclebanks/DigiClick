@@ -15,12 +15,12 @@ export function getDefaultBattleRoute(routes: BattleRoute[]) {
   return routes.find((route) => route.unlockedByDefault) ?? routes[0]
 }
 
-export function isRouteUnlocked(route: BattleRoute, playerLevel: number) {
+export function isRouteUnlocked(route: BattleRoute, playerLevel: number, partySize: number): boolean {
   if (route.unlockedByDefault || route.routeNumber === 1) {
     return true
   }
 
-  return playerLevel >= route.requiredPlayerLevel
+  return playerLevel >= route.requiredPlayerLevel && partySize >= route.requiredPartySize
 }
 
 export function getEncounterLevel(route: BattleRoute, playerLevel: number) {

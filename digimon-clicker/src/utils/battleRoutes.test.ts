@@ -7,9 +7,13 @@ describe('battle route helpers', () => {
     const defaultRoute = getDefaultBattleRoute(sampleBattleRoutes)
 
     expect(defaultRoute.id).toBe('route-1')
-    expect(isRouteUnlocked(sampleBattleRoutes[0], 1)).toBe(true)
-    expect(isRouteUnlocked(sampleBattleRoutes[1], 1)).toBe(false)
-    expect(isRouteUnlocked(sampleBattleRoutes[1], 3)).toBe(true)
+    expect(isRouteUnlocked(sampleBattleRoutes[0], 1, 1)).toBe(true)
+    expect(isRouteUnlocked(sampleBattleRoutes[1], 1, 2)).toBe(false)
+    expect(isRouteUnlocked(sampleBattleRoutes[1], 3, 2)).toBe(true)
+  })
+
+  it('also gates a route behind its required party size, even once the level requirement is met', () => {
+    expect(isRouteUnlocked(sampleBattleRoutes[1], 3, 1)).toBe(false)
   })
 
   it('exposes region-based battle routes with Region 2 entries', () => {

@@ -3,7 +3,6 @@ export interface GrowthModifiers {
   defenseBonus?: number
   speedBonus?: number
   hpBonus?: number
-  expMultiplier?: number
   // Applied to the whole level-growth curve, e.g. the de-digivolution penalty.
   statMultiplier?: number
 }
@@ -21,8 +20,4 @@ export function calculateDigimonStats(
     speed: Math.round((baseStats.speed * growth) + (modifiers.speedBonus ?? 0)),
     hp: Math.round((baseStats.hp * growth) + (modifiers.hpBonus ?? 0)),
   }
-}
-
-export function gainExperience(currentExp: number, amount: number, multiplier = 1) {
-  return currentExp + Math.round(amount * multiplier)
 }

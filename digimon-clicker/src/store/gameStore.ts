@@ -11,12 +11,12 @@ interface GameStore extends PlayerState {
   addCurrency: (amount: number) => void
   addInventoryItem: (itemId: string) => void
   setCurrentArea: (area: string) => void
-  addPartyDigimon: (digimonId: string) => void
   moveToParty: (digimonId: string) => void
   moveToDigitalSpace: (digimonId: string) => void
   selectStarter: (digimonId: string) => void
   setDigivolutionState: (digimonId: string, state: DigivolutionState) => void
   gainDigimonExperience: (digimonId: string, amount: number) => void
+  resetDigimonProgression: (digimonId: string) => void
   recordBattleEncounter: (speciesId: string) => void
   recordCombatEvent: (event: { isCritical?: boolean, isMiss?: boolean, damageDealt?: number, damageTaken?: number }) => void
   recordVictory: (rewards: { bits: number, exp: number }) => void
@@ -42,6 +42,15 @@ function addToFirstAvailableEnvironment(
     environment.id === availableEnvironment?.id
       ? { ...environment, digimonIds: [...environment.digimonIds, digimonId] }
       : environment)
+}
+
+// Ensures a party/digital-space slot has progression state the first time it's touched, without
+// clobbering any progress it has already made.
+function withInitializedProgression(
+  progression: PlayerState['digimonProgression'],
+  digimonId: string,
+): PlayerState['digimonProgression'] {
+  return { ...progression, [digimonId]: resolveDigimonProgression(progression[digimonId]) }
 }
 
 let recruitInstanceCounter = 0
@@ -88,21 +97,6 @@ export const useGameStore = create<GameStore>((set, get) => ({
       inventory: state.inventory.includes(itemId) ? state.inventory : [...state.inventory, itemId],
     })),
   setCurrentArea: (area) => set({ currentArea: area }),
-  addPartyDigimon: (digimonId) =>
-    set((state) => {
-      const isAlreadyInParty = state.partyDigimon.includes(digimonId)
-      const nextPartyDigimon = isAlreadyInParty || state.partyDigimon.length >= 6
-        ? state.partyDigimon
-        : [...state.partyDigimon, digimonId]
-
-      return {
-        partyDigimon: nextPartyDigimon,
-        digimonProgression: {
-          ...state.digimonProgression,
-          [digimonId]: resolveDigimonProgression(state.digimonProgression[digimonId]),
-        },
-      }
-    }),
   moveToParty: (digimonId) =>
     set((state) => {
       const nextParty = state.partyDigimon.includes(digimonId)
@@ -115,10 +109,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
           ...environment,
           digimonIds: environment.digimonIds.filter((id) => id !== digimonId),
         })),
-        digimonProgression: {
-          ...state.digimonProgression,
-          [digimonId]: resolveDigimonProgression(state.digimonProgression[digimonId]),
-        },
+        digimonProgression: withInitializedProgression(state.digimonProgression, digimonId),
       }
     }),
   moveToDigitalSpace: (digimonId) =>
@@ -135,10 +126,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   selectStarter: (digimonId) =>
     set((state) => ({
       partyDigimon: state.partyDigimon.length === 0 ? [digimonId] : state.partyDigimon,
-      digimonProgression: {
-        ...state.digimonProgression,
-        [digimonId]: resolveDigimonProgression(state.digimonProgression[digimonId]),
-      },
+      digimonProgression: withInitializedProgression(state.digimonProgression, digimonId),
     })),
   setDigivolutionState: (digimonId, digivolutionState) =>
     set((state) => ({
@@ -159,6 +147,15 @@ export const useGameStore = create<GameStore>((set, get) => ({
         },
       }
     }),
+  // Digivolving restarts a Digimon's level/exp at 1 for its new form (distinct from the level new
+  // Digimon start at, which is level 5 - see createInitialDigimonProgression's default).
+  resetDigimonProgression: (digimonId) =>
+    set((state) => ({
+      digimonProgression: {
+        ...state.digimonProgression,
+        [digimonId]: createInitialDigimonProgression(1),
+      },
+    })),
   recordBattleEncounter: (speciesId) =>
     set((state) => ({
       statistics: { ...state.statistics, encountered: state.statistics.encountered + 1 },

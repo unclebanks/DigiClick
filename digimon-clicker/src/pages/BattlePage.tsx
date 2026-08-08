@@ -7,13 +7,12 @@ import { useGameStore } from '../store/gameStore'
 import { sampleDigimon } from '../data/digimon'
 import { battleRoutesByRegion, sampleBattleRoutes } from '../data/areas'
 import { getDefaultBattleRoute, getEncounterLevel, isRouteUnlocked, pickRandomEncounterId } from '../utils/battleRoutes'
-import { getAttackIntervalMs, getManualAttackDamage, resolveAttack, resolveVictoryRewards } from '../utils/combat'
+import { getAttackIntervalMs, resolveAttack, resolveVictoryRewards } from '../utils/combat'
 import type { CombatantState } from '../utils/combat'
 import { describeAttributeMatchup } from '../utils/digimonAttributes'
 import { calculateDigimonStats } from '../utils/digimonStats'
 import { resolveDigimonProgression } from '../utils/digimonProgression'
 import { createInitialDigivolutionState } from '../utils/evolution'
-import { getOwnedDigimonIds } from '../utils/digidex'
 import { SCAN_MAX, SCAN_RECRUIT_THRESHOLD, getScanGainFromDefeat } from '../utils/scanning'
 import styles from '../styles/pages.module.css'
 
@@ -31,7 +30,6 @@ export function BattlePage() {
   const gainDigimonExperience = useGameStore((state) => state.gainDigimonExperience)
   const playerLevel = useGameStore((state) => state.playerLevel)
   const partyDigimon = useGameStore((state) => state.partyDigimon)
-  const digitalSpace = useGameStore((state) => state.digitalSpace)
   const digimonProgression = useGameStore((state) => state.digimonProgression)
   const digivolutionStates = useGameStore((state) => state.digivolutionStates)
   const digimonBonuses = useGameStore((state) => state.digimonBonuses)
@@ -67,7 +65,7 @@ export function BattlePage() {
   const activeEncounter = useMemo(() => {
     const species = sampleDigimon.find((digimon) => digimon.id === encounterSpeciesId)
 
-    return species ? { ...species, level: Math.max(species.level, encounterLevelLock) } : undefined
+    return species ? { ...species, level: encounterLevelLock } : undefined
   }, [encounterSpeciesId, encounterLevelLock])
 
   const enemyStats = useMemo(
@@ -123,13 +121,6 @@ export function BattlePage() {
     () => partyRoster.filter((member) => member.baseId !== activeMemberId),
     [partyRoster, activeMemberId],
   )
-
-  const totalDigimonOwned = useMemo(
-    () => getOwnedDigimonIds(partyDigimon, digitalSpace, digivolutionStates).size,
-    [partyDigimon, digitalSpace, digivolutionStates],
-  )
-  // Item-based upgrades aren't implemented yet, so the manual attack only scales with Digimon owned for now.
-  const manualAttackDamage = getManualAttackDamage(totalDigimonOwned)
 
   const appendLog = (message: string) => {
     setLogEntries((previous) => [message, ...previous].slice(0, 5))
@@ -277,22 +268,6 @@ export function BattlePage() {
     }
   }
 
-  const handleManualAttack = () => {
-    if (!isBattling || !activeEncounter || !enemyStats) {
-      return
-    }
-
-    const nextEnemyHp = Math.max(0, enemyHp - manualAttackDamage)
-
-    recordCombatEvent({ damageDealt: manualAttackDamage })
-    setEnemyHp(nextEnemyHp)
-    appendLog(`You struck ${activeEncounter.name} for ${manualAttackDamage} damage!`)
-
-    if (nextEnemyHp === 0) {
-      handleEnemyDefeated()
-    }
-  }
-
   // Keep the ref pointed at the latest closure so the intervals below always act on fresh state.
   useEffect(() => {
     performAttackRef.current = performAttack
@@ -370,7 +345,7 @@ export function BattlePage() {
   const handleRouteSelect = (routeId: string) => {
     const nextRoute = sampleBattleRoutes.find((route) => route.id === routeId)
 
-    if (!nextRoute || !isRouteUnlocked(nextRoute, playerLevel)) {
+    if (!nextRoute || !isRouteUnlocked(nextRoute, playerLevel, partyDigimon.length)) {
       appendLog('That route is still locked. Train a little more and build your party.')
       return
     }
@@ -428,9 +403,6 @@ export function BattlePage() {
                 <span>DEF {activeMember?.stats.defense ?? 0}</span>
                 <span>SPD {activeMember?.stats.speed ?? 0}</span>
               </p>
-              <Button onClick={handleManualAttack} disabled={!isBattling || !activeEncounter}>
-                <Sword size={16} /> Attack ({manualAttackDamage} dmg)
-              </Button>
               {!isBattling && (
                 <Button onClick={handleRegroup}>Regroup</Button>
               )}

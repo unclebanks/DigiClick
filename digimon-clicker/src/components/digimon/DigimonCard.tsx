@@ -10,6 +10,9 @@ interface EvolutionOption {
 
 interface DigimonCardProps {
   digimon: Digimon
+  level: number
+  exp: number
+  expToNextLevel: number
   evolutionOptions?: EvolutionOption[]
   canDedigivolve?: boolean
   onEvolve?: (toId: string) => void
@@ -18,6 +21,9 @@ interface DigimonCardProps {
 
 export function DigimonCard({
   digimon,
+  level,
+  exp,
+  expToNextLevel,
   evolutionOptions = [],
   canDedigivolve = false,
   onEvolve,
@@ -35,13 +41,13 @@ export function DigimonCard({
       <p className={styles.requirementText}>Personality: {digimon.personality}</p>
       <p className={styles.requirementText}>Attribute: {digimon.type}</p>
       <div className={styles.statsGrid}>
-        <span>Lv. {digimon.level}</span>
+        <span>Lv. {level}</span>
         <span>ATK {digimon.baseStats.attack}</span>
         <span>DEF {digimon.baseStats.defense}</span>
         <span>SPD {digimon.baseStats.speed}</span>
         <span>HP {digimon.baseStats.hp}</span>
       </div>
-      <p className={styles.exp}>EXP {digimon.exp}/{digimon.expToNextLevel}</p>
+      <p className={styles.exp}>EXP {exp}/{expToNextLevel}</p>
       <div className={styles.requirements}>
         <p className={styles.label}>Evolution options</p>
         {evolutionOptions.length === 0 ? (

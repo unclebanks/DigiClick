@@ -45,8 +45,6 @@ const BASE_ATTACK_INTERVAL_MS = 2400
 const MIN_ATTACK_INTERVAL_MS = 500
 const DEFAULT_MISS_CHANCE = 0.1
 const DEFAULT_CRIT_CHANCE = 0.2
-const BASE_MANUAL_ATTACK_DAMAGE = 1
-const MANUAL_ATTACK_DIGIMON_SCALING = 5
 
 // Higher speed (and item/skill modifiers) shrinks the wait between automatic attacks.
 export function getAttackIntervalMs(speed: number, speedModifier = 1): number {
@@ -88,15 +86,6 @@ export function resolveAttack(
     defenderHp,
     defenderDefeated: defenderHp === 0,
   }
-}
-
-// Manual "attack button" damage, independent of a Digimon's own combat stats: starts at 1 and
-// grows as the trainer collects more Digimon. `itemBonus` is a reserved hook for upgrade items,
-// which aren't wired up yet.
-export function getManualAttackDamage(totalDigimonOwned: number, itemBonus = 0): number {
-  const digimonBonus = Math.floor(Math.max(0, totalDigimonOwned - 1) / MANUAL_ATTACK_DIGIMON_SCALING)
-
-  return Math.max(1, BASE_MANUAL_ATTACK_DAMAGE + digimonBonus + itemBonus)
 }
 
 export function resolveVictoryRewards(
