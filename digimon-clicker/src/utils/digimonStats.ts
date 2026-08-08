@@ -4,6 +4,8 @@ export interface GrowthModifiers {
   speedBonus?: number
   hpBonus?: number
   expMultiplier?: number
+  // Applied to the whole level-growth curve, e.g. the de-digivolution penalty.
+  statMultiplier?: number
 }
 
 export function calculateDigimonStats(
@@ -11,7 +13,7 @@ export function calculateDigimonStats(
   level: number,
   modifiers: GrowthModifiers = {},
 ) {
-  const growth = 1 + (level - 1) * 0.08
+  const growth = (1 + (level - 1) * 0.08) * (modifiers.statMultiplier ?? 1)
 
   return {
     attack: Math.round((baseStats.attack * growth) + (modifiers.attackBonus ?? 0)),

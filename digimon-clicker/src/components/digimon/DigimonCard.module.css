@@ -61,6 +61,17 @@
   margin: 0;
 }
 
+.evolutionOption {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.5rem 0;
+  border-top: 1px solid #e2e8f0;
+}
+
+.evolutionOption:first-of-type {
+  border-top: none;
+}
+
 .actions {
   display: flex;
   flex-wrap: wrap;
@@ -83,4 +94,11 @@
 .buttonSecondary {
   background: #f3f4f6;
   color: #111827;
+}
+
+.button:disabled,
+.buttonSecondary:disabled {
+  background: #e2e8f0;
+  color: #94a3b8;
+  cursor: not-allowed;
 }
