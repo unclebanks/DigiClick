@@ -16,7 +16,6 @@ const digimonList: Digimon[] = [
     level: 1,
     exp: 0,
     expToNextLevel: 100,
-    evolutionRequirements: [],
   },
   {
     id: 'greymon',
@@ -31,7 +30,6 @@ const digimonList: Digimon[] = [
     level: 3,
     exp: 0,
     expToNextLevel: 200,
-    evolutionRequirements: [],
   },
 ]
 

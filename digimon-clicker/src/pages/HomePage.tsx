@@ -2,14 +2,22 @@ import { Sparkles } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useGameStore } from '../store/gameStore'
 import { sampleDigimon } from '../data/digimon'
+import { sampleEvolutions } from '../data/evolutions'
 import { DigimonCard } from '../components/digimon/DigimonCard'
 import { Card } from '../components/common/Card'
 import { Button } from '../components/common/Button'
 import { ProgressBar } from '../components/common/ProgressBar'
 import { StarterSelection } from '../components/party/StarterSelection'
 import { getLevelProgress } from '../utils/game'
-import { getPartyDigimonList } from '../utils/digimonParty'
 import { resolveDigimonProgression } from '../utils/digimonProgression'
+import {
+  canSatisfyEvolutionRequirements,
+  createInitialDigivolutionState,
+  dedigivolveDigimonState,
+  evolveDigimonState,
+  getEvolutionOptions,
+} from '../utils/evolution'
+import type { DigivolutionState } from '../types/game'
 import styles from '../styles/pages.module.css'
 
 export function HomePage() {
@@ -23,21 +31,49 @@ export function HomePage() {
   const selectStarter = useGameStore((state) => state.selectStarter)
   const digimonProgression = useGameStore((state) => state.digimonProgression)
   const gainDigimonExperience = useGameStore((state) => state.gainDigimonExperience)
+  const inventory = useGameStore((state) => state.inventory)
+  const badges = useGameStore((state) => state.badges)
+  const statistics = useGameStore((state) => state.statistics)
   const navigate = useNavigate()
-  const partyMembers = getPartyDigimonList(sampleDigimon, partyDigimon).map((digimon) => ({
-    ...digimon,
-    ...resolveDigimonProgression(digimonProgression[digimon.id]),
-  }))
 
-  const handleEvolve = (digimonId: string) => {
-    const currentFormId = digivolutionStates[digimonId] ?? digimonId
-    const nextFormId = currentFormId === 'agumon' ? 'greymon' : currentFormId
-    setDigivolutionState(digimonId, nextFormId)
+  const partyMembers = partyDigimon
+    .map((baseId) => {
+      const digivolutionState = digivolutionStates[baseId] ?? createInitialDigivolutionState(baseId)
+      const species = sampleDigimon.find((digimon) => digimon.id === digivolutionState.currentFormId)
+        ?? sampleDigimon.find((digimon) => digimon.id === baseId)
+      const progression = resolveDigimonProgression(digimonProgression[baseId])
+
+      return species ? { baseId, digivolutionState, species, progression } : null
+    })
+    .filter((member): member is NonNullable<typeof member> => member !== null)
+
+  const handleEvolve = (baseId: string, digivolutionState: DigivolutionState, toId: string) => {
+    const evolution = sampleEvolutions.find(
+      (entry) => entry.from === digivolutionState.currentFormId && entry.to === toId,
+    )
+    const progression = resolveDigimonProgression(digimonProgression[baseId])
+
+    if (!evolution) {
+      return
+    }
+
+    const satisfied = canSatisfyEvolutionRequirements(evolution.requires, {
+      level: progression.level,
+      inventory,
+      currentAreaId: currentArea,
+      badges,
+    })
+
+    if (!satisfied || currency < evolution.cost) {
+      return
+    }
+
+    addCurrency(-evolution.cost)
+    setDigivolutionState(baseId, evolveDigimonState(digivolutionState, toId))
   }
 
-  const handleDedigivolve = (digimonId: string) => {
-    const currentFormId = digivolutionStates[digimonId] ?? digimonId
-    setDigivolutionState(digimonId, currentFormId === 'greymon' ? 'agumon' : currentFormId)
+  const handleDedigivolve = (baseId: string, digivolutionState: DigivolutionState) => {
+    setDigivolutionState(baseId, dedigivolveDigimonState(digivolutionState))
   }
 
   const handleStarterSelect = (digimonId: string) => {
@@ -77,21 +113,37 @@ export function HomePage() {
             <p>Level: {playerLevel}</p>
             <p>Area: {currentArea}</p>
             <ProgressBar label="Adventure progress" value={getLevelProgress(playerLevel, currency)} />
+            <p className={styles.statRow}>
+              <span>Encountered {statistics.encountered}</span>
+              <span>Defeated {statistics.defeated}</span>
+              <span>Badges {Object.keys(badges).length}</span>
+            </p>
           </Card>
         </section>
       )}
 
       <section className={styles.grid}>
-        {partyMembers.map((digimon) => (
+        {partyMembers.map(({ baseId, digivolutionState, species, progression }) => (
           <DigimonCard
-            key={digimon.id}
-            digimon={digimon}
-            currentFormId={digivolutionStates[digimon.id] ?? digimon.id}
-            onEvolve={handleEvolve}
-            onDedigivolve={handleDedigivolve}
+            key={baseId}
+            digimon={{ ...species, ...progression }}
+            canDedigivolve={digivolutionState.history.length > 1}
+            evolutionOptions={getEvolutionOptions(digivolutionState.currentFormId, sampleEvolutions).map((evolution) => ({
+              evolution,
+              targetName: sampleDigimon.find((digimon) => digimon.id === evolution.to)?.name ?? evolution.to,
+              satisfied: canSatisfyEvolutionRequirements(evolution.requires, {
+                level: progression.level,
+                inventory,
+                currentAreaId: currentArea,
+                badges,
+              }),
+            }))}
+            onEvolve={(toId) => handleEvolve(baseId, digivolutionState, toId)}
+            onDedigivolve={() => handleDedigivolve(baseId, digivolutionState)}
           />
         ))}
       </section>
     </div>
   )
 }
+

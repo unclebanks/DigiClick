@@ -1,32 +1,103 @@
+import type { DigimonAttribute } from '../types/game'
+import { getAttributeMultiplier } from './digimonAttributes'
+
 export interface BattleDrop {
   itemId: string
   chance: number
 }
 
-export interface BattleTurnResult {
-  enemyHp: number
-  defeated: boolean
-  reward: number
+export interface CombatantState {
+  id: string
+  name: string
+  hp: number
+  maxHp: number
+  attack: number
+  defense: number
+  speed: number
+  level: number
+  attribute: DigimonAttribute
+  drops?: BattleDrop[]
+}
+
+export interface AttackOptions {
+  missChance?: number
+  critChance?: number
+  speedModifier?: number
+  rng?: () => number
+}
+
+export interface AttackOutcome {
+  damage: number
+  isCritical: boolean
+  isMiss: boolean
+  attributeMultiplier: number
+  defenderHp: number
+  defenderDefeated: boolean
+}
+
+export interface VictoryRewards {
+  bits: number
+  exp: number
   droppedItemIds: string[]
 }
 
-export function resolveBattleTurn(
-  playerPower: number,
-  enemyHp: number,
-  drops: BattleDrop[] = [],
-  randomFn: () => number = Math.random,
-): BattleTurnResult {
-  const nextHp = Math.max(0, enemyHp - playerPower)
-  const defeated = nextHp === 0
+const BASE_ATTACK_INTERVAL_MS = 2400
+const MIN_ATTACK_INTERVAL_MS = 500
+const DEFAULT_MISS_CHANCE = 0.1
+const DEFAULT_CRIT_CHANCE = 0.2
 
-  const droppedItemIds = defeated
-    ? drops.filter((drop) => randomFn() <= drop.chance).map((drop) => drop.itemId)
-    : []
+// Higher speed (and item/skill modifiers) shrinks the wait between automatic attacks.
+export function getAttackIntervalMs(speed: number, speedModifier = 1): number {
+  const interval = (BASE_ATTACK_INTERVAL_MS - speed * 20) / Math.max(0.1, speedModifier)
+
+  return Math.max(MIN_ATTACK_INTERVAL_MS, Math.round(interval))
+}
+
+export function resolveAttack(
+  attacker: CombatantState,
+  defender: CombatantState,
+  options: AttackOptions = {},
+): AttackOutcome {
+  const { missChance = DEFAULT_MISS_CHANCE, critChance = DEFAULT_CRIT_CHANCE, rng = Math.random } = options
+
+  if (rng() < missChance) {
+    return {
+      damage: 0,
+      isCritical: false,
+      isMiss: true,
+      attributeMultiplier: 1,
+      defenderHp: defender.hp,
+      defenderDefeated: defender.hp <= 0,
+    }
+  }
+
+  const isCritical = rng() < critChance
+  const criticalMultiplier = isCritical ? 1 + attacker.level / 100 : 1
+  const attributeMultiplier = getAttributeMultiplier(attacker.attribute, defender.attribute)
+  const rawDamage = Math.max(1, attacker.attack - defender.defense / 2)
+  const damage = Math.max(1, Math.round(rawDamage * criticalMultiplier * attributeMultiplier))
+  const defenderHp = Math.max(0, defender.hp - damage)
 
   return {
-    enemyHp: nextHp,
-    defeated,
-    reward: defeated ? 40 : 0,
-    droppedItemIds,
+    damage,
+    isCritical,
+    isMiss: false,
+    attributeMultiplier,
+    defenderHp,
+    defenderDefeated: defenderHp === 0,
   }
 }
+
+export function resolveVictoryRewards(
+  defeatedEnemy: CombatantState,
+  rng: () => number = Math.random,
+): VictoryRewards {
+  const bits = Math.floor(defeatedEnemy.level * 4) + 5
+  const exp = Math.round(defeatedEnemy.level * 8 + defeatedEnemy.maxHp / 4)
+  const droppedItemIds = (defeatedEnemy.drops ?? [])
+    .filter((drop) => rng() <= drop.chance)
+    .map((drop) => drop.itemId)
+
+  return { bits, exp, droppedItemIds }
+}
+

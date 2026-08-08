@@ -36,4 +36,11 @@ export const sampleItems: Item[] = [
     price: 95,
     effect: 'Unlocks hope-based evolution',
   },
+  {
+    id: 'data-disk',
+    name: 'Data Disk',
+    description: 'A dense disk of compressed digital code.',
+    price: 70,
+    effect: 'Unlocks data-based evolution',
+  },
 ]

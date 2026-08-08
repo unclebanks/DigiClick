@@ -44,11 +44,25 @@
   align-items: center;
 }
 
-.battleEnemy {
+.battleRoster {
+  display: grid;
+  gap: 1rem;
+}
+
+.battleCombatant {
   padding: 1rem;
   border-radius: 1rem;
   background: #f8fafc;
   border: 1px solid #e2e8f0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.statRow {
+  display: flex;
+  gap: 1rem;
+  font-weight: 600;
+  color: #334155;
 }
 
 .battleControls {
@@ -56,9 +70,25 @@
   gap: 0.7rem;
 }
 
+.routeList {
+  display: grid;
+  gap: 0.75rem;
+}
+
 .battleLog {
   color: #475569;
   line-height: 1.5;
+}
+
+.logList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+  color: #475569;
+  font-size: 0.9rem;
+  line-height: 1.4;
 }
 
 .cardListItem {
@@ -68,6 +98,29 @@
   border-radius: 1rem;
   background: #f8fafc;
   border: 1px solid #e2e8f0;
+}
+
+.dexEmoji {
+  font-size: 2rem;
+}
+
+.dexStatus {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-weight: 700;
+  color: #7c3aed;
+  margin: 0;
+}
+
+.dexEntryUnseen {
+  opacity: 0.55;
+}
+
+.dexText {
+  color: #64748b;
+  font-size: 0.9rem;
+  margin: 0;
 }
 
 @media (max-width: 768px) {

@@ -66,24 +66,23 @@ Important details:
 Implemented in:
 - src/pages/BattlePage.tsx
 - src/utils/combat.ts
+- src/utils/digimonAttributes.ts
+- src/utils/digimonStats.ts
+- src/utils/scanning.ts
 - src/utils/battleRoutes.ts
 - src/data/areas.ts
 
 Current behavior:
-- The battle page lets the player choose from several battle routes.
-- Each route has a required player level and a required party size.
-- The enemy HP starts at 24 and is reduced by the player’s attack power.
-- Defeating the enemy awards Bits and resets the enemy HP.
-- The battle UI shows the selected route, encounter, enemy HP, and a battle log.
+- Combat is real-time: the active party Digimon and the wild Digimon each attack automatically on their own speed-derived interval (`getAttackIntervalMs`), rather than waiting for a manual click.
+- Each attack can miss, land normally, or crit (`resolveAttack` in src/utils/combat.ts), and damage is scaled by the Vaccine/Data/Virus/Free attribute triangle (src/utils/digimonAttributes.ts).
+- Combat stats (attack/defense/speed/hp) are derived from level, digivolution penalty, and any scan-recruit stat bonus via `calculateDigimonStats`.
+- If the active party Digimon faints, the next living party member is swapped in automatically; if the whole party faints, battling pauses until the player clicks "Regroup".
+- Defeating a wild Digimon fills its per-species DigiDex "scan" meter by an amount based on its level (`getScanGainFromDefeat` in src/utils/scanning.ts) instead of a catch-with-balls mechanic or damage-based gain. At 100% the Digimon can be recruited into the Digital Space; at 200% there's a chance of a bonus-stat recruit.
+- Defeating an enemy grants Bits and EXP (`resolveVictoryRewards`), rolls item drops, unlocks a `first-victory` badge and a per-route `cleared-<routeId>` badge, and records statistics in the player store.
 
 Important details:
-- Attack power is currently calculated as 4 + playerLevel.
-- The battle system is highly simplified and does not yet include:
-  - enemy actions
-  - Digimon-specific combat stats
-  - turn order
-  - party-based battle commands
-- Route unlocks are based on player level only; party size is not enforced by the current logic beyond route metadata.
+- Route unlocks are still based on player level only; party size is not enforced beyond route metadata.
+- Only one wild Digimon (the route's first encounter id) is fought at a time; multi-encounter rotation is not implemented yet.
 
 ## 6. Digimon progression and experience
 Implemented in:
@@ -102,21 +101,23 @@ Important details:
 - Progression is stored per Digimon ID in the game state.
 - This is a lightweight progression system rather than a full evolution tree engine.
 
-## 7. Evolution UI and digivolution state
+## 7. Evolution system
 Implemented in:
+- src/utils/evolution.ts
+- src/data/evolutions.ts
 - src/pages/HomePage.tsx
 - src/store/gameStore.ts
 - src/components/digimon/DigimonCard.tsx
 
 Current behavior:
-- Digimon cards show a Digivolve and De-Digivolve button.
-- The current form is tracked in the Zustand store using a digivolutionStates map.
-- The existing implementation supports a simple Agumon -> Greymon toggle in the home page handler.
+- Each Digimon's digivolution state (`DigivolutionState`) tracks its current form id, full history, and a de-digivolve penalty multiplier, stored per party slot in `digivolutionStates`.
+- `sampleEvolutions` (src/data/evolutions.ts) defines evolution edges (`from` -> `to`) with a Bits `cost` and a typed `requires` list, using builder helpers (`levelReq`, `itemReq`, `areaReq`, `badgeReq`, `timeReq`, `statReq`, `multiReq`).
+- `getEvolutionOptions` looks up every branch available from a Digimon's current form; `canSatisfyEvolutionRequirements` checks them against the player's level, inventory, current area, and badges.
+- DigimonCard lists every available evolution branch with its requirement text, disabling the button until requirements and cost are met; De-Digivolve is disabled once a Digimon is back at its original form.
 
 Important details:
-- Evolution is currently a UI-state placeholder rather than a fully data-driven evolution engine.
-- The requirements shown on Digimon cards are still placeholder text.
-- There is no real condition-checking for evolution costs or requirements yet.
+- Evolution costs are deducted from currency in `HomePage`'s evolve handler; requirement data lives entirely in src/data/evolutions.ts rather than on the Digimon entries themselves.
+- Time-of-day and stat-threshold requirement types exist in the type system and are supported by `canSatisfyEvolutionRequirements`, even though no sample data uses them yet.
 
 ## 8. Sample Digimon data and content foundation
 Implemented in:
@@ -126,9 +127,9 @@ Implemented in:
 - src/data/evolutions.ts
 
 Current behavior:
-- The project includes a sample set of Digimon entries ranging from Fresh to Mega stages.
+- The project includes a sample set of Digimon entries ranging from Fresh to Mega stages, each with a Vaccine/Data/Virus attribute (`DigimonAttribute`).
 - Battle routes are defined with regions, descriptions, required levels, and encounter IDs.
-- Item and evolution data files exist as content scaffolding.
+- Item and evolution data files exist as content scaffolding; evolutions now carry typed requirements instead of free-text templates.
 
 Important details:
 - The data is intentionally sample-based and designed to be expanded later.
@@ -150,17 +151,47 @@ Important details:
 - Components are simple and composable.
 - The current UI is more of a foundation layer than a polished game interface.
 
-## 10. Current limitations to keep in mind
+## 10. Player statistics and badges
+Implemented in:
+- src/types/game.ts (`PlayerStatistics`, `createInitialPlayerStatistics`)
+- src/store/gameStore.ts
+- src/pages/BattlePage.tsx
+- src/pages/HomePage.tsx
+
+Current behavior:
+- The player store tracks `statistics` (encountered, defeated, fled, criticalHits, misses, totalDamageDealt/Taken, bitsEarned, totalExpEarned) and a `badges` record.
+- `recordBattleEncounter`, `recordCombatEvent`, and `recordVictory` update these counters from the battle loop; `unlockBadge` marks a badge id as earned (e.g. `first-victory`, `cleared-<routeId>`).
+- Badges can gate evolution requirements via `badgeReq`.
+- HomePage's "Adventure Status" card surfaces encountered/defeated counts and badge count.
+
+Important details:
+- There is no dedicated statistics/achievements page yet; the numbers are only surfaced inline on the home page.
+
+## 11. DigiDex
+Implemented in:
+- src/pages/DigiDexPage.tsx
+- src/utils/digidex.ts
+- src/utils/scanning.ts
+
+Current behavior:
+- The DigiDex lists every species in `sampleDigimon` with a status of `unseen`, `scanned`, `ready`, or `owned` (`getDigidexStatus`).
+- A species counts as "seen" once it has been encountered in battle (its id gets seeded into `scanProgress`); `unseen` entries are redacted (name/description hidden, generic icon).
+- `getOwnedDigimonIds` treats party members, Digital Space residents, and every form in their digivolution history as owned, so evolved/de-evolved forms show up correctly.
+- Each non-unseen entry shows its scan percentage via a progress bar, and calls out when a species has reached the 200% bonus-stat tier.
+
+Important details:
+- The DigiDex is read-only; recruiting still happens from the Battle page's Recruit button once a species reaches 100% scanned.
+
+## 12. Current limitations to keep in mind
 The project is a foundation, not a complete game. The main gaps are:
 - no save/load system
-- no real combat AI or enemy actions
 - no shop implementation
-- no DigiDex progression tracking
 - no settings persistence
-- no full evolution rules engine
 - no persistent party state across reloads
+- only one wild Digimon per route is fought at a time (no multi-encounter rotation)
+- recruiting via the scan meter only supports species not already owned; there's no release/trade flow yet
 
-## 11. Best mental model for future work
+## 13. Best mental model for future work
 When adding a new feature, think in terms of three layers:
 1. UI layer: page or component changes
 2. State layer: Zustand store actions and state shape changes

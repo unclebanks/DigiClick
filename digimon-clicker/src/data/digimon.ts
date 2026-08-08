@@ -14,7 +14,6 @@ export const sampleDigimon: Digimon[] = [
     level: 1,
     exp: 0,
     expToNextLevel: 100,
-    evolutionRequirements: [{ notes: 'Template: training requirement placeholder.' }],
   },
   {
     id: 'pabumon',
@@ -29,7 +28,6 @@ export const sampleDigimon: Digimon[] = [
     level: 1,
     exp: 0,
     expToNextLevel: 100,
-    evolutionRequirements: [{ notes: 'Template: training requirement placeholder.' }],
   },
   {
     id: 'koromon',
@@ -44,7 +42,6 @@ export const sampleDigimon: Digimon[] = [
     level: 1,
     exp: 0,
     expToNextLevel: 100,
-    evolutionRequirements: [{ minLevel: 2, notes: 'Template: requires basic training.' }],
   },
   {
     id: 'motimon',
@@ -59,7 +56,6 @@ export const sampleDigimon: Digimon[] = [
     level: 1,
     exp: 0,
     expToNextLevel: 100,
-    evolutionRequirements: [{ minLevel: 2, notes: 'Template: requires basic training.' }],
   },
   {
     id: 'agumon',
@@ -74,7 +70,6 @@ export const sampleDigimon: Digimon[] = [
     level: 1,
     exp: 0,
     expToNextLevel: 100,
-    evolutionRequirements: [{ minLevel: 3, notes: 'Template: requires a rookie item placeholder.' }],
     drops: [{ itemId: 'healing-herb', chance: 0.2 }],
   },
   {
@@ -90,7 +85,6 @@ export const sampleDigimon: Digimon[] = [
     level: 1,
     exp: 0,
     expToNextLevel: 100,
-    evolutionRequirements: [{ minLevel: 5, notes: 'Template: battle milestone placeholder.' }],
   },
   {
     id: 'metalgreymon',
@@ -105,7 +99,6 @@ export const sampleDigimon: Digimon[] = [
     level: 1,
     exp: 0,
     expToNextLevel: 100,
-    evolutionRequirements: [{ minLevel: 8, notes: 'Template: advanced gear placeholder.' }],
   },
   {
     id: 'warGreymon',
@@ -120,7 +113,6 @@ export const sampleDigimon: Digimon[] = [
     level: 1,
     exp: 0,
     expToNextLevel: 100,
-    evolutionRequirements: [{ minLevel: 10, notes: 'Template: mega trial placeholder.' }],
   },
   {
     id: 'gabumon',
@@ -135,7 +127,6 @@ export const sampleDigimon: Digimon[] = [
     level: 3,
     exp: 70,
     expToNextLevel: 140,
-    evolutionRequirements: [{ minLevel: 3, notes: 'Template: support item placeholder.' }],
   },
   {
     id: 'garurumon',
@@ -150,7 +141,6 @@ export const sampleDigimon: Digimon[] = [
     level: 5,
     exp: 110,
     expToNextLevel: 180,
-    evolutionRequirements: [{ minLevel: 5, notes: 'Template: battle support placeholder.' }],
   },
   {
     id: 'weregarurumon',
@@ -165,7 +155,6 @@ export const sampleDigimon: Digimon[] = [
     level: 8,
     exp: 170,
     expToNextLevel: 220,
-    evolutionRequirements: [{ minLevel: 8, notes: 'Template: storm relic placeholder.' }],
   },
   {
     id: 'anzhelomon',
@@ -180,7 +169,6 @@ export const sampleDigimon: Digimon[] = [
     level: 10,
     exp: 230,
     expToNextLevel: 260,
-    evolutionRequirements: [{ minLevel: 10, notes: 'Template: celestial trial placeholder.' }],
   },
   {
     id: 'biyomon',
@@ -195,7 +183,6 @@ export const sampleDigimon: Digimon[] = [
     level: 3,
     exp: 65,
     expToNextLevel: 140,
-    evolutionRequirements: [{ minLevel: 3, notes: 'Template: sky training placeholder.' }],
   },
   {
     id: 'velgemon',
@@ -210,7 +197,6 @@ export const sampleDigimon: Digimon[] = [
     level: 5,
     exp: 100,
     expToNextLevel: 180,
-    evolutionRequirements: [{ minLevel: 5, notes: 'Template: sky item placeholder.' }],
   },
   {
     id: 'veemon',
@@ -225,7 +211,6 @@ export const sampleDigimon: Digimon[] = [
     level: 4,
     exp: 85,
     expToNextLevel: 160,
-    evolutionRequirements: [{ minLevel: 4, requiredItemId: 'egg-of-courage', notes: 'Requires level 4 and the Egg of Courage.' }],
   },
   {
     id: 'otamamon',
@@ -240,7 +225,6 @@ export const sampleDigimon: Digimon[] = [
     level: 3,
     exp: 60,
     expToNextLevel: 140,
-    evolutionRequirements: [{ minLevel: 3, requiredItemId: 'egg-of-friendship', notes: 'Requires level 3 and the Egg of Friendship.' }],
   },
   {
     id: 'piyomon',
@@ -255,7 +239,6 @@ export const sampleDigimon: Digimon[] = [
     level: 4,
     exp: 70,
     expToNextLevel: 150,
-    evolutionRequirements: [{ minLevel: 4, requiredItemId: 'egg-of-hope', notes: 'Requires level 4 and the Egg of Hope.' }],
   },
   {
     id: 'rosemon',
@@ -270,7 +253,6 @@ export const sampleDigimon: Digimon[] = [
     level: 10,
     exp: 220,
     expToNextLevel: 260,
-    evolutionRequirements: [{ minLevel: 10, notes: 'Template: flower trial placeholder.' }],
   },
   {
     id: 'gatomon',
@@ -285,7 +267,6 @@ export const sampleDigimon: Digimon[] = [
     level: 3,
     exp: 60,
     expToNextLevel: 140,
-    evolutionRequirements: [{ minLevel: 3, notes: 'Template: charm item placeholder.' }],
   },
   {
     id: 'angewomon',
@@ -300,7 +281,6 @@ export const sampleDigimon: Digimon[] = [
     level: 5,
     exp: 95,
     expToNextLevel: 180,
-    evolutionRequirements: [{ minLevel: 5, notes: 'Template: healing focus placeholder.' }],
   },
   {
     id: 'magnaangemon',
@@ -315,7 +295,6 @@ export const sampleDigimon: Digimon[] = [
     level: 10,
     exp: 210,
     expToNextLevel: 260,
-    evolutionRequirements: [{ minLevel: 10, notes: 'Template: holy trial placeholder.' }],
   },
   {
     id: 'patamon',
@@ -330,7 +309,6 @@ export const sampleDigimon: Digimon[] = [
     level: 3,
     exp: 55,
     expToNextLevel: 140,
-    evolutionRequirements: [{ minLevel: 3, notes: 'Template: support partner placeholder.' }],
   },
   {
     id: 'gomamon',
@@ -345,7 +323,6 @@ export const sampleDigimon: Digimon[] = [
     level: 5,
     exp: 90,
     expToNextLevel: 180,
-    evolutionRequirements: [{ minLevel: 5, notes: 'Template: water item placeholder.' }],
   },
   {
     id: 'icerimon',
@@ -360,7 +337,6 @@ export const sampleDigimon: Digimon[] = [
     level: 8,
     exp: 165,
     expToNextLevel: 220,
-    evolutionRequirements: [{ minLevel: 8, notes: 'Template: frost relic placeholder.' }],
   },
   {
     id: 'owgaramon',
@@ -375,6 +351,5 @@ export const sampleDigimon: Digimon[] = [
     level: 10,
     exp: 250,
     expToNextLevel: 280,
-    evolutionRequirements: [{ minLevel: 10, notes: 'Template: fusion trial placeholder.' }],
   },
 ]

@@ -1,24 +1,30 @@
-import type { Digimon } from '../../types/game'
+import type { Digimon, Evolution } from '../../types/game'
 import { formatEvolutionRequirements } from '../../utils/evolution'
 import styles from './DigimonCard.module.css'
 
+interface EvolutionOption {
+  evolution: Evolution
+  targetName: string
+  satisfied: boolean
+}
+
 interface DigimonCardProps {
   digimon: Digimon
-  currentFormId?: string
-  onEvolve?: (digimonId: string) => void
-  onDedigivolve?: (digimonId: string) => void
+  evolutionOptions?: EvolutionOption[]
+  canDedigivolve?: boolean
+  onEvolve?: (toId: string) => void
+  onDedigivolve?: () => void
 }
 
 export function DigimonCard({
   digimon,
-  currentFormId,
+  evolutionOptions = [],
+  canDedigivolve = false,
   onEvolve,
   onDedigivolve,
 }: DigimonCardProps) {
-  const isActive = currentFormId === digimon.id
-
   return (
-    <article className={`${styles.card} ${isActive ? styles.active : ''}`}>
+    <article className={styles.card}>
       <div className={styles.emoji}>{digimon.emoji}</div>
       <div>
         <h3>{digimon.name}</h3>
@@ -27,7 +33,7 @@ export function DigimonCard({
       <p className={styles.description}>{digimon.description}</p>
       <p className={styles.power}>Power {digimon.basePower}</p>
       <p className={styles.requirementText}>Personality: {digimon.personality}</p>
-      <p className={styles.requirementText}>Type: {digimon.type}</p>
+      <p className={styles.requirementText}>Attribute: {digimon.type}</p>
       <div className={styles.statsGrid}>
         <span>Lv. {digimon.level}</span>
         <span>ATK {digimon.baseStats.attack}</span>
@@ -37,19 +43,38 @@ export function DigimonCard({
       </div>
       <p className={styles.exp}>EXP {digimon.exp}/{digimon.expToNextLevel}</p>
       <div className={styles.requirements}>
-        <p className={styles.label}>Requirements</p>
-        <p className={styles.requirementText}>
-          {formatEvolutionRequirements(digimon.evolutionRequirements)}
-        </p>
+        <p className={styles.label}>Evolution options</p>
+        {evolutionOptions.length === 0 ? (
+          <p className={styles.requirementText}>No further evolutions available yet.</p>
+        ) : (
+          evolutionOptions.map(({ evolution, targetName, satisfied }) => (
+            <div key={evolution.id} className={styles.evolutionOption}>
+              <p className={styles.requirementText}>
+                {targetName} ({evolution.cost} Bits) - {formatEvolutionRequirements(evolution.requires)}
+              </p>
+              <button
+                type="button"
+                className={styles.button}
+                disabled={!satisfied}
+                onClick={() => onEvolve?.(evolution.to)}
+              >
+                Digivolve to {targetName}
+              </button>
+            </div>
+          ))
+        )}
       </div>
       <div className={styles.actions}>
-        <button type="button" className={styles.button} onClick={() => onEvolve?.(digimon.id)}>
-          Digivolve
-        </button>
-        <button type="button" className={styles.buttonSecondary} onClick={() => onDedigivolve?.(digimon.id)}>
+        <button
+          type="button"
+          className={styles.buttonSecondary}
+          disabled={!canDedigivolve}
+          onClick={() => onDedigivolve?.()}
+        >
           De-Digivolve
         </button>
       </div>
     </article>
   )
 }
+
