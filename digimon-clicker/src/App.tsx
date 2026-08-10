@@ -45,10 +45,6 @@ function App() {
             <Route path="/settings" element={<SettingsPage />} />
           </Routes>
         </main>
-
-        <footer className="app-footer">
-          <p>Frontend refresher project with a simple architecture for future Digimon game systems.</p>
-        </footer>
       </div>
     </HashRouter>
   )

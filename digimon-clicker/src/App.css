@@ -55,14 +55,6 @@
   gap: 1rem;
 }
 
-.app-footer {
-  padding: 0.8rem 1rem;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 1rem;
-  color: #475569;
-}
-
 @media (max-width: 768px) {
   .app-header {
     flex-direction: column;
