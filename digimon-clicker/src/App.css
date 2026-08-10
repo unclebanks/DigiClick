@@ -14,8 +14,8 @@
   gap: 1rem;
   padding: 1.25rem;
   border-radius: 1.25rem;
-  background: linear-gradient(135deg, #111827, #1f2937);
-  color: white;
+  background: linear-gradient(135deg, var(--color-header-gradient-start), var(--color-header-gradient-end));
+  color: var(--color-header-text);
 }
 
 .brand {
@@ -23,12 +23,12 @@
   font-size: 0.9rem;
   text-transform: uppercase;
   letter-spacing: 0.2em;
-  color: #c4b5fd;
+  color: var(--color-brand-accent);
 }
 
 .app-header h1 {
   margin: 0;
-  color: white;
+  color: var(--color-header-text);
   font-size: 1.3rem;
 }
 
@@ -39,15 +39,15 @@
 }
 
 .nav-link {
-  color: #e5e7eb;
+  color: var(--color-nav-text);
   text-decoration: none;
   padding: 0.55rem 0.8rem;
   border-radius: 999px;
 }
 
 .nav-link.active {
-  background: rgba(255, 255, 255, 0.15);
-  color: white;
+  background: var(--color-nav-active-bg);
+  color: var(--color-nav-active-text);
 }
 
 .app-main {
@@ -55,8 +55,32 @@
   gap: 1rem;
 }
 
+/* Foundation for the future desktop/mobile split (see src/utils/platform.ts) - mobile support
+   isn't built yet, so this is just an informational banner, not a functional restriction. */
+.desktop-notice {
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  background: var(--color-accent-soft-bg);
+  border: 1px solid var(--color-border-strong);
+  color: var(--color-text-strong);
+  font-size: 0.9rem;
+}
+
+/* Utility for content that should be hidden until mobile support lands - unused today, ready for
+   the first feature that explicitly needs to be desktop-only. */
+.desktop-only {
+  display: revert;
+}
+
+@media (max-width: 767px) {
+  .desktop-only {
+    display: none;
+  }
+}
+
 @media (max-width: 768px) {
   .app-header {
     flex-direction: column;
   }
 }
+

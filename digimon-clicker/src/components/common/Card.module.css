@@ -1,9 +1,9 @@
 .card {
-  background: white;
-  border: 1px solid #e5e7eb;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 1rem;
   padding: 1.2rem;
-  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
+  box-shadow: var(--shadow-card);
 }
 
 .card h2 {

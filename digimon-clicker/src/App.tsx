@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { HashRouter, NavLink, Route, Routes } from 'react-router-dom'
 import { HomePage } from './pages/HomePage'
 import { BattlePage } from './pages/BattlePage'
@@ -5,6 +6,8 @@ import { DigiDexPage } from './pages/DigiDexPage'
 import { PartyPage } from './pages/PartyPage'
 import { ShopPage } from './pages/ShopPage'
 import { SettingsPage } from './pages/SettingsPage'
+import { useGameStore } from './store/gameStore'
+import { usePlatformTarget } from './utils/platform'
 import './App.css'
 
 const links = [
@@ -17,10 +20,24 @@ const links = [
 ]
 
 function App() {
+  const theme = useGameStore((state) => state.theme)
+  const platformTarget = usePlatformTarget()
+
+  // The chosen theme lives on <html> (via data-theme) rather than a wrapper element so it applies
+  // to everything, including anything portaled outside #root - see index.css's :root[data-theme] rules.
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme
+  }, [theme])
+
   return (
     <HashRouter>
       {/* Keep page-level composition lightweight so each route stays focused on its own domain. */}
-      <div className="app-shell">
+      <div className="app-shell" data-platform={platformTarget}>
+        {platformTarget === 'mobile' && (
+          <p className="desktop-notice" role="status">
+            DigiClick is currently optimized for desktop browsers - mobile support is planned for a future update.
+          </p>
+        )}
         <header className="app-header">
           <div>
             <p className="brand">DigiClick</p>

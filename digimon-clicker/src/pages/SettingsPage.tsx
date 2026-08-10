@@ -3,9 +3,18 @@ import { Card } from '../components/common/Card'
 import { Button } from '../components/common/Button'
 import { useGameStore } from '../store/gameStore'
 import { deleteSaveGame, hasSaveGame } from '../utils/saveGame'
+import type { ThemeName } from '../types/game'
 import styles from '../styles/pages.module.css'
 
+const THEME_OPTIONS: Array<{ value: ThemeName, label: string }> = [
+  { value: 'light', label: 'Light' },
+  { value: 'dark', label: 'Dark' },
+  { value: 'dark-high-contrast', label: 'Dark (High Contrast)' },
+]
+
 export function SettingsPage() {
+  const theme = useGameStore((state) => state.theme)
+  const setTheme = useGameStore((state) => state.setTheme)
   const saveToStorage = useGameStore((state) => state.saveToStorage)
   const importSaveFile = useGameStore((state) => state.importSaveFile)
   const exportSaveFile = useGameStore((state) => state.exportSaveFile)
@@ -78,8 +87,23 @@ export function SettingsPage() {
 
   return (
     <div className={styles.page}>
+      <Card title="Themes">
+        <p>Choose a color theme for the whole app. Your choice is saved with your game.</p>
+        <div className={styles.actions} role="radiogroup" aria-label="Theme">
+          {THEME_OPTIONS.map((option) => (
+            <Button
+              key={option.value}
+              variant={theme === option.value ? 'primary' : 'secondary'}
+              onClick={() => setTheme(option.value)}
+            >
+              {option.label}
+              {theme === option.value ? ' ✓' : ''}
+            </Button>
+          ))}
+        </div>
+      </Card>
       <Card title="Settings">
-        <p>Placeholder for sound and display options.</p>
+        <p>Placeholder for sound options.</p>
       </Card>
       <Card title="Save Data">
         <p>

@@ -230,7 +230,30 @@ Current behavior:
 Important details:
 - This is a first pass, not the final shop UX - no confirmation dialogs, categories/tabs beyond the three data-source sections, or item detail view.
 
-## 15. Best mental model for future work
+## 15. Themes
+Implemented in:
+- src/index.css
+- src/App.css / src/App.tsx
+- src/pages/SettingsPage.tsx
+- src/store/gameStore.ts / src/utils/saveGame.ts / src/types/game.ts (`ThemeName`, `PlayerState.theme`)
+
+Current behavior:
+- Three selectable themes: `light` (default), `dark`, and `dark-high-contrast` (a maximum-contrast black/white/yellow variant for accessibility). Chosen via three buttons in Settings > Themes, backed by the `theme` field on `PlayerState` (persisted through save/load like any other player state, sanitized/defaulted by `sanitizePlayerState` if missing or invalid).
+- Every color used across the app's CSS (App.css, pages.module.css, and every component's `.module.css`) is a `var(--color-*)`/`var(--shadow-card)` custom property rather than a literal hex value - the actual palettes live in `index.css` under `:root` (light, the fallback), `:root[data-theme='dark']`, and `:root[data-theme='dark-high-contrast']`.
+- `App.tsx` mirrors the store's `theme` onto `document.documentElement.dataset.theme` in a `useEffect`, so the whole document (not just `#root`) responds to the active theme.
+- Adding a new themed color anywhere in the app means adding a token to all three `:root` blocks in index.css and referencing `var(--token-name)` in the component's CSS - never a literal color.
+
+## 16. Desktop/mobile platform foundation
+Implemented in:
+- src/utils/platform.ts
+
+Current behavior:
+- This is foundation only - mobile support itself is not implemented yet, this just gives future work a single shared way to know which target it's rendering for.
+- `getPlatformTarget(width)` classifies a viewport width as `'desktop'` or `'mobile'` against `MOBILE_BREAKPOINT_PX` (768px); `usePlatformTarget()` is the React hook wrapper (tracks window resize, defaults to `'desktop'` outside a browser environment).
+- `App.tsx` uses the hook to (a) put `data-platform="desktop"|"mobile"` on the `.app-shell` root element for future CSS targeting, and (b) show a non-blocking `.desktop-notice` banner ("DigiClick is currently optimized for desktop browsers...") when the viewport is classified as mobile. Nothing is actually hidden or disabled for mobile yet.
+- App.css also has an unused-so-far `.desktop-only` utility class (`display: none` under `max-width: 767px`) ready for the first feature that needs to be explicitly desktop-only ahead of real mobile support landing.
+
+## 17. Best mental model for future work
 When adding a new feature, think in terms of three layers:
 1. UI layer: page or component changes
 2. State layer: Zustand store actions and state shape changes

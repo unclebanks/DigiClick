@@ -180,6 +180,10 @@ export function createInitialPlayerStatistics(): PlayerStatistics {
   }
 }
 
+// Selectable UI color themes (Settings page). 'dark-high-contrast' is a maximum-contrast variant
+// of dark, not a fourth independent palette - see index.css's :root[data-theme] overrides.
+export type ThemeName = 'light' | 'dark' | 'dark-high-contrast'
+
 export interface PlayerState {
   currency: number
   playerLevel: number
@@ -195,4 +199,5 @@ export interface PlayerState {
   // Scan percentage per Digimon species id, 0-200. 100 unlocks recruiting, 200 gives a bonus-stat chance.
   scanProgress: Record<string, number>
   digimonBonuses: Record<string, DigimonStatBonus>
+  theme: ThemeName
 }

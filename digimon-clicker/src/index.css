@@ -2,12 +2,144 @@
   font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  color: #0f172a;
-  background: #f8fafc;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* Theme tokens - "light" values (default, also the fallback if data-theme is unset). Every
+     color used anywhere in the app should reference one of these variables rather than a literal
+     hex value, so the three Settings > Themes options (see SettingsPage.tsx) stay exhaustive. */
+  --color-bg: #f8fafc;
+  --color-bg-gradient-start: #f8fafc;
+  --color-bg-gradient-end: #eef2ff;
+  --color-surface: #ffffff;
+  --color-surface-alt: #f8fafc;
+  --color-border: #e2e8f0;
+  --color-border-strong: #ddd6fe;
+  --color-text: #0f172a;
+  --color-text-strong: #334155;
+  --color-text-muted: #475569;
+  --color-text-subtle: #64748b;
+  --color-text-faint: #94a3b8;
+  --color-accent: #7c3aed;
+  --color-accent-strong: #2563eb;
+  --color-accent-soft-bg: #f5f3ff;
+  --color-focus-ring: rgba(124, 58, 237, 0.2);
+  --shadow-card: 0 10px 25px rgba(15, 23, 42, 0.06);
+
+  --color-header-gradient-start: #111827;
+  --color-header-gradient-end: #1f2937;
+  --color-header-text: #ffffff;
+  --color-brand-accent: #c4b5fd;
+  --color-nav-text: #e5e7eb;
+  --color-nav-active-bg: rgba(255, 255, 255, 0.15);
+  --color-nav-active-text: #ffffff;
+
+  --color-button-primary-start: #7c3aed;
+  --color-button-primary-end: #2563eb;
+  --color-button-primary-text: #ffffff;
+  --color-button-secondary-bg: #f3f4f6;
+  --color-button-secondary-text: #1f2937;
+  --color-button-secondary-border: transparent;
+  --color-disabled-bg: #e2e8f0;
+  --color-disabled-text: #94a3b8;
+
+  --color-progress-fill-start: #8b5cf6;
+  --color-progress-fill-end: #3b82f6;
+  --color-progress-overflow-start: #22c55e;
+  --color-progress-overflow-end: #16a34a;
+
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+
+/* Dark theme - a standard dark palette, not aiming for maximum contrast (see dark-high-contrast
+   below for that). */
+:root[data-theme='dark'] {
+  --color-bg: #0f172a;
+  --color-bg-gradient-start: #0b1120;
+  --color-bg-gradient-end: #1e1b4b;
+  --color-surface: #1e293b;
+  --color-surface-alt: #172033;
+  --color-border: #334155;
+  --color-border-strong: #6d28d9;
+  --color-text: #f1f5f9;
+  --color-text-strong: #e2e8f0;
+  --color-text-muted: #cbd5e1;
+  --color-text-subtle: #94a3b8;
+  --color-text-faint: #64748b;
+  --color-accent: #a78bfa;
+  --color-accent-strong: #60a5fa;
+  --color-accent-soft-bg: #2e1065;
+  --color-focus-ring: rgba(167, 139, 250, 0.35);
+  --shadow-card: 0 10px 25px rgba(0, 0, 0, 0.45);
+
+  --color-header-gradient-start: #020617;
+  --color-header-gradient-end: #111827;
+  --color-header-text: #f8fafc;
+  --color-brand-accent: #c4b5fd;
+  --color-nav-text: #cbd5e1;
+  --color-nav-active-bg: rgba(255, 255, 255, 0.12);
+  --color-nav-active-text: #ffffff;
+
+  --color-button-primary-start: #7c3aed;
+  --color-button-primary-end: #2563eb;
+  --color-button-primary-text: #ffffff;
+  --color-button-secondary-bg: #334155;
+  --color-button-secondary-text: #e2e8f0;
+  --color-button-secondary-border: transparent;
+  --color-disabled-bg: #334155;
+  --color-disabled-text: #64748b;
+
+  --color-progress-fill-start: #8b5cf6;
+  --color-progress-fill-end: #3b82f6;
+  --color-progress-overflow-start: #22c55e;
+  --color-progress-overflow-end: #16a34a;
+}
+
+/* Dark, high-contrast theme - a maximum-contrast variant of dark for accessibility (near-pure
+   black/white with a saturated yellow/cyan accent, visible borders on everything). */
+:root[data-theme='dark-high-contrast'] {
+  --color-bg: #000000;
+  --color-bg-gradient-start: #000000;
+  --color-bg-gradient-end: #000000;
+  --color-surface: #000000;
+  --color-surface-alt: #0d0d0d;
+  --color-border: #ffffff;
+  --color-border-strong: #ffff00;
+  --color-text: #ffffff;
+  --color-text-strong: #ffffff;
+  --color-text-muted: #e5e5e5;
+  --color-text-subtle: #e5e5e5;
+  --color-text-faint: #cccccc;
+  --color-accent: #ffff00;
+  --color-accent-strong: #00e5ff;
+  --color-accent-soft-bg: #1a1a00;
+  --color-focus-ring: rgba(255, 255, 0, 0.6);
+  --shadow-card: 0 0 0 1px #ffffff;
+
+  --color-header-gradient-start: #000000;
+  --color-header-gradient-end: #000000;
+  --color-header-text: #ffffff;
+  --color-brand-accent: #ffff00;
+  --color-nav-text: #ffffff;
+  --color-nav-active-bg: #ffff00;
+  --color-nav-active-text: #000000;
+
+  --color-button-primary-start: #ffff00;
+  --color-button-primary-end: #ffd400;
+  --color-button-primary-text: #000000;
+  --color-button-secondary-bg: #000000;
+  --color-button-secondary-text: #ffffff;
+  --color-button-secondary-border: #ffffff;
+  --color-disabled-bg: #1a1a1a;
+  --color-disabled-text: #888888;
+
+  --color-progress-fill-start: #ffff00;
+  --color-progress-fill-end: #00e5ff;
+  --color-progress-overflow-start: #00ff00;
+  --color-progress-overflow-end: #00cc00;
 }
 
 * {
@@ -18,7 +150,8 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+  color: var(--color-text);
+  background: linear-gradient(180deg, var(--color-bg-gradient-start) 0%, var(--color-bg-gradient-end) 100%);
 }
 
 #root {
@@ -33,3 +166,4 @@ h3,
 p {
   margin: 0;
 }
+

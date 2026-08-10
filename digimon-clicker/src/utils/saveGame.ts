@@ -6,6 +6,7 @@ import type {
   DigivolutionState,
   PlayerState,
   PlayerStatistics,
+  ThemeName,
 } from '../types/game'
 import { createInitialPlayerStatistics } from '../types/game'
 import { createInitialDigivolutionState } from './evolution'
@@ -66,6 +67,7 @@ export function createDefaultPlayerState(): PlayerState {
     badges: {},
     scanProgress: {},
     digimonBonuses: {},
+    theme: 'light',
   }
 }
 
@@ -75,6 +77,12 @@ function sanitizeNumber(value: unknown, fallback: number, min = -Infinity, max =
 
 function sanitizeString(value: unknown, fallback: string): string {
   return typeof value === 'string' ? value : fallback
+}
+
+const THEME_NAMES = new Set<ThemeName>(['light', 'dark', 'dark-high-contrast'])
+
+function sanitizeTheme(value: unknown, fallback: ThemeName): ThemeName {
+  return typeof value === 'string' && THEME_NAMES.has(value as ThemeName) ? (value as ThemeName) : fallback
 }
 
 function sanitizeStringArray(value: unknown, fallback: string[]): string[] {
@@ -301,6 +309,7 @@ export function sanitizePlayerState(raw: unknown): PlayerState {
     badges: sanitizeBadges(raw.badges),
     scanProgress: sanitizeScanProgress(raw.scanProgress),
     digimonBonuses: sanitizeDigimonBonuses(raw.digimonBonuses),
+    theme: sanitizeTheme(raw.theme, defaults.theme),
   }
 }
 

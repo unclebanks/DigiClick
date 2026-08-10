@@ -14,12 +14,12 @@
   text-transform: uppercase;
   letter-spacing: 0.22em;
   font-size: 0.8rem;
-  color: #7c3aed;
+  color: var(--color-accent);
   font-weight: 700;
 }
 
 .lead {
-  color: #475569;
+  color: var(--color-text-muted);
   max-width: 60ch;
   line-height: 1.6;
 }
@@ -58,8 +58,8 @@
 .battleCombatant {
   padding: 1rem;
   border-radius: 1rem;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
   display: grid;
   gap: 0.5rem;
 }
@@ -68,7 +68,7 @@
   display: flex;
   gap: 1rem;
   font-weight: 600;
-  color: #334155;
+  color: var(--color-text-strong);
 }
 
 .battleControls {
@@ -77,8 +77,8 @@
   align-content: start;
   padding: 1rem;
   border-radius: 1rem;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
 }
 
 .regionSelect {
@@ -86,13 +86,13 @@
   width: 100%;
   padding: 0.65rem 2.25rem 0.65rem 1rem;
   border-radius: 0.75rem;
-  border: 1px solid #ddd6fe;
-  background-color: white;
-  background-image: linear-gradient(45deg, transparent 50%, #7c3aed 50%), linear-gradient(135deg, #7c3aed 50%, transparent 50%);
+  border: 1px solid var(--color-border-strong);
+  background-color: var(--color-surface);
+  background-image: linear-gradient(45deg, transparent 50%, var(--color-accent) 50%), linear-gradient(135deg, var(--color-accent) 50%, transparent 50%);
   background-position: calc(100% - 1.2rem) center, calc(100% - 0.9rem) center;
   background-size: 0.35rem 0.35rem, 0.35rem 0.35rem;
   background-repeat: no-repeat;
-  color: #334155;
+  color: var(--color-text-strong);
   font-weight: 600;
   font-size: 0.95rem;
   cursor: pointer;
@@ -100,13 +100,13 @@
 }
 
 .regionSelect:hover {
-  border-color: #7c3aed;
+  border-color: var(--color-accent);
 }
 
 .regionSelect:focus-visible {
   outline: none;
-  border-color: #7c3aed;
-  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2);
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-focus-ring);
 }
 
 .routeList {
@@ -115,7 +115,7 @@
 }
 
 .battleLog {
-  color: #475569;
+  color: var(--color-text-muted);
   line-height: 1.5;
 }
 
@@ -125,7 +125,7 @@
   padding: 0;
   display: grid;
   gap: 0.35rem;
-  color: #475569;
+  color: var(--color-text-muted);
   font-size: 0.9rem;
   line-height: 1.4;
 }
@@ -133,7 +133,7 @@
 .teamSection {
   margin-top: 1.25rem;
   padding-top: 1.25rem;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid var(--color-border);
 }
 
 .teamRoster {
@@ -146,16 +146,16 @@
 .teamMember {
   padding: 1rem;
   border-radius: 1rem;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
   display: grid;
   gap: 0.4rem;
   justify-items: start;
 }
 
 .teamMemberActive {
-  border-color: #7c3aed;
-  background: #f5f3ff;
+  border-color: var(--color-accent);
+  background: var(--color-accent-soft-bg);
 }
 
 .cardListItem {
@@ -163,8 +163,8 @@
   gap: 0.5rem;
   padding: 1rem;
   border-radius: 1rem;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
 }
 
 .dexEmoji {
@@ -176,7 +176,7 @@
   text-transform: uppercase;
   letter-spacing: 0.14em;
   font-weight: 700;
-  color: #7c3aed;
+  color: var(--color-accent);
   margin: 0;
 }
 
@@ -185,7 +185,7 @@
 }
 
 .dexText {
-  color: #64748b;
+  color: var(--color-text-subtle);
   font-size: 0.9rem;
   margin: 0;
 }
@@ -202,17 +202,17 @@
   flex: 1 1 220px;
   padding: 0.65rem 1rem;
   border-radius: 0.75rem;
-  border: 1px solid #ddd6fe;
-  background-color: white;
-  color: #334155;
+  border: 1px solid var(--color-border-strong);
+  background-color: var(--color-surface);
+  color: var(--color-text-strong);
   font-size: 0.95rem;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .dexSearchInput:focus-visible {
   outline: none;
-  border-color: #7c3aed;
-  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2);
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-focus-ring);
 }
 
 .dexToggle {
@@ -220,7 +220,7 @@
   align-items: center;
   gap: 0.4rem;
   font-size: 0.9rem;
-  color: #334155;
+  color: var(--color-text-strong);
   font-weight: 600;
 }
 

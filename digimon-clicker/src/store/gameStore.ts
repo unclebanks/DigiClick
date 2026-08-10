@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { DigimonStatBonus, DigimonStats, DigitalSpaceEnvironment, DigivolutionState, PlayerState } from '../types/game'
+import type { DigimonStatBonus, DigimonStats, DigitalSpaceEnvironment, DigivolutionState, PlayerState, ThemeName } from '../types/game'
 import { createInitialDigimonProgression, gainDigimonExperience, resolveDigimonProgression } from '../utils/digimonProgression'
 import { createInitialDigivolutionState } from '../utils/evolution'
 import { addScanProgress, canRecruitFromScan, getScanStatBonus } from '../utils/scanning'
@@ -22,6 +22,7 @@ interface GameStore extends PlayerState {
   addCurrency: (amount: number) => void
   addInventoryItem: (itemId: string, quantity?: number) => void
   setCurrentArea: (area: string) => void
+  setTheme: (theme: ThemeName) => void
   moveToParty: (digimonId: string) => void
   moveToDigitalSpace: (digimonId: string) => void
   selectStarter: (digimonId: string) => void
@@ -95,6 +96,7 @@ function extractPlayerState(state: GameStore): PlayerState {
     badges: state.badges,
     scanProgress: state.scanProgress,
     digimonBonuses: state.digimonBonuses,
+    theme: state.theme,
   }
 }
 
@@ -123,6 +125,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       inventory: { ...state.inventory, [itemId]: (state.inventory[itemId] ?? 0) + quantity },
     })),
   setCurrentArea: (area) => set({ currentArea: area }),
+  setTheme: (theme) => set({ theme }),
   moveToParty: (digimonId) =>
     set((state) => {
       const nextParty = state.partyDigimon.includes(digimonId)
