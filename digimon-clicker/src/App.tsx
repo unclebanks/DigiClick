@@ -1,4 +1,4 @@
-import { BrowserRouter, NavLink, Route, Routes } from 'react-router-dom'
+import { HashRouter, NavLink, Route, Routes } from 'react-router-dom'
 import { HomePage } from './pages/HomePage'
 import { BattlePage } from './pages/BattlePage'
 import { DigiDexPage } from './pages/DigiDexPage'
@@ -18,7 +18,7 @@ const links = [
 
 function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       {/* Keep page-level composition lightweight so each route stays focused on its own domain. */}
       <div className="app-shell">
         <header className="app-header">
@@ -50,7 +50,7 @@ function App() {
           <p>Frontend refresher project with a simple architecture for future Digimon game systems.</p>
         </footer>
       </div>
-    </BrowserRouter>
+    </HashRouter>
   )
 }
 
