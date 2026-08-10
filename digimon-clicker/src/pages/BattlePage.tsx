@@ -1,4 +1,4 @@
-import { Sword } from 'lucide-react'
+import { Lock, Sword } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Card } from '../components/common/Card'
 import { Button } from '../components/common/Button'
@@ -6,7 +6,7 @@ import { ProgressBar } from '../components/common/ProgressBar'
 import { useGameStore } from '../store/gameStore'
 import { sampleDigimon } from '../data/digimon'
 import { battleRoutesByRegion, sampleBattleRoutes } from '../data/areas'
-import { getDefaultBattleRoute, getEncounterLevel, isRouteUnlocked, pickRandomEncounterId } from '../utils/battleRoutes'
+import { getDefaultBattleRoute, getEncounterLevel, getRouteUnlockRequirements, isRouteUnlocked, pickRandomEncounterId } from '../utils/battleRoutes'
 import { getAttackIntervalMs, resolveAttack, resolveVictoryRewards } from '../utils/combat'
 import type { CombatantState } from '../utils/combat'
 import { describeAttributeMatchup } from '../utils/digimonAttributes'
@@ -354,8 +354,13 @@ export function BattlePage() {
   const handleRouteSelect = (routeId: string) => {
     const nextRoute = sampleBattleRoutes.find((route) => route.id === routeId)
 
-    if (!nextRoute || !isRouteUnlocked(nextRoute, playerLevel, partyDigimon.length)) {
-      appendLog('That route is still locked. Train a little more and build your party.')
+    if (!nextRoute) {
+      return
+    }
+
+    if (!isRouteUnlocked(nextRoute, playerLevel, partyDigimon.length)) {
+      const requirements = getRouteUnlockRequirements(nextRoute, playerLevel, partyDigimon.length)
+      appendLog(`${nextRoute.name} is locked - requires ${requirements.join(' and ')}.`)
       return
     }
 
@@ -464,7 +469,7 @@ export function BattlePage() {
                   variant={route.id === currentRoute.id ? 'primary' : 'secondary'}
                   onClick={() => handleRouteSelect(route.id)}
                 >
-                  {route.name}
+                  {!isRouteUnlocked(route, playerLevel, partyDigimon.length) && <Lock size={14} />} {route.name}
                 </Button>
               ))}
             </div>

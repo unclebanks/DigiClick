@@ -23,6 +23,27 @@ export function isRouteUnlocked(route: BattleRoute, playerLevel: number, partySi
   return playerLevel >= route.requiredPlayerLevel && partySize >= route.requiredPartySize
 }
 
+// Describes whichever of a locked route's requirements aren't yet met, so the UI can tell the
+// player exactly what's missing instead of a generic "still locked" message. Returns [] once the
+// route is unlocked.
+export function getRouteUnlockRequirements(route: BattleRoute, playerLevel: number, partySize: number): string[] {
+  if (isRouteUnlocked(route, playerLevel, partySize)) {
+    return []
+  }
+
+  const requirements: string[] = []
+
+  if (playerLevel < route.requiredPlayerLevel) {
+    requirements.push(`Trainer Level ${route.requiredPlayerLevel} (currently ${playerLevel})`)
+  }
+
+  if (partySize < route.requiredPartySize) {
+    requirements.push(`a party of ${route.requiredPartySize} Digimon (currently ${partySize})`)
+  }
+
+  return requirements
+}
+
 export function getEncounterLevel(route: BattleRoute, playerLevel: number) {
   const [minLevel, maxLevel] = route.encounterLevelRange ?? [route.requiredPlayerLevel, route.requiredPlayerLevel]
   const clampedLevel = Math.max(minLevel, Math.min(maxLevel, playerLevel))

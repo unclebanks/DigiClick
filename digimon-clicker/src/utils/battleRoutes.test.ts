@@ -18,7 +18,7 @@ describe('battle route helpers', () => {
 
   it('exposes region-based battle routes with Region 2 entries', () => {
     expect(Array.isArray(battleRoutesByRegion['Region 1'])).toBe(true)
-    expect(battleRoutesByRegion['Region 2']?.some((route) => route.id === 'route-6')).toBe(true)
+    expect(battleRoutesByRegion['Region 2']?.some((route) => route.id === 'route-11')).toBe(true)
     expect(sampleBattleRoutes.some((route) => route.region === 'Region 2')).toBe(true)
   })
 
