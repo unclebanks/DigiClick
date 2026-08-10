@@ -1,5 +1,7 @@
 import type { Item } from '../types/game'
 
+// Egg-of-courage/friendship/hope placeholders were removed - superseded by the CSV-sourced
+// digi-egg-of-* entries in src/data/evolutionItems.ts.
 export const sampleItems: Item[] = [
   {
     id: 'training-chip',
@@ -16,27 +18,6 @@ export const sampleItems: Item[] = [
     effect: 'Recover 20 HP',
   },
   {
-    id: 'egg-of-courage',
-    name: 'Egg of Courage',
-    description: 'A glowing egg that awakens bravery in a young Digimon.',
-    price: 90,
-    effect: 'Unlocks courage-based evolution',
-  },
-  {
-    id: 'egg-of-friendship',
-    name: 'Egg of Friendship',
-    description: 'A warm egg that strengthens bonds and trust.',
-    price: 85,
-    effect: 'Unlocks friendship-based evolution',
-  },
-  {
-    id: 'egg-of-hope',
-    name: 'Egg of Hope',
-    description: 'A bright egg that inspires growth and optimism.',
-    price: 95,
-    effect: 'Unlocks hope-based evolution',
-  },
-  {
     id: 'data-disk',
     name: 'Data Disk',
     description: 'A dense disk of compressed digital code.',
@@ -44,3 +25,4 @@ export const sampleItems: Item[] = [
     effect: 'Unlocks data-based evolution',
   },
 ]
+

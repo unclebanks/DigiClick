@@ -1,0 +1,103 @@
+﻿Item,Type,Description
+Topaz,Gem,A gem symbolizing prosperity. Can be sold for a high price.
+Pearl,Gem,A gem harvested from shellfish. Not to be confused with black pearls produced by Syakomon. Can be sold for a high price.
+Aquamarine,Gem,"A translucent, sky-blue gem of the beryl family. Can be sold for a high price."
+Jade,Gem,A gem that is said to bring about rebirth. Can be sold for a high price.
+Alexandrite,Gem,A gem which changes color to blue-green in sunlight and red under artificial light. Can be sold for a high price.
+Ruby,Gem,A scarlet gem of hardness rivaled only by diamond. Can be sold for a high price.
+Sapphire,Gem,"A gem that comes in all colors other than red, of hardness rivaled only by diamond. Can be sold for a high price."
+Emerald,Gem,A vividly green gem of the beryl family. Can be sold for a high price.
+Diamond,Gem,A dreary old killjoy would say it's made of the same stuff as what's in an ordinary pencil. Can be sold for a high price.
+Digi-Jewel,Gem,An incredibly rare and mysterious gem. Can be sold for a high price.
+HP Attachment I,Attachment,Boosts HP by 1 /Equipment
+HP Attachment II,Attachment,HP boost 2 /Equipment
+HP Attachment III,Attachment,HP boost 3 /Equipment
+SP Attachment I,Attachment,Boosts SP by 1 /Equipment
+SP Attachment II,Attachment,SP boost 2 /Equipment
+SP Attachment III,Attachment,SP boost 3 /Equipment
+ATK Attachment I,Attachment,Boosts ATK by 1 /Equipment
+ATK Attachment II,Attachment,ATK boost 2 /Equipment
+ATK Attachment III,Attachment,ATK boost 3 /Equipment
+DEF Attachment I,Attachment,Boosts DEF by 1 /Equipment
+DEF Attachment II,Attachment,DEF boost 2 /Equipment
+DEF Attachment III,Attachment,DEF boost 3 /Equipment
+INT Attachment I,Attachment,Boosts INT by 1 /Equipment
+INT Attachment II,Attachment,INT boost 2 /Equipment
+INT Attachment III,Attachment,INT boost 3 /Equipment
+SPI Attachment I,Attachment,Boosts SPI by 1 /Equipment
+SPI Attachment II,Attachment,SPI boost 2 /Equipment
+SPI Attachment III,Attachment,SPI boost 3 /Equipment
+SPD Attachment I,Attachment,Boosts SPD by 1 /Equipment
+SPD Attachment II,Attachment,SPD boost 2 /Equipment
+SPD Attachment III,Attachment,SPD boost 3 /Equipment
+ACU Attachment I,Attachment,ACU boost 1 /Equipment
+ACU Attachment II,Attachment,ACU boost 2 /Equipment
+EVA Attachment I,Attachment,Boosts EVA by 1 /Equipment
+EVA Attachment II,Attachment,EVA boost 2 /Equipment
+CRT Attachment I,Attachment,CRI boost 1 /Equipment
+CRT Attachment II,Attachment,CRI boost 2 /Equipment
+Energy Attachment I,Attachment,HP and SP boost 1 /Equipment
+Energy Attachment II,Attachment,HP and SP boost 2 /Equipment
+Physical Attachment I,Attachment,ATK and DEF boost 1 /Equipment
+Physical Attachment II,Attachment,ATK and DEF boost 2 /Equipment
+Destruction Attachment I,Attachment,ATK and INT boost 1 /Equipment
+Destruction Attachment II,Attachment,ATK and INT boost 2 /Equipment
+Soul Attachment I,Attachment,INT and SPI boost 1 /Equipment
+Soul Attachment II,Attachment,INT and SPI boost 2 /Equipment
+Vigor Attachment I,Attachment,DEF and SPI boost 1 /Equipment
+Vigor Attachment II,Attachment,DEF and SPI boost 2 /Equipment
+Feather Attachment I,Attachment,ACU and EVA boost 1 /Equipment
+Feather Attachment II,Attachment,ACU and EVA boost 2 /Equipment
+Deadly Attachment I,Attachment,ATK and CRI boost 1 /Equipment
+Deadly Attachment II,Attachment,ATK and CRI boost 2 /Equipment
+Curse Attachment I,Attachment,INT and CRI boost 1 /Equipment
+Curse Attachment II,Attachment,INT and CRI boost 2 /Equipment
+Attacker Attachment I,Attachment,"SP, ATK and INT boost 1 /Equipment"
+Attacker Attachment II,Attachment,"SP, ATK and INT boost 2 /Equipment"
+Guarder Attachment I,Attachment,"HP, DEF and SPI boost 1 /Equipment"
+Guarder Attachment II,Attachment,"HP, DEF and SPI boost 2 /Equipment"
+Flare Guard,Attachment,Fire damage reduction /Equipment
+Aqua Guard,Attachment,Water damage reduction /Equipment
+Ice Guard,Attachment,Ice damage reduction /Equipment
+Plant Guard,Attachment,Plant damage reduction /Equipment
+Electric Guard,Attachment,Reduces damage from Electricity attacks /Equipment
+Gaia Guard,Attachment,Earth damage reduction /Equipment
+Steel Guard,Attachment,Steel damage reduction /Equipment
+Wind Guard,Attachment,Wind damage reduction /Equipment
+Light Guard,Attachment,Light damage reduction /Equipment
+Dark Guard,Attachment,Dark damage reduction /Equipment
+Noise Guard,Attachment,Null damage reduction /Equipment
+Poison Wall I,Attachment,Nullifies {is28}{image(ui_icon_btlStatus_000)} Poison.
+Panic Wall I,Attachment,Nullifies {is28}{image(ui_icon_btlStatus_002)} Confusion.
+Paralysis Wall I,Attachment,Nullifies {is28}{image(ui_icon_btlStatus_003)} Paralysis.
+Sleep Wall I,Attachment,Nullifies {is28}{image(ui_icon_btlStatus_004)} Sleep.
+Crystal Wall,Attachment,Nullifies crystallization /Equipment
+Bug Wall,Attachment,Nullifies reversed /Equipment
+Death Wall,Attachment,Nullifies instant death /Equipment
+Stats Wall,Attachment,Nullifies stat debuffs.
+Multi Wall,Attachment,Nullifies all status abnormalities.
+Poison Attack,Attachment,Adds poison to attack /Equipment
+Panic Attack,Attachment,Adds confusion to attack /Equipment
+Paralysis Attack,Attachment,Adds paralysis to attack /Equipment
+Sleep Attack,Attachment,Adds sleep to attack /Equipment
+Crystal Attack,Attachment,Adds crystallization to attack /Equipment
+Damage Down,Attachment,Nullifies any damage below a certain percentage of max HP /Equipment
+Known Bug,Attachment,Reduces damage from {is28}{image(ui_icon_type_040)} Virus Attribute Digimon by 30%.
+Etemon's Bling,Equipment,Nullifies stat debuffs. Attacking deals magic damage.
+Hiroko's Hot Perm Rods,Equipment,INT +300. SPI +300. Recovers SP equal to 5% of physical damage taken.
+The God of Speed's Boots,Equipment,SPD +300. Nullifies {is28}{image(ui_icon_btlStatus_000)} Poison/{is28}{image(ui_icon_btlStatus_005)} Deadly Poison. Boosts {is28}{image(ui_icon_skill_007)} Wind resistance.
+The Smithing God's Hammer,Equipment,CRT Rate +20%. Nullifies {is28}{image(ui_icon_btlStatus_000)} Poison/{is28}{image(ui_icon_btlStatus_005)} Deadly Poison. Boosts {is28}{image(ui_icon_skill_006)} Steel resistance.
+The Marine God's Red Scarf,Equipment,ATK +300. Nullifies {is28}{image(ui_icon_btlStatus_003)} Paralysis/{is28}{image(ui_icon_btlStatus_008)} Immobilization. Boosts {is28}{image(ui_icon_skill_004)} Water resistance.
+The Goddess of Charity's Shell,Equipment,Max HP +1000. Nullifies {is28}{image(ui_icon_btlStatus_002)} Confusion/{is28}{image(ui_icon_btlStatus_007)} Chaos. Boosts {is28}{image(ui_icon_skill_000)} Null resistance.
+The God of Liquor's Barrel,Equipment,EVA +20%. Nullifies {is28}{image(ui_icon_btlStatus_010)} Crystallization. Boosts {is28}{image(ui_icon_skill_004)} Water resistance.
+The Goddess of Fertility's Sapling,Equipment,DEF +300. Nullifies {is28}{image(ui_icon_btlStatus_000)} Poison/{is28}{image(ui_icon_btlStatus_005)} Deadly Poison. Boosts {is28}{image(ui_icon_skill_003)} Plant resistance.
+The War God's Brass Knuckles,Equipment,ACU +20%. Nullifies Instant Death. Boosts Fire resistance.
+The Queen Goddess's Love Chain,Equipment,INT +300. Nullifies stat debuffs. Boosts Light resistance.
+The God of Darkness's Cloak,Equipment,SPI +300. Nullifies Instant Death. Boosts Dark resistance.
+The Sun God's Burning Arrow,Equipment,"ATK +300. Nullifies Paralysis, Immobilization. Boosts Fire resistance."
+The Moon Goddess's Moonlight Bow,Equipment,"Max SP +500. Nullifies Sleep, Deep Slumber. Boosts Ice resistance."
+The Guardian Goddess's Greatsword,Equipment,"Max HP +1000. Nullifies Confusion, Chaos. Boosts Earth resistance."
+The Sky God's Thunderbolt,Equipment,ATK +500. CRT Rate +30%. Nullifies all status abnormalities. Boosts Electricity Resistance.
+Collector's USB Stick,Key_Items,Boosts Scan Rate gained by 100%
+Strategist's USB Stick,Key_Items,Boosts EXP gained by 100%.
+Millionaire's USB Stick,Key_Items,Boosts BITS gained by 100%

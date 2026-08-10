@@ -89,8 +89,10 @@ Important details:
 ## 6. Digimon progression and experience
 Implemented in:
 - src/utils/digimonProgression.ts
+- src/utils/digimonStats.ts
 - src/store/gameStore.ts
 - src/pages/HomePage.tsx
+- src/pages/PartyPage.tsx
 
 Current behavior:
 - Each Digimon has its own progression state in the store.
@@ -99,6 +101,8 @@ Current behavior:
   - each level increases the required EXP threshold by 20%
 - New Digimon (starter pick, scan recruits) start at level 5 (`createInitialDigimonProgression`'s default), rather than level 1, to compensate for the manual attack button being temporarily removed (see section 5). Digivolving still resets a Digimon back to level 1 for its new form (`resetDigimonProgression` explicitly passes level 1).
 - EXP is earned exclusively from defeating wild Digimon in battle (`resolveVictoryRewards`/`gainDigimonExperience` in BattlePage), not from any Home page action.
+- Permanent per-instance stat bonuses (`digimonBonuses`, keyed by party/Digital Space instance id) come from two sources that stack additively: the scan-recruit bonus tier (section 11) and Augment Chip items (`applyStatAugment` in gameStore.ts) - using a chip consumes one from `inventory` and adds its flat amount to that instance's `attack`/`defense`/`speed`/`hp`/`sp`/`int`/`spi` bonus. PartyPage lets a player apply any owned Augment Chip to a party member.
+- `calculateDigimonStats` (digimonStats.ts) now also accepts `spBonus`/`intBonus`/`spiBonus` alongside the original four. Every page that shows a Digimon's stats (DigimonCard/HomePage, PartyPage, BattlePage) computes both an unboosted `baseStats` and the final bonus-inclusive `stats`, and renders each stat via `formatStatWithBonus(base, boosted)` as `Normal (+Boost)` (or just the plain number when there's no bonus).
 
 Important details:
 - Progression is stored per Digimon ID in the game state.
@@ -127,12 +131,15 @@ Implemented in:
 - src/data/digimon.ts
 - src/data/areas.ts
 - src/data/items.ts
+- src/data/consumables.ts
 - src/data/evolutions.ts
 
 Current behavior:
 - The project includes a sample set of Digimon entries ranging from Fresh to Mega stages, each with a Vaccine/Data/Virus attribute (`DigimonAttribute`).
 - Battle routes are defined with regions, descriptions, required levels, and encounter IDs.
 - Item and evolution data files exist as content scaffolding; evolutions now carry typed requirements instead of free-text templates.
+- `Item` (src/types/game.ts) has optional `target` ('single'/'all'), `targetType` ('ally'/'enemy'), and a typed `mechanic` discriminated union (stat_recovery, status_recovery, cure_stat_drop, revive, stat_boost, exp_gain, bond_gain, stat_augment) - these fields are only present on newer data-driven consumables, not the older misc `sampleItems` entries (training-chip, eggs, etc.).
+- `src/data/consumables.ts` holds the first full item category (65 items sourced from `examples/ConsumableTable.csv`: HP/SP recovery, status cures, stat-drop cures, revives, timed stat boosts, EXP items, Bond/Friendship items, and permanent Augment Chips), each with a real `mechanic` payload and a proposed placeholder price. Augment Chips are wired (see section 6 - `applyStatAugment`); the rest (recovery/status/boost/EXP/Bond) are still data only - no shop buy UI or use-item flow, no status-ailment/stat-stage/SP/Bond system in combat.
 
 Important details:
 - The data is intentionally sample-based and designed to be expanded later.
@@ -189,11 +196,12 @@ Important details:
 ## 12. Current limitations to keep in mind
 The project is a foundation, not a complete game. The main gaps are:
 - no save/load system
-- no shop implementation
 - no settings persistence
 - no persistent party state across reloads
 - only one wild Digimon per route is fought at a time (no multi-encounter rotation)
 - recruiting via the scan meter only supports species not already owned; there's no release/trade flow yet
+- `PlayerState.inventory` is a quantity map (`Record<itemId, count>`, `addInventoryItem(itemId, quantity?)` increments it) rather than a plain id list - evolution's `itemReq` checks now do a `> 0` count lookup instead of `Array.includes`. There's still no in-battle status-ailment/stat-stage/SP system and most consumables (recovery/status/timed-boost/EXP/Bond) have no use-item flow yet, so their typed `mechanic` payloads aren't applied anywhere except Augment Chips (see section 6).
+- The Shop (section 13) is deliberately unrestricted (every item purchasable, no stock/level/area gates) for testing - this is not the intended final shop UX.
 
 ## 13. Best mental model for future work
 When adding a new feature, think in terms of three layers:
@@ -202,3 +210,15 @@ When adding a new feature, think in terms of three layers:
 3. Logic layer: utility functions and data helpers
 
 The current codebase is intentionally structured so new systems can be introduced incrementally without a large rewrite.
+
+## 14. Shop
+Implemented in:
+- src/pages/ShopPage.tsx
+
+Current behavior:
+- Lists every item from all three data sources (`sampleItems`, `consumableItems`, `evolutionItems`) in separate sections, each showing its `effect` text, Bits price, and owned quantity (if any).
+- Buying deducts Bits via `addCurrency(-item.price)` and adds one to `inventory` via `addInventoryItem` - same pattern HomePage's evolve handler uses, so spending Bits here also affects `playerLevel` (level is derived from currency, see section 3).
+- Intentionally unrestricted for testing: every item is purchasable regardless of category, with no stock limit, level gate, or area gate - the Buy button only disables when the player can't afford it.
+
+Important details:
+- This is a first pass, not the final shop UX - no confirmation dialogs, categories/tabs beyond the three data-source sections, or item detail view.

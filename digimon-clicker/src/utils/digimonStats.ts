@@ -8,6 +8,9 @@ export interface GrowthModifiers {
   defenseBonus?: number
   speedBonus?: number
   hpBonus?: number
+  spBonus?: number
+  intBonus?: number
+  spiBonus?: number
   // Applied to the whole level-growth curve, e.g. the de-digivolution penalty.
   statMultiplier?: number
 }
@@ -44,10 +47,18 @@ export function calculateDigimonStats(
     defense: Math.round(scaleStat(baseStats.defense, level, lv99Stats?.defense, statMultiplier) + (modifiers.defenseBonus ?? 0)),
     speed: Math.round(scaleStat(baseStats.speed, level, lv99Stats?.speed, statMultiplier) + (modifiers.speedBonus ?? 0)),
     hp: Math.round(scaleStat(baseStats.hp, level, lv99Stats?.hp, statMultiplier) + (modifiers.hpBonus ?? 0)),
-    ...(baseStats.sp === undefined ? {} : { sp: Math.round(scaleStat(baseStats.sp, level, undefined, statMultiplier)) }),
-    ...(baseStats.int === undefined ? {} : { int: Math.round(scaleStat(baseStats.int, level, undefined, statMultiplier)) }),
-    ...(baseStats.spi === undefined ? {} : { spi: Math.round(scaleStat(baseStats.spi, level, undefined, statMultiplier)) }),
+    ...(baseStats.sp === undefined ? {} : { sp: Math.round(scaleStat(baseStats.sp, level, undefined, statMultiplier) + (modifiers.spBonus ?? 0)) }),
+    ...(baseStats.int === undefined ? {} : { int: Math.round(scaleStat(baseStats.int, level, undefined, statMultiplier) + (modifiers.intBonus ?? 0)) }),
+    ...(baseStats.spi === undefined ? {} : { spi: Math.round(scaleStat(baseStats.spi, level, undefined, statMultiplier) + (modifiers.spiBonus ?? 0)) }),
   }
+}
+
+// Renders a stat as "Normal (+Boost)" when a permanent item/scan bonus raised it above the
+// unboosted value, or just the plain number when there's no active bonus.
+export function formatStatWithBonus(unboostedValue: number, boostedValue: number): string {
+  const bonus = boostedValue - unboostedValue
+
+  return bonus > 0 ? `${unboostedValue} (+${bonus})` : `${unboostedValue}`
 }
 
 

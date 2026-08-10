@@ -43,12 +43,45 @@ export interface Digimon {
   growthStats?: StatGrowthRange
 }
 
+// Ailments a status-cure consumable can target - no in-battle status system applies these yet
+// (see src/data/consumables.ts), this just gives the item data a real shape to wire up later.
+export type StatusAilment = 'poison' | 'panic' | 'paralysis' | 'sleep' | 'sprite' | 'bug' | 'pain' | 'sickness'
+
+// Stats a timed Stat Boost item can raise - accuracy/evasion/critRate have no combat mechanic yet
+// (resolveAttack uses fixed miss/crit constants), reserved for when stat-stage combat is built.
+export type BoostableStat = 'attack' | 'defense' | 'speed' | 'int' | 'spi' | 'accuracy' | 'evasion' | 'critRate'
+
+// Stats a permanent Augment Chip can raise. Mirrors DigimonStatBonus's fields plus sp/int/spi,
+// which DigimonStatBonus doesn't carry yet.
+export type AugmentStat = 'hp' | 'sp' | 'attack' | 'defense' | 'int' | 'spi' | 'speed'
+
+// Structured mechanic payload for a consumable item. Nothing in the game reads/applies these yet -
+// they exist so the data has real, typed shape ahead of shop/inventory-use/combat wiring.
+export type ItemMechanic =
+  | { kind: 'stat_recovery', stat: 'hp' | 'sp' | 'hpAndSp', amount?: number, percent?: number }
+  | { kind: 'status_recovery', ailment: StatusAilment }
+  | { kind: 'cure_stat_drop', scope: 'one_random' | 'all', fullyRestore: boolean }
+  | { kind: 'revive', hpPercent: number }
+  | { kind: 'stat_boost', stat: BoostableStat, stages: number, durationSeconds: number }
+  | { kind: 'exp_gain', amount: number }
+  | { kind: 'bond_gain', percent: number }
+  | { kind: 'stat_augment', stat: AugmentStat, amount: number }
+
+export type ItemTarget = 'single' | 'all'
+export type ItemTargetType = 'ally' | 'enemy'
+
 export interface Item {
   id: string
   name: string
   description: string
   price: number
   effect: string
+  // The following three fields are present only for consumables with a real mechanic (see
+  // src/data/consumables.ts) - absent for older misc/placeholder items (training-chip, eggs, etc.)
+  // that have no wired effect yet.
+  target?: ItemTarget
+  targetType?: ItemTargetType
+  mechanic?: ItemMechanic
 }
 
 export interface LevelRequirement { type: 'level', level: number }
@@ -105,6 +138,9 @@ export interface DigimonStatBonus {
   defense?: number
   speed?: number
   hp?: number
+  sp?: number
+  int?: number
+  spi?: number
 }
 
 export interface PlayerStatistics {
@@ -135,7 +171,8 @@ export interface PlayerState {
   currency: number
   playerLevel: number
   partyDigimon: string[]
-  inventory: string[]
+  // Item id -> quantity owned. Absent/0 means none owned (no negative or fractional counts).
+  inventory: Record<string, number>
   currentArea: string
   digitalSpace: DigitalSpaceEnvironment[]
   digivolutionStates: Record<string, DigivolutionState>

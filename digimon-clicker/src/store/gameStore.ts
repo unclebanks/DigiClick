@@ -1,15 +1,16 @@
 import { create } from 'zustand'
-import type { DigimonStats, DigitalSpaceEnvironment, DigivolutionState, PlayerState } from '../types/game'
+import type { DigimonStatBonus, DigimonStats, DigitalSpaceEnvironment, DigivolutionState, PlayerState } from '../types/game'
 import { createInitialPlayerStatistics } from '../types/game'
 import { createInitialDigimonProgression, gainDigimonExperience, resolveDigimonProgression } from '../utils/digimonProgression'
 import { createInitialDigivolutionState } from '../utils/evolution'
 import { addScanProgress, canRecruitFromScan, getScanStatBonus } from '../utils/scanning'
+import { consumableItems } from '../data/consumables'
 
 // This store is intentionally simple and centralized so future systems such as
 // save/load, offline progress, and battle state can build on a single source of truth.
 interface GameStore extends PlayerState {
   addCurrency: (amount: number) => void
-  addInventoryItem: (itemId: string) => void
+  addInventoryItem: (itemId: string, quantity?: number) => void
   setCurrentArea: (area: string) => void
   moveToParty: (digimonId: string) => void
   moveToDigitalSpace: (digimonId: string) => void
@@ -23,6 +24,7 @@ interface GameStore extends PlayerState {
   unlockBadge: (badgeId: string) => void
   gainScanProgress: (speciesId: string, amount: number) => void
   recruitFromScan: (speciesId: string, baseStats: DigimonStats) => boolean
+  applyStatAugment: (instanceId: string, itemId: string) => boolean
 }
 
 const createInitialDigitalSpace = (): PlayerState['digitalSpace'] =>
@@ -67,7 +69,7 @@ const initialState: PlayerState = {
   currency: 120,
   playerLevel: 1,
   partyDigimon: [],
-  inventory: ['training-chip'],
+  inventory: { 'training-chip': 1 },
   currentArea: 'Digital Forest',
   digitalSpace: createInitialDigitalSpace(),
   digivolutionStates: {
@@ -92,9 +94,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
         playerLevel: nextLevel,
       }
     }),
-  addInventoryItem: (itemId) =>
+  addInventoryItem: (itemId, quantity = 1) =>
     set((state) => ({
-      inventory: state.inventory.includes(itemId) ? state.inventory : [...state.inventory, itemId],
+      inventory: { ...state.inventory, [itemId]: (state.inventory[itemId] ?? 0) + quantity },
     })),
   setCurrentArea: (area) => set({ currentArea: area }),
   moveToParty: (digimonId) =>
@@ -217,6 +219,32 @@ export const useGameStore = create<GameStore>((set, get) => ({
       digimonBonuses: bonus ? { ...current.digimonBonuses, [instanceId]: bonus } : current.digimonBonuses,
       scanProgress: { ...current.scanProgress, [speciesId]: 0 },
     }))
+
+    return true
+  },
+  // Consumes one Augment Chip from inventory and adds its permanent stat bonus to a party/Digital
+  // Space instance's digimonBonuses entry - additive with any existing scan-recruit bonus.
+  applyStatAugment: (instanceId, itemId) => {
+    const state = get()
+    const item = consumableItems.find((entry) => entry.id === itemId)
+
+    if (!item || item.mechanic?.kind !== 'stat_augment' || (state.inventory[itemId] ?? 0) <= 0) {
+      return false
+    }
+
+    const { stat, amount } = item.mechanic
+
+    set((current) => {
+      const existingBonus: DigimonStatBonus = current.digimonBonuses[instanceId] ?? {}
+
+      return {
+        inventory: { ...current.inventory, [itemId]: (current.inventory[itemId] ?? 0) - 1 },
+        digimonBonuses: {
+          ...current.digimonBonuses,
+          [instanceId]: { ...existingBonus, [stat]: (existingBonus[stat] ?? 0) + amount },
+        },
+      }
+    })
 
     return true
   },

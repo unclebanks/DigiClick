@@ -1,0 +1,66 @@
+Item,Type,Target,Target_Type,Effect,Description
+HP Capsule I,Consumable,Single,Ally,Stat_Recovery,Recovers HP by 500.
+HP Capsule II,Consumable,Single,Ally,Stat_Recovery,Recovers HP by 1500.
+HP Capsule III,Consumable,Single,Ally,Stat_Recovery,Recovers HP by 2000.
+HP Spray I,Consumable,All,Ally,Stat_Recovery,Recovers HP by 400.
+HP Spray II,Consumable,All,Ally,Stat_Recovery,Recovers HP by 800.
+HP Spray III,Consumable,All,Ally,Stat_Recovery,Recovers HP by 1200.
+SP Capsule I,Consumable,Single,Ally,Stat_Recovery,Recovers SP by 300.
+SP Capsule II,Consumable,Single,Ally,Stat_Recovery,Recovers SP by 600.
+SP Capsule III,Consumable,Single,Ally,Stat_Recovery,Recovers SP by 900
+SP Spray I,Consumable,All,Ally,Stat_Recovery,Recovers SP by 200.
+SP Spray II,Consumable,All,Ally,Stat_Recovery,Recovers SP by 500.
+SP Spray III,Consumable,All,Ally,Stat_Recovery,Recovers SP by 800.
+Medical Spray,Consumable,All,Ally,Stat_Recovery,Recovers HP/SP by 50%.
+Medical Spray DX,Consumable,All,Ally,Stat_Recovery,Recovers HP/SP by 100%.
+Poison Recovery,Consumable,Single,Ally,Recovery,Recovers from Poison
+Panic Recovery,Consumable,Single,Ally,Recovery,Recovers from Panic
+Paralysis Recovery,Consumable,Single,Ally,Recovery,Recovers from Paralysis
+Sleep Recovery,Consumable,Single,Ally,Recovery,Recovers from Sleep
+Sprite Recovery,Consumable,Single,Ally,Recovery,Recovers from Sprite
+Bug Recovery,Consumable,Single,Ally,Recovery,Recovers from Bug
+Pain Recovery,Consumable,Single,Ally,Recovery,Recovers from Pain
+Sickness Recovery,Consumable,Single,Ally,Recovery,Recovers from Sickness
+Stat Recovery,Consumable,Single,Ally,Recovery,Recovers 1 stage of a random decreased stats.
+Multi-Recovery,Consumable,Single,Ally,Recovery,Recovers 1 stage of all decreased stats.
+Multi-Recovery DX,Consumable,All,Ally,Recovery,Recovers all stages of all decreased stats.
+Revival Capsule,Consumable,Single,Ally,Recovery,Revives from KO and recovers half HP.
+Revival Capsule DX,Consumable,All,Ally,Recovery,Revives from KO and recovers 2/3 full HP
+Full Revival Spray,Consumable,Single,Ally,Recovery,Revives from KO and fully recovers HP
+ATK Boost,Consumable,Single,Ally,Stat_Booster,Boosts Attack by 1 stage for 30 seconds.
+DEF Boost,Consumable,Single,Ally,Stat_Booster,Boosts Defense by 1 stage for 30 seconds.
+INT Boost,Consumable,Single,Ally,Stat_Booster,Boosts Intelligence by 1 stage for 30 seconds.
+SPI Boost,Consumable,Single,Ally,Stat_Booster,Boosts SPI by 1 stage for 30 seconds.
+SPD Boost,Consumable,Single,Ally,Stat_Booster,Boosts Speed by 1 stage for 30 seconds.
+ACU Boost,Consumable,Single,Ally,Stat_Booster,Boosts Accuracy by 1 stage for 30 seconds.
+EVA Boost,Consumable,Single,Ally,Stat_Booster,Boosts Evasion by 1 stage for 30 seconds.
+CRT Boost,Consumable,Single,Ally,Stat_Booster,Boosts Critical Rate by 1 stage for 30 seconds.
+Courage Point I,Consumable,Single,Ally,Stat_Booster,Increases a Digimon's EXP by 5000.
+Courage Point II,Consumable,Single,Ally,Stat_Booster,Increases a Digimon's EXP by 10000.
+Courage Point III,Consumable,Single,Ally,Stat_Booster,Increases a Digimon's EXP by 25000.
+Courage Point IV,Consumable,Single,Ally,Stat_Booster,Increases a Digimon's EXP by 50000.
+Courage Point V,Consumable,Single,Ally,Stat_Booster,Increases a Digimon's EXP by 100000.
+Friendship,Consumable,Single,Ally,Stat_Booster,Increases a Digimon's Bond by 3%.
+Friendship DX,Consumable,Single,Ally,Stat_Booster,Increases a Digimon's Bond by 5%.
+Friendship S,Consumable,Single,Ally,Stat_Booster,Increases a Digimon's Bond by 1%.
+HP Augment Chip I,Consumable,Single,Ally,Stat_Booster,Increases a Digimon's cumulative Max HP by 50.
+HP Augment Chip II,Consumable,Single,Ally,Stat_Booster,Increases a Digimon's cumulative Max HP by 150.
+HP Augment Chip III,Consumable,Single,Ally,Stat_Booster,Increases a Digimon's cumulative Max HP by 300.
+SP Augment Chip I,Consumable,Single,Ally,Stat_Booster,Increases a Digimon's cumulative Max SP by 50.
+SP Augment Chip II,Consumable,Single,Ally,Stat_Booster,Increases a Digimon's cumulative Max SP by 150.
+SP Augment Chip III,Consumable,Single,Ally,Stat_Booster,Increases a Digimon's cumulative Max SP by 300.
+ATK Augment Chip I,Consumable,Single,Ally,Stat_Booster,Increases a Digimon's cumulative ATK by 30.
+ATK Augment Chip II,Consumable,Single,Ally,Stat_Booster,Increases a Digimon's cumulative ATK by 50.
+ATK Augment Chip III,Consumable,Single,Ally,Stat_Booster,Increases a Digimon's cumulative ATK by 100.
+DEF Augment Chip I,Consumable,Single,Ally,Stat_Booster,Increases a Digimon's cumulative DEF by 30.
+DEF Augment Chip II,Consumable,Single,Ally,Stat_Booster,Increases a Digimon's cumulative DEF by 50.
+DEF Augment Chip III,Consumable,Single,Ally,Stat_Booster,Increases a Digimon's cumulative DEF by 100.
+INT Augment Chip I,Consumable,Single,Ally,Stat_Booster,Increases a Digimon's cumulative INT by 30.
+INT Augment Chip II,Consumable,Single,Ally,Stat_Booster,Increases a Digimon's cumulative INT by 50.
+INT Augment Chip III,Consumable,Single,Ally,Stat_Booster,Increases a Digimon's cumulative INT by 100.
+SPI Augment Chip I,Consumable,Single,Ally,Stat_Booster,Increases a Digimon's cumulative SPI by 30.
+SPI Augment Chip II,Consumable,Single,Ally,Stat_Booster,Increases a Digimon's cumulative SPI by 50.
+SPI Augment Chip III,Consumable,Single,Ally,Stat_Booster,Increases a Digimon's cumulative SPI by 100.
+SPD Augment Chip I,Consumable,Single,Ally,Stat_Booster,Increases a Digimon's cumulative SPD by 30.
+SPD Augment Chip II,Consumable,Single,Ally,Stat_Booster,Increases a Digimon's cumulative SPD by 50.
+SPD Augment Chip III,Consumable,Single,Ally,Stat_Booster,Increases a Digimon's cumulative SPD by 100.

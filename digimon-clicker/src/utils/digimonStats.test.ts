@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { calculateDigimonStats } from './digimonStats'
+import { calculateDigimonStats, formatStatWithBonus } from './digimonStats'
 
 describe('digimon stat helpers', () => {
   it('applies level growth and experience multipliers', () => {
@@ -34,6 +34,25 @@ describe('digimon stat helpers', () => {
       speed: 500,
       hp: 500,
     })
+  })
+
+  it('applies sp/int/spi bonuses just like the four core stats', () => {
+    const stats = calculateDigimonStats(
+      { attack: 10, defense: 8, speed: 7, hp: 20, sp: 5, int: 5, spi: 5 },
+      1,
+      { spBonus: 50, intBonus: 30, spiBonus: 100 },
+    )
+    expect(stats).toMatchObject({ sp: 55, int: 35, spi: 105 })
+  })
+})
+
+describe('formatStatWithBonus', () => {
+  it('shows just the plain value when there is no bonus', () => {
+    expect(formatStatWithBonus(120, 120)).toBe('120')
+  })
+
+  it('shows "Normal (+Boost)" when the boosted value is higher', () => {
+    expect(formatStatWithBonus(120, 170)).toBe('120 (+50)')
   })
 })
 

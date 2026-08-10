@@ -14,7 +14,7 @@ import type {
 
 export interface EvolutionRequirementContext {
   level: number
-  inventory: string[]
+  inventory: Record<string, number>
   currentAreaId?: string
   badges?: Record<string, boolean>
   currentHour?: number
@@ -35,7 +35,7 @@ function satisfiesRequirement(requirement: EvolutionRequirement, context: Evolut
     case 'level':
       return context.level >= requirement.level
     case 'item':
-      return context.inventory.includes(requirement.itemId)
+      return (context.inventory[requirement.itemId] ?? 0) > 0
     case 'area':
       return context.currentAreaId === requirement.areaId
     case 'badge':
