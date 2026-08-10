@@ -1,18 +1,25 @@
 import { useGameStore } from '../store/gameStore'
 import { sampleDigimon } from '../data/digimon'
+import { consumableItems } from '../data/consumables'
 import { Card } from '../components/common/Card'
 import { Button } from '../components/common/Button'
 import { resolveDigimonProgression } from '../utils/digimonProgression'
 import { createInitialDigivolutionState } from '../utils/evolution'
+import { calculateDigimonStats, formatStatWithBonus } from '../utils/digimonStats'
 import styles from '../styles/pages.module.css'
+
+const augmentChipItems = consumableItems.filter((item) => item.mechanic?.kind === 'stat_augment')
 
 export function PartyPage() {
   const partyDigimon = useGameStore((state) => state.partyDigimon)
   const digitalSpace = useGameStore((state) => state.digitalSpace)
   const digimonProgression = useGameStore((state) => state.digimonProgression)
   const digivolutionStates = useGameStore((state) => state.digivolutionStates)
+  const digimonBonuses = useGameStore((state) => state.digimonBonuses)
+  const inventory = useGameStore((state) => state.inventory)
   const moveToParty = useGameStore((state) => state.moveToParty)
   const moveToDigitalSpace = useGameStore((state) => state.moveToDigitalSpace)
+  const applyStatAugment = useGameStore((state) => state.applyStatAugment)
 
   // partyDigimon/digitalSpace store instance ids, not species ids directly - a species can be
   // owned more than once, so the species itself always comes from the digivolution state.
@@ -21,7 +28,34 @@ export function PartyPage() {
     const species = sampleDigimon.find((digimon) => digimon.id === digivolutionState.currentFormId)
     const progression = resolveDigimonProgression(digimonProgression[baseId])
 
-    return species ? { baseId, species, progression } : null
+    if (!species) {
+      return null
+    }
+
+    const bonus = digimonBonuses[baseId]
+    const baseStats = calculateDigimonStats(
+      species.baseStats,
+      progression.level,
+      { statMultiplier: digivolutionState.penaltyMultiplier },
+      species.growthStats,
+    )
+    const stats = calculateDigimonStats(
+      species.baseStats,
+      progression.level,
+      {
+        statMultiplier: digivolutionState.penaltyMultiplier,
+        attackBonus: bonus?.attack,
+        defenseBonus: bonus?.defense,
+        speedBonus: bonus?.speed,
+        hpBonus: bonus?.hp,
+        spBonus: bonus?.sp,
+        intBonus: bonus?.int,
+        spiBonus: bonus?.spi,
+      },
+      species.growthStats,
+    )
+
+    return { baseId, species, progression, stats, baseStats }
   }
 
   const partyMembers = partyDigimon
@@ -41,10 +75,30 @@ export function PartyPage() {
       <Card title="Party">
         <p>Party size: {partyDigimon.length}/6</p>
         <div className={styles.grid}>
-          {partyMembers.map(({ baseId, species }) => (
+          {partyMembers.map(({ baseId, species, stats, baseStats }) => (
             <div key={baseId} className={styles.cardListItem}>
               <strong>{species.name}</strong>
               <p>{species.stage}</p>
+              <p className={styles.statRow}>
+                <span>ATK {formatStatWithBonus(baseStats.attack, stats.attack)}</span>
+                <span>DEF {formatStatWithBonus(baseStats.defense, stats.defense)}</span>
+                <span>SPD {formatStatWithBonus(baseStats.speed, stats.speed)}</span>
+                <span>HP {formatStatWithBonus(baseStats.hp, stats.hp)}</span>
+              </p>
+              {augmentChipItems.some((item) => (inventory[item.id] ?? 0) > 0) && (
+                <div>
+                  <p className={styles.dexText}>Use an Augment Chip:</p>
+                  <div className={styles.actions}>
+                    {augmentChipItems
+                      .filter((item) => (inventory[item.id] ?? 0) > 0)
+                      .map((item) => (
+                        <Button key={item.id} variant="secondary" onClick={() => applyStatAugment(baseId, item.id)}>
+                          {item.name} (x{inventory[item.id]})
+                        </Button>
+                      ))}
+                  </div>
+                </div>
+              )}
               <Button variant="secondary" onClick={() => moveToDigitalSpace(baseId)}>
                 Send to Digital Space
               </Button>
@@ -70,3 +124,4 @@ export function PartyPage() {
     </div>
   )
 }
+

@@ -32,6 +32,7 @@ export function HomePage() {
   const selectStarter = useGameStore((state) => state.selectStarter)
   const digimonProgression = useGameStore((state) => state.digimonProgression)
   const resetDigimonProgression = useGameStore((state) => state.resetDigimonProgression)
+  const digimonBonuses = useGameStore((state) => state.digimonBonuses)
   const inventory = useGameStore((state) => state.inventory)
   const badges = useGameStore((state) => state.badges)
   const statistics = useGameStore((state) => state.statistics)
@@ -48,14 +49,30 @@ export function HomePage() {
         return null
       }
 
-      const stats = calculateDigimonStats(
+      const bonus = digimonBonuses[baseId]
+      const baseStats = calculateDigimonStats(
         species.baseStats,
         progression.level,
         { statMultiplier: digivolutionState.penaltyMultiplier },
         species.growthStats,
       )
+      const stats = calculateDigimonStats(
+        species.baseStats,
+        progression.level,
+        {
+          statMultiplier: digivolutionState.penaltyMultiplier,
+          attackBonus: bonus?.attack,
+          defenseBonus: bonus?.defense,
+          speedBonus: bonus?.speed,
+          hpBonus: bonus?.hp,
+          spBonus: bonus?.sp,
+          intBonus: bonus?.int,
+          spiBonus: bonus?.spi,
+        },
+        species.growthStats,
+      )
 
-      return { baseId, digivolutionState, species, progression, stats }
+      return { baseId, digivolutionState, species, progression, stats, baseStats }
     })
     .filter((member): member is NonNullable<typeof member> => member !== null)
 
@@ -136,13 +153,15 @@ export function HomePage() {
       )}
 
       <section className={styles.grid}>
-        {partyMembers.map(({ baseId, digivolutionState, species, progression, stats }) => (
+        {partyMembers.map(({ baseId, digivolutionState, species, progression, stats, baseStats }) => (
           <DigimonCard
             key={baseId}
             digimon={species}
             level={progression.level}
             exp={progression.exp}
             expToNextLevel={progression.expToNextLevel}
+            stats={stats}
+            baseStats={baseStats}
             canDedigivolve={digivolutionState.history.length > 1}
             evolutionOptions={getEvolutionOptions(digivolutionState.currentFormId, sampleEvolutions).map((evolution) => ({
               evolution,

@@ -10,7 +10,7 @@ import { getDefaultBattleRoute, getEncounterLevel, isRouteUnlocked, pickRandomEn
 import { getAttackIntervalMs, resolveAttack, resolveVictoryRewards } from '../utils/combat'
 import type { CombatantState } from '../utils/combat'
 import { describeAttributeMatchup } from '../utils/digimonAttributes'
-import { calculateDigimonStats } from '../utils/digimonStats'
+import { calculateDigimonStats, formatStatWithBonus } from '../utils/digimonStats'
 import { resolveDigimonProgression } from '../utils/digimonProgression'
 import { createInitialDigivolutionState } from '../utils/evolution'
 import { SCAN_MAX, SCAN_RECRUIT_THRESHOLD, getScanGainFromDefeat } from '../utils/scanning'
@@ -87,15 +87,24 @@ export function BattlePage() {
 
     const progression = resolveDigimonProgression(digimonProgression[baseId])
     const bonus = digimonBonuses[baseId]
+    const baseStats = calculateDigimonStats(
+      species.baseStats,
+      progression.level,
+      { statMultiplier: digivolutionState.penaltyMultiplier },
+      species.growthStats,
+    )
     const stats = calculateDigimonStats(species.baseStats, progression.level, {
       statMultiplier: digivolutionState.penaltyMultiplier,
       attackBonus: bonus?.attack,
       defenseBonus: bonus?.defense,
       speedBonus: bonus?.speed,
       hpBonus: bonus?.hp,
+      spBonus: bonus?.sp,
+      intBonus: bonus?.int,
+      spiBonus: bonus?.spi,
     }, species.growthStats)
 
-    return { baseId, species, progression, stats }
+    return { baseId, species, progression, stats, baseStats }
   }
 
   const activeMember = useMemo(
@@ -417,14 +426,14 @@ export function BattlePage() {
                 displayValue={`${activeMember?.progression.exp ?? 0}/${activeMember?.progression.expToNextLevel ?? 0}`}
               />
               <p className={styles.statRow}>
-                <span>ATK {activeMember?.stats.attack ?? 0}</span>
-                <span>DEF {activeMember?.stats.defense ?? 0}</span>
-                <span>SPD {activeMember?.stats.speed ?? 0}</span>
+                <span>ATK {activeMember ? formatStatWithBonus(activeMember.baseStats.attack, activeMember.stats.attack) : 0}</span>
+                <span>DEF {activeMember ? formatStatWithBonus(activeMember.baseStats.defense, activeMember.stats.defense) : 0}</span>
+                <span>SPD {activeMember ? formatStatWithBonus(activeMember.baseStats.speed, activeMember.stats.speed) : 0}</span>
               </p>
               <p className={styles.statRow}>
-                <span>SP {activeMember?.stats.sp ?? 0}</span>
-                <span>INT {activeMember?.stats.int ?? 0}</span>
-                <span>SPI {activeMember?.stats.spi ?? 0}</span>
+                <span>SP {activeMember ? formatStatWithBonus(activeMember.baseStats.sp ?? 0, activeMember.stats.sp ?? 0) : 0}</span>
+                <span>INT {activeMember ? formatStatWithBonus(activeMember.baseStats.int ?? 0, activeMember.stats.int ?? 0) : 0}</span>
+                <span>SPI {activeMember ? formatStatWithBonus(activeMember.baseStats.spi ?? 0, activeMember.stats.spi ?? 0) : 0}</span>
               </p>
               {!isBattling && (
                 <Button onClick={handleRegroup}>Regroup</Button>

@@ -34,12 +34,12 @@ describe('evolution helpers', () => {
 
   it('supports level-only and item-based evolution requirements', () => {
     const levelOnly = [levelReq(3)]
-    expect(canSatisfyEvolutionRequirements(levelOnly, { level: 3, inventory: [] })).toBe(true)
-    expect(canSatisfyEvolutionRequirements(levelOnly, { level: 2, inventory: [] })).toBe(false)
+    expect(canSatisfyEvolutionRequirements(levelOnly, { level: 3, inventory: {} })).toBe(true)
+    expect(canSatisfyEvolutionRequirements(levelOnly, { level: 2, inventory: {} })).toBe(false)
 
     const itemRequirement = [levelReq(4), itemReq('egg-of-courage')]
-    expect(canSatisfyEvolutionRequirements(itemRequirement, { level: 4, inventory: ['egg-of-courage'] })).toBe(true)
-    expect(canSatisfyEvolutionRequirements(itemRequirement, { level: 4, inventory: [] })).toBe(false)
+    expect(canSatisfyEvolutionRequirements(itemRequirement, { level: 4, inventory: { 'egg-of-courage': 1 } })).toBe(true)
+    expect(canSatisfyEvolutionRequirements(itemRequirement, { level: 4, inventory: {} })).toBe(false)
 
     const formatted = formatEvolutionRequirements(itemRequirement)
     expect(formatted).toContain('Level 4')
@@ -48,8 +48,8 @@ describe('evolution helpers', () => {
 
   it('supports combined multi requirements and badge gating', () => {
     const combo = [multiReq(levelReq(5), itemReq('training-chip'))]
-    expect(canSatisfyEvolutionRequirements(combo, { level: 5, inventory: ['training-chip'] })).toBe(true)
-    expect(canSatisfyEvolutionRequirements(combo, { level: 5, inventory: [] })).toBe(false)
+    expect(canSatisfyEvolutionRequirements(combo, { level: 5, inventory: { 'training-chip': 1 } })).toBe(true)
+    expect(canSatisfyEvolutionRequirements(combo, { level: 5, inventory: {} })).toBe(false)
   })
 
   it('filters evolution edges by their current form id', () => {

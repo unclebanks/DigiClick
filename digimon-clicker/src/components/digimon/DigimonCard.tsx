@@ -1,5 +1,6 @@
-import type { Digimon, Evolution } from '../../types/game'
+import type { Digimon, DigimonStats, Evolution } from '../../types/game'
 import { formatEvolutionRequirements } from '../../utils/evolution'
+import { formatStatWithBonus } from '../../utils/digimonStats'
 import styles from './DigimonCard.module.css'
 
 interface EvolutionOption {
@@ -13,6 +14,10 @@ interface DigimonCardProps {
   level: number
   exp: number
   expToNextLevel: number
+  // Leveled stats before/after any permanent scan or Augment Chip bonus - used to render each stat
+  // as "Normal (+Boost)". Falls back to the species' raw level-1 baseStats when omitted.
+  stats?: DigimonStats
+  baseStats?: DigimonStats
   evolutionOptions?: EvolutionOption[]
   canDedigivolve?: boolean
   onEvolve?: (toId: string) => void
@@ -24,11 +29,16 @@ export function DigimonCard({
   level,
   exp,
   expToNextLevel,
+  stats,
+  baseStats,
   evolutionOptions = [],
   canDedigivolve = false,
   onEvolve,
   onDedigivolve,
 }: DigimonCardProps) {
+  const displayedBaseStats = baseStats ?? digimon.baseStats
+  const displayedStats = stats ?? displayedBaseStats
+
   return (
     <article className={styles.card}>
       <div className={styles.emoji}>{digimon.emoji}</div>
@@ -42,10 +52,10 @@ export function DigimonCard({
       <p className={styles.requirementText}>Attribute: {digimon.type}</p>
       <div className={styles.statsGrid}>
         <span>Lv. {level}</span>
-        <span>ATK {digimon.baseStats.attack}</span>
-        <span>DEF {digimon.baseStats.defense}</span>
-        <span>SPD {digimon.baseStats.speed}</span>
-        <span>HP {digimon.baseStats.hp}</span>
+        <span>ATK {formatStatWithBonus(displayedBaseStats.attack, displayedStats.attack)}</span>
+        <span>DEF {formatStatWithBonus(displayedBaseStats.defense, displayedStats.defense)}</span>
+        <span>SPD {formatStatWithBonus(displayedBaseStats.speed, displayedStats.speed)}</span>
+        <span>HP {formatStatWithBonus(displayedBaseStats.hp, displayedStats.hp)}</span>
       </div>
       <p className={styles.exp}>EXP {exp}/{expToNextLevel}</p>
       <div className={styles.requirements}>
