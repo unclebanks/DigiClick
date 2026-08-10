@@ -45,7 +45,7 @@ Current behavior:
 
 Important details:
 - Currency and level are simple, immediately visible systems.
-- The current implementation is not tied to a save system or offline progression.
+- Currency/level are part of `PlayerState` and covered by the explicit save/load system (see section 12); there is no offline-progression system.
 
 ## 4. Party management and digital space
 Implemented in:
@@ -169,7 +169,7 @@ Implemented in:
 - src/pages/HomePage.tsx
 
 Current behavior:
-- The player store tracks `statistics` (encountered, defeated, fled, criticalHits, misses, totalDamageDealt/Taken, bitsEarned, totalExpEarned) and a `badges` record.
+- The player store tracks `statistics` (encountered, defeated, criticalHits, misses, totalDamageDealt/Taken, bitsEarned, totalExpEarned) and a `badges` record.
 - `recordBattleEncounter`, `recordCombatEvent`, and `recordVictory` update these counters from the battle loop; `unlockBadge` marks a badge id as earned (e.g. `first-victory`, `cleared-<routeId>`).
 - Badges can gate evolution requirements via `badgeReq`.
 - HomePage's "Adventure Status" card surfaces encountered/defeated counts and badge count.
@@ -193,23 +193,30 @@ Current behavior:
 Important details:
 - Recruiting is not gated on ownership - trainers can stack multiple copies of the same species, each with independent progression/digivolution/stat-bonus state keyed by its own instance id.
 
-## 12. Current limitations to keep in mind
+## 12. Save / load system
+Implemented in:
+- src/utils/saveGame.ts
+- src/store/gameStore.ts
+- src/pages/SettingsPage.tsx
+
+Current behavior:
+- Saves are stored in `localStorage` under the key `digiclick-save`, wrapped as `{ version, savedAt, player }`.
+- On app load, the store hydrates synchronously from any existing save (`loadGame()`); if none exists, it falls back to `createDefaultPlayerState()` and no save file is written yet.
+- The first time a trainer picks a starter (`selectStarter`), the store bootstraps a save file automatically if one doesn't already exist, so a fresh game always has something on disk from that point on.
+- The Settings page exposes explicit "Save Game"/"Load Game"/"Delete Save" buttons (`saveToStorage`/`loadFromStorage` store actions, `deleteSaveGame()` util) - saving/loading otherwise never happens automatically.
+- `sanitizePlayerState(raw)` validates and repairs every field of a loaded save (wrong types, missing fields, out-of-range numbers, corrupted entries) against `createDefaultPlayerState()`, so an old, edited, or corrupted save can never crash the app - it always returns a fully valid `PlayerState`. `migrateSaveData`/`MIGRATIONS` in the same file is the extension point for future breaking shape changes (bump `SAVE_VERSION` and add a version-keyed migration step); purely additive field changes don't need a migration since sanitize already defaults them.
+
+Important details:
+- `saveGame`/`loadGame`/`hasSaveGame`/`deleteSaveGame` never throw - storage access is wrapped in try/catch and JSON parsing failures are treated as "no save", not an error.
+- `GameStore.lastSavedAt` is a runtime-only field (not part of the persisted `PlayerState`) used purely for the Settings page's "last saved" display.
+
+## 13. Current limitations to keep in mind
 The project is a foundation, not a complete game. The main gaps are:
-- no save/load system
-- no settings persistence
-- no persistent party state across reloads
+- no persistent party state across reloads beyond the explicit save/load flow (no auto-save on every action)
 - only one wild Digimon per route is fought at a time (no multi-encounter rotation)
 - recruiting via the scan meter only supports species not already owned; there's no release/trade flow yet
 - `PlayerState.inventory` is a quantity map (`Record<itemId, count>`, `addInventoryItem(itemId, quantity?)` increments it) rather than a plain id list - evolution's `itemReq` checks now do a `> 0` count lookup instead of `Array.includes`. There's still no in-battle status-ailment/stat-stage/SP system and most consumables (recovery/status/timed-boost/EXP/Bond) have no use-item flow yet, so their typed `mechanic` payloads aren't applied anywhere except Augment Chips (see section 6).
-- The Shop (section 13) is deliberately unrestricted (every item purchasable, no stock/level/area gates) for testing - this is not the intended final shop UX.
-
-## 13. Best mental model for future work
-When adding a new feature, think in terms of three layers:
-1. UI layer: page or component changes
-2. State layer: Zustand store actions and state shape changes
-3. Logic layer: utility functions and data helpers
-
-The current codebase is intentionally structured so new systems can be introduced incrementally without a large rewrite.
+- The Shop (section 14) is deliberately unrestricted (every item purchasable, no stock/level/area gates) for testing - this is not the intended final shop UX.
 
 ## 14. Shop
 Implemented in:
@@ -222,3 +229,12 @@ Current behavior:
 
 Important details:
 - This is a first pass, not the final shop UX - no confirmation dialogs, categories/tabs beyond the three data-source sections, or item detail view.
+
+## 15. Best mental model for future work
+When adding a new feature, think in terms of three layers:
+1. UI layer: page or component changes
+2. State layer: Zustand store actions and state shape changes
+3. Logic layer: utility functions and data helpers
+
+The current codebase is intentionally structured so new systems can be introduced incrementally without a large rewrite.
+

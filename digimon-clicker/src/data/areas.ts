@@ -10,7 +10,7 @@ export const battleRoutesByRegion: Record<string, BattleRoute[]> = {
       description: 'A calm starting route with friendly Digimon around every corner.',
       requiredPlayerLevel: 1,
       requiredPartySize: 1,
-      encounterIds: ['botamon', 'pabumon'],
+      encounterIds: ['botamon', 'pabumon','kuramon','choromon','dodomon','punimon','poyomon'],
       encounterLevelRange: [1, 2],
       unlockedByDefault: true,
     },
@@ -22,7 +22,7 @@ export const battleRoutesByRegion: Record<string, BattleRoute[]> = {
       description: 'A slightly busier path where rookie Digimon gather.',
       requiredPlayerLevel: 2,
       requiredPartySize: 2,
-      encounterIds: ['koromon', 'agumon'],
+      encounterIds: ['koromon', 'tanemon','tsunomon','tokomon','yokomon'],
       encounterLevelRange: [2, 3],
     },
     {

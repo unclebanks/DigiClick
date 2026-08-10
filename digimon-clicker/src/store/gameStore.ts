@@ -1,14 +1,24 @@
 import { create } from 'zustand'
 import type { DigimonStatBonus, DigimonStats, DigitalSpaceEnvironment, DigivolutionState, PlayerState } from '../types/game'
-import { createInitialPlayerStatistics } from '../types/game'
 import { createInitialDigimonProgression, gainDigimonExperience, resolveDigimonProgression } from '../utils/digimonProgression'
 import { createInitialDigivolutionState } from '../utils/evolution'
 import { addScanProgress, canRecruitFromScan, getScanStatBonus } from '../utils/scanning'
 import { consumableItems } from '../data/consumables'
+import {
+  createDefaultPlayerState,
+  hasSaveGame,
+  importSaveFile as importSaveFileContents,
+  loadGame,
+  saveGame,
+  serializeSaveFile,
+} from '../utils/saveGame'
 
 // This store is intentionally simple and centralized so future systems such as
 // save/load, offline progress, and battle state can build on a single source of truth.
 interface GameStore extends PlayerState {
+  // Timestamp of the last successful save (this session or loaded from disk), for Settings UI
+  // feedback only - not itself part of the persisted PlayerState.
+  lastSavedAt: number | null
   addCurrency: (amount: number) => void
   addInventoryItem: (itemId: string, quantity?: number) => void
   setCurrentArea: (area: string) => void
@@ -25,14 +35,19 @@ interface GameStore extends PlayerState {
   gainScanProgress: (speciesId: string, amount: number) => void
   recruitFromScan: (speciesId: string, baseStats: DigimonStats) => boolean
   applyStatAugment: (instanceId: string, itemId: string) => boolean
+  // Explicit save/load, driven by the Settings page (and the first-starter-selection bootstrap
+  // save in selectStarter). Both return false on failure (no storage, corrupted/missing save)
+  // instead of throwing, so callers can surface a message without risking a crash.
+  saveToStorage: () => boolean
+  loadFromStorage: () => boolean
+  // Loads a save from the raw text contents of an exported .json file (see serializeSaveFile),
+  // e.g. picked via the Settings page's "Load Game" file input. Also persists it to localStorage
+  // on success so the imported progress survives a page refresh, not just the current session.
+  importSaveFile: (raw: string) => boolean
+  // Serializes the current live state (not just whatever was last saved to localStorage) so the
+  // Settings page's "Export Save" button always downloads up-to-date progress.
+  exportSaveFile: () => string
 }
-
-const createInitialDigitalSpace = (): PlayerState['digitalSpace'] =>
-  Array.from({ length: 30 }, (_, index) => ({
-    id: `env-${index + 1}`,
-    name: `Environment ${index + 1}`,
-    digimonIds: [],
-  }))
 
 function addToFirstAvailableEnvironment(
   digitalSpace: DigitalSpaceEnvironment[],
@@ -65,25 +80,34 @@ function createDigimonInstanceId(speciesId: string): string {
   return `${speciesId}--${Date.now().toString(36)}-${recruitInstanceCounter}`
 }
 
-const initialState: PlayerState = {
-  currency: 120,
-  playerLevel: 1,
-  partyDigimon: [],
-  inventory: { 'training-chip': 1 },
-  currentArea: 'Digital Forest',
-  digitalSpace: createInitialDigitalSpace(),
-  digivolutionStates: {
-    agumon: createInitialDigivolutionState('agumon'),
-  },
-  digimonProgression: {},
-  statistics: createInitialPlayerStatistics(),
-  badges: {},
-  scanProgress: {},
-  digimonBonuses: {},
+// Picks just the persisted PlayerState fields off the store, dropping actions/lastSavedAt.
+function extractPlayerState(state: GameStore): PlayerState {
+  return {
+    currency: state.currency,
+    playerLevel: state.playerLevel,
+    partyDigimon: state.partyDigimon,
+    inventory: state.inventory,
+    currentArea: state.currentArea,
+    digitalSpace: state.digitalSpace,
+    digivolutionStates: state.digivolutionStates,
+    digimonProgression: state.digimonProgression,
+    statistics: state.statistics,
+    badges: state.badges,
+    scanProgress: state.scanProgress,
+    digimonBonuses: state.digimonBonuses,
+  }
 }
 
+// Hydrate synchronously at module load: if a valid save exists it becomes the store's initial
+// state, otherwise we fall back to a brand-new trainer's default state (no save file is written
+// yet - selectStarter creates it the moment the player picks their first Digimon).
+const savedGame = loadGame()
+const initialPlayerState: PlayerState = savedGame?.player ?? createDefaultPlayerState()
+const initialLastSavedAt: number | null = savedGame?.savedAt ?? null
+
 export const useGameStore = create<GameStore>((set, get) => ({
-  ...initialState,
+  ...initialPlayerState,
+  lastSavedAt: initialLastSavedAt,
   addCurrency: (amount) =>
     set((state) => {
       const nextCurrency = Math.max(0, state.currency + amount)
@@ -125,11 +149,20 @@ export const useGameStore = create<GameStore>((set, get) => ({
         digitalSpace: addToFirstAvailableEnvironment(state.digitalSpace, digimonId),
       }
     }),
-  selectStarter: (digimonId) =>
+  selectStarter: (digimonId) => {
     set((state) => ({
       partyDigimon: state.partyDigimon.length === 0 ? [digimonId] : state.partyDigimon,
       digimonProgression: withInitializedProgression(state.digimonProgression, digimonId),
-    })),
+    }))
+
+    // First-time bootstrap: a brand-new trainer's very first choice creates their save file, so
+    // there's always something on disk for the "check on load" flow to find from now on. Only
+    // fires if no save exists yet - later starter-esque actions (there are none today) won't
+    // clobber an existing save.
+    if (!hasSaveGame()) {
+      get().saveToStorage()
+    }
+  },
   setDigivolutionState: (digimonId, digivolutionState) =>
     set((state) => ({
       digivolutionStates: {
@@ -248,5 +281,39 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
     return true
   },
+  saveToStorage: () => {
+    const success = saveGame(extractPlayerState(get()))
+
+    if (success) {
+      set({ lastSavedAt: Date.now() })
+    }
+
+    return success
+  },
+  loadFromStorage: () => {
+    const loaded = loadGame()
+
+    if (!loaded) {
+      return false
+    }
+
+    set({ ...loaded.player, lastSavedAt: loaded.savedAt ?? Date.now() })
+
+    return true
+  },
+  importSaveFile: (raw) => {
+    const imported = importSaveFileContents(raw)
+
+    if (!imported) {
+      return false
+    }
+
+    set({ ...imported.player, lastSavedAt: Date.now() })
+    // Persist immediately so the imported save is what's still there after a page refresh.
+    saveGame(imported.player)
+
+    return true
+  },
+  exportSaveFile: () => serializeSaveFile(extractPlayerState(get())),
 }))
 

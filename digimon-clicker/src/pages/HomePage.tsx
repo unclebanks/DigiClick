@@ -152,7 +152,7 @@ export function HomePage() {
         </section>
       )}
 
-      <section className={styles.grid}>
+      <section className={styles.partyList}>
         {partyMembers.map(({ baseId, digivolutionState, species, progression, stats, baseStats }) => (
           <DigimonCard
             key={baseId}
@@ -163,6 +163,7 @@ export function HomePage() {
             stats={stats}
             baseStats={baseStats}
             canDedigivolve={digivolutionState.history.length > 1}
+            showDescription={false}
             evolutionOptions={getEvolutionOptions(digivolutionState.currentFormId, sampleEvolutions).map((evolution) => ({
               evolution,
               targetName: sampleDigimon.find((digimon) => digimon.id === evolution.to)?.name ?? evolution.to,

@@ -20,6 +20,7 @@ interface DigimonCardProps {
   baseStats?: DigimonStats
   evolutionOptions?: EvolutionOption[]
   canDedigivolve?: boolean
+  showDescription?: boolean
   onEvolve?: (toId: string) => void
   onDedigivolve?: () => void
 }
@@ -33,6 +34,7 @@ export function DigimonCard({
   baseStats,
   evolutionOptions = [],
   canDedigivolve = false,
+  showDescription = true,
   onEvolve,
   onDedigivolve,
 }: DigimonCardProps) {
@@ -41,23 +43,24 @@ export function DigimonCard({
 
   return (
     <article className={styles.card}>
-      <div className={styles.emoji}>{digimon.emoji}</div>
-      <div>
-        <h3>{digimon.name}</h3>
-        <p>{digimon.stage}</p>
+      <div className={styles.header}>
+        <div className={styles.emoji}>{digimon.emoji}</div>
+        <div className={styles.identity}>
+          <h3>{digimon.name}</h3>
+          <p className={styles.stage}>{digimon.stage}</p>
+        </div>
+        <div className={styles.statsGrid}>
+          <span>Lv. {level}</span>
+          <span>ATK {formatStatWithBonus(displayedBaseStats.attack, displayedStats.attack)}</span>
+          <span>DEF {formatStatWithBonus(displayedBaseStats.defense, displayedStats.defense)}</span>
+          <span>SPD {formatStatWithBonus(displayedBaseStats.speed, displayedStats.speed)}</span>
+          <span>HP {formatStatWithBonus(displayedBaseStats.hp, displayedStats.hp)}</span>
+        </div>
+        <p className={styles.exp}>EXP {exp}/{expToNextLevel}</p>
       </div>
-      <p className={styles.description}>{digimon.description}</p>
+      {showDescription && <p className={styles.description}>{digimon.description}</p>}
       <p className={styles.power}>Power {digimon.basePower}</p>
-      <p className={styles.requirementText}>Personality: {digimon.personality}</p>
-      <p className={styles.requirementText}>Attribute: {digimon.type}</p>
-      <div className={styles.statsGrid}>
-        <span>Lv. {level}</span>
-        <span>ATK {formatStatWithBonus(displayedBaseStats.attack, displayedStats.attack)}</span>
-        <span>DEF {formatStatWithBonus(displayedBaseStats.defense, displayedStats.defense)}</span>
-        <span>SPD {formatStatWithBonus(displayedBaseStats.speed, displayedStats.speed)}</span>
-        <span>HP {formatStatWithBonus(displayedBaseStats.hp, displayedStats.hp)}</span>
-      </div>
-      <p className={styles.exp}>EXP {exp}/{expToNextLevel}</p>
+      <p className={styles.requirementText}>{digimon.personality} - {digimon.type}</p>
       <div className={styles.requirements}>
         <p className={styles.label}>Evolution options</p>
         {evolutionOptions.length === 0 ? (
