@@ -114,6 +114,7 @@ export function createInitialDigivolutionState(formId: string): DigivolutionStat
     history: [formId],
     penaltyCount: 0,
     penaltyMultiplier: 1,
+    digivolutionChain: [{ formId }],
   }
 }
 
@@ -129,6 +130,7 @@ export function evolveDigimonState(
     ...state,
     currentFormId: nextFormId,
     history: [...state.history, nextFormId],
+    digivolutionChain: [...state.digivolutionChain, { formId: nextFormId, direction: 'up' }],
   }
 }
 
@@ -144,5 +146,6 @@ export function dedigivolveDigimonState(state: DigivolutionState): DigivolutionS
     history: state.history.slice(0, -1),
     penaltyCount: state.penaltyCount + 1,
     penaltyMultiplier: Math.max(0.5, Number((state.penaltyMultiplier * 0.85).toFixed(2))),
+    digivolutionChain: [...state.digivolutionChain, { formId: previousForm, direction: 'down' }],
   }
 }

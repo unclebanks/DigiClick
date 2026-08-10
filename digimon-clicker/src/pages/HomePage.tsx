@@ -162,6 +162,7 @@ export function HomePage() {
             expToNextLevel={progression.expToNextLevel}
             stats={stats}
             baseStats={baseStats}
+            digivolutionChain={digivolutionState.digivolutionChain}
             canDedigivolve={digivolutionState.history.length > 1}
             showDescription={false}
             evolutionOptions={getEvolutionOptions(digivolutionState.currentFormId, sampleEvolutions).map((evolution) => ({

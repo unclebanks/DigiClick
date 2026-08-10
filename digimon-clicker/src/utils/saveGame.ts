@@ -2,6 +2,7 @@ import type {
   DigimonProgressionState,
   DigimonStatBonus,
   DigitalSpaceEnvironment,
+  DigivolutionChainEntry,
   DigivolutionState,
   PlayerState,
   PlayerStatistics,
@@ -80,6 +81,28 @@ function sanitizeStringArray(value: unknown, fallback: string[]): string[] {
   return Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : fallback
 }
 
+// Accepts either the current `{ formId, direction? }[]` shape or a plain `string[]` (this field's
+// original shape, before choice-based de-digivolution needed to know each hop's direction too).
+function sanitizeDigivolutionChain(value: unknown, fallback: DigivolutionChainEntry[]): DigivolutionChainEntry[] {
+  if (!Array.isArray(value)) {
+    return fallback
+  }
+
+  const result: DigivolutionChainEntry[] = []
+
+  for (const entry of value) {
+    if (typeof entry === 'string') {
+      result.push({ formId: entry })
+    } else if (isRecord(entry) && typeof entry.formId === 'string') {
+      result.push(entry.direction === 'up' || entry.direction === 'down'
+        ? { formId: entry.formId, direction: entry.direction }
+        : { formId: entry.formId })
+    }
+  }
+
+  return result.length > 0 ? result : fallback
+}
+
 // `inventory` is a quantity map (item id -> count owned). Drops non-numeric/non-positive/fractional
 // counts rather than crashing - see the v1->v2 MIGRATIONS entry for converting the older
 // plain-array inventory shape into this one.
@@ -137,6 +160,12 @@ function sanitizeDigivolutionStates(value: unknown): Record<string, Digivolution
       history: sanitizeStringArray(entry.history, [entry.currentFormId]),
       penaltyCount: sanitizeNumber(entry.penaltyCount, 0, 0),
       penaltyMultiplier: sanitizeNumber(entry.penaltyMultiplier, 1, 0),
+      // Falls back to `history` for saves written before this field existed - a reasonable
+      // best-effort chain rather than losing the display entirely.
+      digivolutionChain: sanitizeDigivolutionChain(
+        entry.digivolutionChain,
+        sanitizeStringArray(entry.history, [entry.currentFormId]).map((formId) => ({ formId })),
+      ),
     }
   }
 

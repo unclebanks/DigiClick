@@ -18,18 +18,36 @@ describe('evolution helpers', () => {
         history: ['agumon'],
         penaltyCount: 0,
         penaltyMultiplier: 1,
+        digivolutionChain: [{ formId: 'agumon' }],
       },
       'greymon',
     )
 
     expect(evolved.currentFormId).toBe('greymon')
     expect(evolved.history).toEqual(['agumon', 'greymon'])
+    expect(evolved.digivolutionChain).toEqual([{ formId: 'agumon' }, { formId: 'greymon', direction: 'up' }])
 
     const dedigivolved = dedigivolveDigimonState(evolved)
 
     expect(dedigivolved.currentFormId).toBe('agumon')
     expect(dedigivolved.penaltyCount).toBe(1)
     expect(dedigivolved.penaltyMultiplier).toBeCloseTo(0.85)
+    expect(dedigivolved.history).toEqual(['agumon'])
+    // Unlike `history` (which shrinks back to just agumon), the chain keeps the full record,
+    // and each entry after the first is tagged with the direction it happened in.
+    expect(dedigivolved.digivolutionChain).toEqual([
+      { formId: 'agumon' },
+      { formId: 'greymon', direction: 'up' },
+      { formId: 'agumon', direction: 'down' },
+    ])
+
+    const reEvolved = evolveDigimonState(dedigivolved, 'greymon')
+    expect(reEvolved.digivolutionChain).toEqual([
+      { formId: 'agumon' },
+      { formId: 'greymon', direction: 'up' },
+      { formId: 'agumon', direction: 'down' },
+      { formId: 'greymon', direction: 'up' },
+    ])
   })
 
   it('supports level-only and item-based evolution requirements', () => {

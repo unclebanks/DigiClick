@@ -104,7 +104,13 @@ describe('sanitizePlayerState', () => {
   it('drops digivolution states missing a currentFormId but keeps valid ones', () => {
     const result = sanitizePlayerState({
       digivolutionStates: {
-        agumon: { currentFormId: 'greymon', history: ['agumon', 'greymon'], penaltyCount: 1, penaltyMultiplier: 0.9 },
+        agumon: {
+          currentFormId: 'greymon',
+          history: ['agumon', 'greymon'],
+          penaltyCount: 1,
+          penaltyMultiplier: 0.9,
+          digivolutionChain: [{ formId: 'agumon' }, { formId: 'greymon', direction: 'up' }],
+        },
         broken: { history: ['broken'] },
       },
     })
@@ -114,8 +120,35 @@ describe('sanitizePlayerState', () => {
       history: ['agumon', 'greymon'],
       penaltyCount: 1,
       penaltyMultiplier: 0.9,
+      digivolutionChain: [{ formId: 'agumon' }, { formId: 'greymon', direction: 'up' }],
     })
     expect(result.digivolutionStates.broken).toBeUndefined()
+  })
+
+  it('falls back to `history` for a digivolutionChain missing from an older save', () => {
+    const result = sanitizePlayerState({
+      digivolutionStates: {
+        agumon: { currentFormId: 'greymon', history: ['agumon', 'greymon'], penaltyCount: 0, penaltyMultiplier: 1 },
+      },
+    })
+
+    expect(result.digivolutionStates.agumon.digivolutionChain).toEqual([{ formId: 'agumon' }, { formId: 'greymon' }])
+  })
+
+  it('accepts the older plain string[] digivolutionChain shape (pre-direction-tracking saves)', () => {
+    const result = sanitizePlayerState({
+      digivolutionStates: {
+        agumon: {
+          currentFormId: 'greymon',
+          history: ['agumon', 'greymon'],
+          penaltyCount: 0,
+          penaltyMultiplier: 1,
+          digivolutionChain: ['agumon', 'greymon'],
+        },
+      },
+    })
+
+    expect(result.digivolutionStates.agumon.digivolutionChain).toEqual([{ formId: 'agumon' }, { formId: 'greymon' }])
   })
 
   it('pads a digital space that has fewer environments than the current default', () => {

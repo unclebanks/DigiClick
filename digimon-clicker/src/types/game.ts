@@ -131,6 +131,19 @@ export interface DigivolutionState {
   history: string[]
   penaltyCount: number
   penaltyMultiplier: number
+  // Full chronological log of every form this instance has been in, in the exact order it
+  // happened - unlike `history` (the current lineage stack, which shrinks on de-digivolve),
+  // this only ever grows, so de-digivolving back down and re-evolving stays on the record
+  // (e.g. agumon -> greymon -> agumon -> geogreymon logs all four steps). Each entry's
+  // `direction` records how the trainer arrived there (absent for the very first/starting
+  // entry) - this is what future choice-based de-digivolution (picking which past form to
+  // revert to) will read to know which hops were forward vs backward.
+  digivolutionChain: DigivolutionChainEntry[]
+}
+
+export interface DigivolutionChainEntry {
+  formId: string
+  direction?: 'up' | 'down'
 }
 
 export interface DigimonStatBonus {

@@ -6,7 +6,15 @@ describe('getOwnedDigimonIds', () => {
     const owned = getOwnedDigimonIds(
       ['agumon'],
       [{ id: 'env-1', name: 'Environment 1', digimonIds: ['gabumon'] }],
-      { agumon: { currentFormId: 'greymon', history: ['agumon', 'greymon'], penaltyCount: 0, penaltyMultiplier: 1 } },
+      {
+        agumon: {
+          currentFormId: 'greymon',
+          history: ['agumon', 'greymon'],
+          penaltyCount: 0,
+          penaltyMultiplier: 1,
+          digivolutionChain: [{ formId: 'agumon' }, { formId: 'greymon', direction: 'up' }],
+        },
+      },
     )
 
     expect(owned.has('agumon')).toBe(true)
