@@ -9,10 +9,15 @@ import type { RawStatKey } from './digimonSource'
 // ends are in our current sampleDigimon roster. digimon_cleaned.json has no bits-cost concept, so
 // cost is derived from the target's generation (see BASE_EVOLUTION_COST_BY_GENERATION).
 //
-// Stat-condition thresholds are used AS-IS from the source data, NOT rescaled like baseStats is
-// (JSON_STAT_SCALE_DIVISOR in digimon.ts) - per direction, the plan is to eventually rework the
-// whole game around the JSON's larger numbers, so these thresholds are deliberately left unscaled
-// even though most won't be reachable yet against today's small stat numbers. Adjust later, not now.
+// Stat-condition thresholds are used AS-IS from the source data. baseStats/growthStats in
+// digimon.ts are also unscaled now (JSON_STAT_SCALE_DIVISOR was removed - see the migration plan
+// doc's Phase 8), so both sides of a statReq check are finally on the same raw JSON scale.
+//
+// Each evolvesTo target can now have its own condition via digimon_cleaned.json's per-target
+// `evolutionConditions` map (falls back to the shared `evolutionCondition` if a target has no
+// entry there) - e.g. agumon's edges to geogreymon vs greymon now require different HP thresholds
+// instead of sharing one. Current values are placeholders (scaled off the old shared condition),
+// not researched/balanced - see the migration plan doc.
 //
 // requiredItem/jogressPartners/talent/agentSkills evolutionConditions have no equivalent in our
 // evolution model yet and are silently dropped from `requires` (the edge stays reachable via
@@ -87,13 +92,16 @@ for (const id of digimonIds) {
     }
 
     const targetSpecies = sampleDigimon.find((digimon) => digimon.id === targetId)
+    // Per-target condition (Phase 8 follow-up: distinct requirements per evolvesTo target)
+    // falls back to the shared evolutionCondition if this target has no entry of its own.
+    const condition = raw.evolutionConditions?.[targetSlug] ?? raw.evolutionCondition
 
     generatedEvolutions.push({
       id: `${id}-${targetId}`,
       from: id,
       to: targetId,
       cost: costForGeneration(targetSpecies?.stage ?? ''),
-      requires: buildRequirements(raw.evolutionCondition.stats),
+      requires: buildRequirements(condition.stats),
     })
   }
 }

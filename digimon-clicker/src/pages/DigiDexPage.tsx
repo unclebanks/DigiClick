@@ -123,7 +123,7 @@ export function DigiDexPage() {
                     <span>{digimon.stage}</span>
                     <span>{digimon.type}</span>
                   </p>
-                  <ProgressBar label="Scan" value={scanValue} max={SCAN_MAX} />
+                  <ProgressBar label="Scan" value={scanValue} max={SCAN_MAX} overflowThreshold={SCAN_RECRUIT_THRESHOLD} />
                   {hasBonusScanTier(scanValue) && (
                     <p className={styles.dexText}>
                       +{Math.round(getScanBonusRatio(scanValue) * 100)}% stat bonus if recruited now!

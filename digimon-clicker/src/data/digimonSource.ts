@@ -54,6 +54,12 @@ export interface RawDigimonEntry {
   attributeResistances: Record<string, number>
   elementalResistances: Record<string, number>
   evolutionCondition: RawEvolutionCondition
+  // Per-target requirement, keyed by the slug in evolvesTo - lets e.g. agumon's geogreymon and
+  // greymon edges each have their own condition instead of sharing `evolutionCondition`. Only
+  // placeholder values for now (see /memories/repo/digimon-json-migration-plan.md) - derived by
+  // scaling `evolutionCondition`, not researched/balanced real thresholds. Falls back to the
+  // shared `evolutionCondition` when a target has no entry here.
+  evolutionConditions?: Record<string, RawEvolutionCondition>
   evolvesTo: string[]
   evolvesFrom: string[]
   devolvesFrom: string[]

@@ -12,9 +12,9 @@ describe('sampleDigimon (full digimon_cleaned.json roster)', () => {
     expect(new Set(ids).size).toBe(ids.length)
   })
 
-  it('includes the full digimon_cleaned.json dataset plus the manual-fallback species it lacks', () => {
-    // 475 from digimon_cleaned.json + 6 hand-authored species with no match there (see digimon.ts).
-    expect(sampleDigimon.length).toBe(481)
+  it('includes exactly the digimon_cleaned.json dataset (no manual-fallback species anymore)', () => {
+    // All 6 hand-authored species without a digimon_cleaned.json match were removed - see digimon.ts.
+    expect(sampleDigimon.length).toBe(475)
   })
 
   it('gives every entry the fields pages/components render unconditionally', () => {

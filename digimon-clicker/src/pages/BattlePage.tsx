@@ -374,12 +374,23 @@ export function BattlePage() {
               <h2>{activeEncounter?.name ?? 'No encounter'}</h2>
               <p>{currentRoute.region} • {currentRoute.name}</p>
               <p>Lv. {activeEncounter?.level ?? 1} • {activeEncounter?.type ?? 'Free'}</p>
-              <ProgressBar label="HP" value={enemyStats ? Math.round((enemyHp / enemyStats.hp) * 100) : 0} />
-              <ProgressBar label="Scan" value={scanValue} max={SCAN_MAX} />
+              <ProgressBar label="HP" value={enemyHp} max={enemyStats?.hp ?? 0} displayValue={`${enemyHp}/${enemyStats?.hp ?? 0}`} />
+              <ProgressBar
+                label="Scan"
+                value={scanValue}
+                max={SCAN_MAX}
+                overflowThreshold={SCAN_RECRUIT_THRESHOLD}
+                displayValue={`${scanValue}/${SCAN_MAX}`}
+              />
               <p className={styles.statRow}>
                 <span>ATK {enemyStats?.attack ?? 0}</span>
                 <span>DEF {enemyStats?.defense ?? 0}</span>
                 <span>SPD {enemyStats?.speed ?? 0}</span>
+              </p>
+              <p className={styles.statRow}>
+                <span>SP {enemyStats?.sp ?? 0}</span>
+                <span>INT {enemyStats?.int ?? 0}</span>
+                <span>SPI {enemyStats?.spi ?? 0}</span>
               </p>
               <p>{currentRoute.description}</p>
               {canRecruit && (
@@ -393,15 +404,27 @@ export function BattlePage() {
               <p className={styles.eyebrow}>Your Digimon</p>
               <h2>{activeMember?.species.name ?? 'No party Digimon'}</h2>
               <p>Lv. {activeMember?.progression.level ?? 1} • {activeMember?.species.type ?? 'Free'}</p>
-              <ProgressBar label="HP" value={activeMember ? Math.round((activeMemberHp / activeMember.stats.hp) * 100) : 0} />
+              <ProgressBar
+                label="HP"
+                value={activeMemberHp}
+                max={activeMember?.stats.hp ?? 0}
+                displayValue={`${activeMemberHp}/${activeMember?.stats.hp ?? 0}`}
+              />
               <ProgressBar
                 label="EXP"
-                value={activeMember ? Math.round((activeMember.progression.exp / activeMember.progression.expToNextLevel) * 100) : 0}
+                value={activeMember?.progression.exp ?? 0}
+                max={activeMember?.progression.expToNextLevel ?? 0}
+                displayValue={`${activeMember?.progression.exp ?? 0}/${activeMember?.progression.expToNextLevel ?? 0}`}
               />
               <p className={styles.statRow}>
                 <span>ATK {activeMember?.stats.attack ?? 0}</span>
                 <span>DEF {activeMember?.stats.defense ?? 0}</span>
                 <span>SPD {activeMember?.stats.speed ?? 0}</span>
+              </p>
+              <p className={styles.statRow}>
+                <span>SP {activeMember?.stats.sp ?? 0}</span>
+                <span>INT {activeMember?.stats.int ?? 0}</span>
+                <span>SPI {activeMember?.stats.spi ?? 0}</span>
               </p>
               {!isBattling && (
                 <Button onClick={handleRegroup}>Regroup</Button>
@@ -461,7 +484,7 @@ export function BattlePage() {
                     <div className={styles.dexEmoji}>{member.species.emoji}</div>
                     <strong>{member.species.name}</strong>
                     <p className={styles.dexText}>Lv. {member.progression.level}</p>
-                    <ProgressBar label="HP" value={Math.round((member.hp / member.stats.hp) * 100)} />
+                    <ProgressBar label="HP" value={member.hp} max={member.stats.hp} displayValue={`${member.hp}/${member.stats.hp}`} />
                     <Button
                       variant="secondary"
                       disabled={isFainted}

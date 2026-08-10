@@ -45,10 +45,15 @@ const BASE_ATTACK_INTERVAL_MS = 2400
 const MIN_ATTACK_INTERVAL_MS = 500
 const DEFAULT_MISS_CHANCE = 0.1
 const DEFAULT_CRIT_CHANCE = 0.2
+// Digimon.baseStats/growthStats are digimon_cleaned.json's raw hundreds-to-thousands scale (see
+// digimon.ts) - previously that was divided down by 20 before reaching combat math, so this factor
+// is the old tuned value (20) divided by that same 20 to land back on the original pacing/balance
+// now that speed itself is ~20x bigger.
+const SPEED_TO_MS_FACTOR = 1
 
 // Higher speed (and item/skill modifiers) shrinks the wait between automatic attacks.
 export function getAttackIntervalMs(speed: number, speedModifier = 1): number {
-  const interval = (BASE_ATTACK_INTERVAL_MS - speed * 20) / Math.max(0.1, speedModifier)
+  const interval = (BASE_ATTACK_INTERVAL_MS - speed * SPEED_TO_MS_FACTOR) / Math.max(0.1, speedModifier)
 
   return Math.max(MIN_ATTACK_INTERVAL_MS, Math.round(interval))
 }
@@ -93,7 +98,9 @@ export function resolveVictoryRewards(
   rng: () => number = Math.random,
 ): VictoryRewards {
   const bits = Math.floor(defeatedEnemy.level * 4) + 5
-  const exp = Math.round(defeatedEnemy.level * 8 + defeatedEnemy.maxHp / 4)
+  // maxHp is the raw (unscaled) JSON stat now - divide by the old divisor (20) times the old
+  // flat constant (4) to keep this reward at the same original pacing/balance as before.
+  const exp = Math.round(defeatedEnemy.level * 8 + defeatedEnemy.maxHp / 80)
   const droppedItemIds = (defeatedEnemy.drops ?? [])
     .filter((drop) => rng() <= drop.chance)
     .map((drop) => drop.itemId)
