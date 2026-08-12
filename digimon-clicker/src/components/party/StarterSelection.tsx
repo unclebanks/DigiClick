@@ -1,4 +1,5 @@
 import { sampleDigimon } from '../../data/digimon'
+import { DigimonSprite } from '../digimon/DigimonSprite'
 import styles from './StarterSelection.module.css'
 
 interface StarterSelectionProps {
@@ -15,7 +16,7 @@ export function StarterSelection({ onSelect }: StarterSelectionProps) {
       <div className={styles.grid}>
         {starters.map((digimon) => (
           <button key={digimon.id} type="button" className={styles.card} onClick={() => onSelect(digimon.id)}>
-            <span className={styles.emoji}>{digimon.emoji}</span>
+            <DigimonSprite speciesId={digimon.id} name={digimon.name} emoji={digimon.emoji} className={styles.emoji} />
             <strong>{digimon.name}</strong>
             <span>{digimon.description}</span>
             <span className={styles.selectBadge}>Select</span>

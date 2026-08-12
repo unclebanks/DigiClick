@@ -1,0 +1,33 @@
+.sprite {
+  image-rendering: pixelated;
+  object-fit: contain;
+}
+
+.spriteFallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.flipped {
+  transform: scaleX(-1);
+}
+
+.small {
+  width: 48px;
+  height: 48px;
+  font-size: 1.5rem;
+}
+
+.medium {
+  width: 96px;
+  height: 96px;
+  font-size: 2.5rem;
+}
+
+.large {
+  width: 144px;
+  height: 144px;
+  font-size: 3.5rem;
+}

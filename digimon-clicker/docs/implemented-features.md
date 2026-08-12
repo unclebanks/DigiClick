@@ -253,7 +253,22 @@ Current behavior:
 - `App.tsx` uses the hook to (a) put `data-platform="desktop"|"mobile"` on the `.app-shell` root element for future CSS targeting, and (b) show a non-blocking `.desktop-notice` banner ("DigiClick is currently optimized for desktop browsers...") when the viewport is classified as mobile. Nothing is actually hidden or disabled for mobile yet.
 - App.css also has an unused-so-far `.desktop-only` utility class (`display: none` under `max-width: 767px`) ready for the first feature that needs to be explicitly desktop-only ahead of real mobile support landing.
 
-## 17. Best mental model for future work
+## 17. Battle sprite framework
+Implemented in:
+- src/utils/sprites.ts
+- src/data/spriteFacing.ts
+- src/components/digimon/DigimonSprite.tsx / .module.css
+- src/pages/BattlePage.tsx, src/pages/DigiDexPage.tsx, src/components/party/StarterSelection.tsx
+
+Current behavior:
+- `src/assets/digimon_set2` holds optional per-species pixel-art sprite sheets: 4 frames named `<id>_01.png`..`<id>_04.png` (id matches the Digimon's `id`, e.g. `agumon_01.png`). Only Agumon has art right now; every other species has no files there yet.
+- `sprites.ts` auto-discovers these via `import.meta.glob` at build time (no per-species registration needed) and exposes `getDigimonSpriteFrames(speciesId)` (ordered frame URLs, or `undefined` if that species has no art yet).
+- `spriteFacing.ts` records which way a species' art faces by default (`getSpriteFacing(speciesId)`, defaults to `'right'` for anything not listed - currently only `agumon: 'left'` is set, since that's the only art in the game).
+- `DigimonSprite` is the shared component: renders the current animation frame (cycling every 350ms via `useState`, tracked/reset by species id) when sprite art exists, otherwise falls back to rendering the species' `emoji` in a same-sized box - so callers don't need to branch on sprite availability themselves. Optional `facing` prop flips the sprite (`scaleX(-1)`) when it differs from the species' native facing.
+- Wired into: BattlePage's wild-Digimon and active-party-member panels (`facing="left"`/`facing="right"` respectively, so they visually face each other) and its bench "Your Team" list (small, no facing), DigiDexPage's dex grid entries, and StarterSelection's starter cards.
+- `DigimonCard` (used by HomePage/PartyPage) was NOT wired up - it has no existing portrait slot, only the small evolution-chain emoji icons, so adding a sprite there would need a layout decision, not just a swap.
+
+## 18. Best mental model for future work
 When adding a new feature, think in terms of three layers:
 1. UI layer: page or component changes
 2. State layer: Zustand store actions and state shape changes

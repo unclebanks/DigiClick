@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Card } from '../components/common/Card'
 import { Button } from '../components/common/Button'
 import { ProgressBar } from '../components/common/ProgressBar'
+import { DigimonSprite } from '../components/digimon/DigimonSprite'
 import { useGameStore } from '../store/gameStore'
 import { sampleDigimon } from '../data/digimon'
 import { battleRoutesByRegion, sampleBattleRoutes } from '../data/areas'
@@ -385,6 +386,14 @@ export function BattlePage() {
           <div className={styles.battleRoster}>
             <div className={styles.battleCombatant}>
               <p className={styles.eyebrow}>Wild Digimon</p>
+              {activeEncounter && (
+                <DigimonSprite
+                  speciesId={activeEncounter.id}
+                  name={activeEncounter.name}
+                  emoji={activeEncounter.emoji}
+                  facing="left"
+                />
+              )}
               <h2>{activeEncounter?.name ?? 'No encounter'}</h2>
               <p>{currentRoute.region} • {currentRoute.name}</p>
               <p>Lv. {activeEncounter?.level ?? 1} • {activeEncounter?.type ?? 'Free'}</p>
@@ -416,6 +425,14 @@ export function BattlePage() {
 
             <div className={styles.battleCombatant}>
               <p className={styles.eyebrow}>Your Digimon</p>
+              {activeMember && (
+                <DigimonSprite
+                  speciesId={activeMember.species.id}
+                  name={activeMember.species.name}
+                  emoji={activeMember.species.emoji}
+                  facing="right"
+                />
+              )}
               <h2>{activeMember?.species.name ?? 'No party Digimon'}</h2>
               <p>Lv. {activeMember?.progression.level ?? 1} • {activeMember?.species.type ?? 'Free'}</p>
               <ProgressBar
@@ -495,7 +512,7 @@ export function BattlePage() {
 
                 return (
                   <div key={member.baseId} className={styles.teamMember}>
-                    <div className={styles.dexEmoji}>{member.species.emoji}</div>
+                    <DigimonSprite speciesId={member.species.id} name={member.species.name} emoji={member.species.emoji} size="small" />
                     <strong>{member.species.name}</strong>
                     <p className={styles.dexText}>Lv. {member.progression.level}</p>
                     <ProgressBar label="HP" value={member.hp} max={member.stats.hp} displayValue={`${member.hp}/${member.stats.hp}`} />

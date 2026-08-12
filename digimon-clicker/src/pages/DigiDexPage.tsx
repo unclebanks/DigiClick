@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { Card } from '../components/common/Card'
 import { Button } from '../components/common/Button'
 import { ProgressBar } from '../components/common/ProgressBar'
+import { DigimonSprite } from '../components/digimon/DigimonSprite'
 import { useGameStore } from '../store/gameStore'
 import { sampleDigimon } from '../data/digimon'
 import { getDigidexStatus, getOwnedDigimonIds } from '../utils/digidex'
@@ -111,7 +112,11 @@ export function DigiDexPage() {
               key={digimon.id}
               className={`${styles.cardListItem} ${status === 'unseen' ? styles.dexEntryUnseen : ''}`}
             >
-              <div className={styles.dexEmoji}>{status === 'unseen' ? '❔' : digimon.emoji}</div>
+              {status === 'unseen' ? (
+                <div className={styles.dexEmoji}>{'❔'}</div>
+              ) : (
+                <DigimonSprite speciesId={digimon.id} name={digimon.name} emoji={digimon.emoji} />
+              )}
               <h3>{status === 'unseen' ? '???' : digimon.name}</h3>
               <p className={styles.dexStatus}>{STATUS_LABEL[status]}</p>
               {status === 'unseen' ? (
